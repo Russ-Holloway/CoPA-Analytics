@@ -1,13 +1,13 @@
-# CoPPA Analytics - Police Force Deployment Guide
+# College of Policing - Policing Assistant Analytics - Police Force Deployment Guide
 
 ## 🚔 For Police Force IT Teams
 
-This guide explains how any police force can deploy CoPPA Analytics in their Azure tenant.
+This guide explains how any police force can deploy College of Policing - Policing Assistant Analytics in their Azure tenant.
 
 ## 📋 Prerequisites
 
 ### What You Need:
-1. **Existing CoPPA Chatbot** with Cosmos DB deployment
+1. **Existing College of Policing - Policing Assistant Chatbot** with Cosmos DB deployment
 2. **Azure Subscription** with appropriate permissions
 3. **Admin Email Address** for receiving analytics reports
 4. **5-10 minutes** for deployment
@@ -30,10 +30,10 @@ This guide explains how any police force can deploy CoPPA Analytics in their Azu
 3. **Fill in Deployment Form:**
    - **Force Prefix**: Your force code (e.g., "BTP", "MET", "GMP", "WMP")
    - **Admin Email**: Email for daily reports (e.g., analytics@yourforce.police.uk)
-   - **Cosmos DB Endpoint**: Your existing CoPPA Cosmos DB URL
-   - **Cosmos DB Key**: Your existing CoPPA Cosmos DB primary key
-   - **Database Name**: Usually "coppa-conversations" (check your CoPPA deployment)
-   - **Container Name**: Usually "conversations" (check your CoPPA deployment)
+   - **Cosmos DB Endpoint**: Your existing College of Policing - Policing Assistant Cosmos DB URL
+   - **Cosmos DB Key**: Your existing College of Policing - Policing Assistant Cosmos DB primary key
+   - **Database Name**: Usually "conversations" (check your College of Policing - Policing Assistant deployment)
+   - **Container Name**: Usually "conversations" (check your College of Policing - Policing Assistant deployment)
 
 4. **Deploy** (takes 5-10 minutes)
 

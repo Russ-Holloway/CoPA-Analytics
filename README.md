@@ -1,4 +1,4 @@
-# CoPPA Analytics - Azure Deployment Solution
+# College of Policing - Policing Assistant Analytics - Azure Deployment Solution
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2FcreateUiDefinition.json)
 
@@ -6,15 +6,15 @@
 [![Azure](https://img.shields.io/badge/Azure-Functions-blue.svg)](https://azure.microsoft.com/en-us/services/functions/)
 [![Python](https://img.shields.io/badge/Python-3.9+-green.svg)](https://www.python.org/)
 
-## 🚔 About CoPPA Analytics
+## 🚔 About College of Policing - Policing Assistant Analytics
 
-**CoPPA Analytics** is a comprehensive analytics and reporting solution designed specifically for police forces using the **Community Policing Partnership Assistant (CoPPA)** chatbot platform. This solution provides automated insights, reporting, and dashboard capabilities to help police forces understand citizen engagement patterns and improve community policing effectiveness.
+**College of Policing - Policing Assistant Analytics** is a comprehensive analytics and reporting solution designed specifically for police forces using the **College of Policing - Policing Assistant** chatbot platform. This solution provides automated insights, reporting, and dashboard capabilities to help police forces understand citizen engagement patterns and improve community policing effectiveness.
 
 ### ✨ Key Features
 
 - **📊 Real-time Analytics Dashboard** - Interactive web dashboard showing chatbot usage, citizen engagement, and trending topics
 - **📧 Automated Daily Reports** - Email reports sent to administrators with key metrics and insights
-- **🔄 Seamless Integration** - Connects directly to existing CoPPA Cosmos DB deployments
+- **🔄 Seamless Integration** - Connects directly to existing College of Policing - Policing Assistant Cosmos DB deployments
 - **🎯 One-Click Deployment** - Complete Azure infrastructure deployed in minutes
 - **🏛️ Multi-Force Ready** - Easily customizable for different police forces
 - **📈 Performance Monitoring** - Built-in Application Insights and monitoring
@@ -23,7 +23,7 @@
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Existing CoPPA chatbot deployment with Cosmos DB
+- Existing College of Policing - Policing Assistant chatbot deployment with Cosmos DB
 - Azure subscription with appropriate permissions
 - Email account for automated reports (Office 365 recommended)
 
@@ -33,7 +33,7 @@
 2. **Fill in the deployment form:**
    - **Force Code**: Your police force identifier (e.g., "btp", "met", "gmp")
    - **Administrator Email**: Email for reports and notifications
-   - **Cosmos DB Details**: Connection string and database information from your existing CoPPA deployment
+   - **Cosmos DB Details**: Connection string and database information from your existing College of Policing - Policing Assistant deployment
    - **Email Configuration**: SMTP settings for automated reports
 
 3. **Review and Deploy**: The deployment typically takes 5-10 minutes
@@ -93,9 +93,9 @@ The solution deploys the following Azure resources:
 
 ## 📋 Functions Included
 
-### 🔍 CoPPA Analytics API (`/api/GetAnalytics`)
+### 🔍 College of Policing - Policing Assistant Analytics API (`/api/GetAnalytics`)
 - **Type**: HTTP Trigger (GET/POST)
-- **Purpose**: Retrieve comprehensive analytics from CoPPA conversations
+- **Purpose**: Retrieve comprehensive analytics from College of Policing - Policing Assistant conversations
 - **Features**:
   - Conversation volume analysis
   - Topic categorization and trending
@@ -104,7 +104,7 @@ The solution deploys the following Azure resources:
   - Sentiment analysis
 - **Parameters**: `start_date`, `end_date`, `category`, `format`
 
-### ⏰ Daily Report Generator (`CoPPADailyReport`)
+### ⏰ Daily Report Generator (`DailyReport`)
 - **Type**: Timer Trigger
 - **Schedule**: Daily at 7:00 AM UTC
 - **Purpose**: Generate and email daily analytics reports
@@ -131,7 +131,7 @@ The solution deploys the following Azure resources:
 
 ## ⚙️ Post-Deployment Configuration
 
-After successful deployment, your CoPPA Analytics solution will be automatically configured. However, you may want to customize these settings:
+After successful deployment, your College of Policing - Policing Assistant Analytics solution will be automatically configured. However, you may want to customize these settings:
 
 ### Environment Variables (Automatically Set)
 ```bash

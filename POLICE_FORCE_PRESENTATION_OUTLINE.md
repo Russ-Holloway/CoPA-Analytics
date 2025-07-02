@@ -1,4 +1,4 @@
-# CoPPA Analytics - Police Force Presentation Outline
+# College of Policing - Policing Assistant Analytics - Police Force Presentation Outline
 
 ## Slide Deck for Police Force Briefings
 *Use this outline to create presentations for senior leadership, IT teams, or force-wide briefings*
@@ -6,7 +6,7 @@
 ---
 
 ### Slide 1: Title Slide
-**CoPPA Analytics**  
+**College of Policing - Policing Assistant Analytics**  
 *Professional Analytics for Police Chatbot Deployment*
 
 - Self-Service Deployment Available Now
@@ -19,7 +19,7 @@
 ### Slide 2: The Challenge
 **Without Analytics, You're Flying Blind**
 
-🔍 Current CoPPA Deployment Issues:
+🔍 Current College of Policing - Policing Assistant Deployment Issues:
 - No visibility into citizen engagement patterns
 - Can't measure chatbot effectiveness
 - Missing opportunities for service improvement
@@ -30,7 +30,7 @@
 
 ---
 
-### Slide 3: The Solution - CoPPA Analytics
+### Slide 3: The Solution - College of Policing - Policing Assistant Analytics
 **Professional Analytics in Minutes, Not Months**
 
 ✅ **Real-Time Dashboard** - Live citizen engagement metrics  
@@ -48,7 +48,7 @@
 ### Slide 4: Dashboard Demo
 **See Your Data Come to Life**
 
-[Screenshot of CoPPA Analytics Dashboard]
+[Screenshot of College of Policing - Policing Assistant Analytics Dashboard]
 
 📊 **Key Metrics Displayed**:
 - Total citizen interactions
@@ -160,7 +160,7 @@
 📊 **Cost Comparison**:
 - Traditional BI Solution: £5,000-50,000+ setup
 - Commercial Analytics Platform: £500-2,000/month
-- **CoPPA Analytics: £15-40/month**
+- **College of Policing - Policing Assistant Analytics: £15-40/month**
 
 💡 **ROI Calculation**:
 - Cost of 1 hour analyst time: £30-50

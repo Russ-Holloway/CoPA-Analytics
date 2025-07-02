@@ -1,7 +1,7 @@
-# CoPPA Analytics - Final Completion Summary
+# College of Policing - Policing Assistant Analytics - Final Completion Summary
 
 ## 🎯 Project Overview
-**CoPPA Analytics** is a complete, production-ready Azure deployment solution that provides comprehensive analytics, reporting, and dashboard capabilities for police forces using the Community Policing Partnership Assistant (CoPPA) chatbot platform.
+**College of Policing - Policing Assistant Analytics** is a complete, production-ready Azure deployment solution that provides comprehensive analytics, reporting, and dashboard capabilities for police forces using the College of Policing - Policing Assistant chatbot platform.
 
 ## ✅ Completed Components
 
@@ -21,7 +21,7 @@
   - Email server configuration
   - Validation and help text
 
-- **✅ PowerShell Deployment Script (`deploy-coppa.ps1`)**: Complete automated deployment
+- **✅ PowerShell Deployment Script (`deploy.ps1`)**: Complete automated deployment
   - Resource group creation
   - ARM template deployment
   - Function code packaging and deployment
@@ -30,7 +30,7 @@
 
 ### 📊 Analytics Functions
 - **✅ GetAnalytics Function (`GetAnalytics/__init__.py`)**: Core analytics API
-  - Comprehensive CoPPA-specific analytics
+  - Comprehensive College of Policing - Policing Assistant-specific analytics
   - Cosmos DB integration with fallback to demo data
   - Categories: crime_reporting, traffic_incidents, general_enquiry, domestic_violence, fraud_cybercrime, community_safety
   - Advanced metrics: satisfaction scores, resolution rates, response times
@@ -45,7 +45,7 @@
   - Hourly distribution analysis
   - Recent questions display
   - Date range filtering
-  - CoPPA branding and styling
+  - College of Policing - Policing Assistant branding and styling
 
 - **✅ Supporting Function Framework**:
   - `host.json`: Function app configuration
@@ -54,7 +54,7 @@
 
 ### 📚 Documentation
 - **✅ README.md**: Complete project documentation
-  - Professional CoPPA branding
+  - Professional College of Policing - Policing Assistant branding
   - "Deploy to Azure" button with correct GitHub URLs
   - Feature overview and architecture diagrams
   - Step-by-step deployment instructions
@@ -90,7 +90,7 @@
 
 ### Method 2: PowerShell Script
 1. Clone repository
-2. Run `.\deploy-coppa.ps1` with parameters
+2. Run `.\deploy.ps1` with parameters
 3. Automated deployment with testing
 4. Complete setup validation
 
@@ -145,7 +145,7 @@
 - Alert thresholds and notifications
 
 ### Data Sources
-- Primary: Existing CoPPA Cosmos DB
+- Primary: Existing College of Policing - Policing Assistant Cosmos DB
 - Fallback: Realistic demo data
 - Integration: RESTful APIs for external systems
 - Export: JSON, CSV formats available
@@ -198,7 +198,7 @@
 
 ## 🎉 Success Metrics
 
-The CoPPA Analytics solution provides police forces with:
+The College of Policing - Policing Assistant Analytics solution provides police forces with:
 - **Immediate value**: Real-time insights into citizen engagement
 - **Data-driven decisions**: Evidence-based service improvements
 - **Operational efficiency**: Automated reporting and monitoring
@@ -215,4 +215,4 @@ The CoPPA Analytics solution provides police forces with:
 
 ---
 
-**This CoPPA Analytics solution is now complete and ready for production deployment by any police force with an existing CoPPA chatbot system.**
+**This College of Policing - Policing Assistant Analytics solution is now complete and ready for production deployment by any police force with an existing College of Policing - Policing Assistant chatbot system.**

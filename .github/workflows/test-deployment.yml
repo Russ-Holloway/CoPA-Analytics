@@ -1,4 +1,4 @@
-name: Test CoPPA Analytics Deployment
+name: Test College of Policing - Policing Assistant Analytics Deployment
 
 on:
   push:

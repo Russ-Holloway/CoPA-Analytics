@@ -5,7 +5,7 @@
   "parameters": {
     "config": {
       "basics": {
-        "description": "**CoPPA Analytics for Police Forces**\n\nDeploy a complete analytics solution for your CoPPA chatbot. This solution provides automated reporting, dashboard analytics, and monitoring capabilities.\n\n**Requirements:**\n- Existing CoPPA chatbot deployment with Cosmos DB\n- Azure subscription with Function App and Storage permissions\n- Email configuration for automated reports",
+        "description": "**College of Policing - Policing Assistant Analytics for Police Forces**\n\nDeploy a complete analytics solution for your College of Policing - Policing Assistant chatbot. This solution provides automated reporting, dashboard analytics, and monitoring capabilities.\n\n**Requirements:**\n- Existing College of Policing - Policing Assistant chatbot deployment with Cosmos DB\n- Azure subscription with Function App and Storage permissions\n- Email configuration for automated reports",
         "location": {
           "label": "Region",
           "toolTip": "Choose the Azure region closest to your force. UK South is recommended for UK forces.",
@@ -57,7 +57,7 @@
           {
             "name": "cosmosSection",
             "type": "Microsoft.Common.Section",
-            "label": "CoPPA Cosmos DB Details",
+            "label": "College of Policing - Policing Assistant Cosmos DB Details",
             "elements": [
               {
                 "name": "cosmosConnectionString",
@@ -66,7 +66,7 @@
                   "password": "Cosmos DB Connection String",
                   "confirmPassword": "Confirm Connection String"
                 },
-                "toolTip": "Primary connection string from your existing CoPPA Cosmos DB account",
+                "toolTip": "Primary connection string from your existing College of Policing - Policing Assistant Cosmos DB account",
                 "constraints": {
                   "required": true
                 },

@@ -1,20 +1,20 @@
 # Email Template for Police Force Distribution
 
-## Subject: CoPPA Analytics - Self-Service Deployment Now Available
+## Subject: College of Policing - Policing Assistant Analytics - Self-Service Deployment Now Available
 
 ---
 
 **To: [Police Force IT Teams / Digital Teams]**
 **From: BTP Digital Analytics Team**
-**Subject: CoPPA Analytics - Self-Service Deployment Now Available**
+**Subject: College of Policing - Policing Assistant Analytics - Self-Service Deployment Now Available**
 
 Dear Colleagues,
 
-We're pleased to announce that **CoPPA Analytics** is now available for self-service deployment by any police force with an existing CoPPA chatbot.
+We're pleased to announce that **College of Policing - Policing Assistant Analytics** is now available for self-service deployment by any police force with an existing College of Policing - Policing Assistant chatbot.
 
-## 🚀 What is CoPPA Analytics?
+## 🚀 What is College of Policing - Policing Assistant Analytics?
 
-CoPPA Analytics provides comprehensive insights into your chatbot conversations:
+College of Policing - Policing Assistant Analytics provides comprehensive insights into your chatbot conversations:
 
 - **📊 Real-time Dashboard** - Interactive analytics and visualizations
 - **📧 Automated Reports** - Daily email summaries sent to your team
@@ -27,7 +27,7 @@ CoPPA Analytics provides comprehensive insights into your chatbot conversations:
 ### Option 1: One-Click Deployment (Easiest)
 1. Visit: **https://github.com/Russ-Holloway/CoPPA-Analytics**
 2. Click the **"Deploy to Azure"** button
-3. Fill in your force details and existing CoPPA Cosmos DB connection
+3. Fill in your force details and existing College of Policing - Policing Assistant Cosmos DB connection
 4. Deploy and access your dashboard immediately
 
 ### Option 2: Download and Run
@@ -40,7 +40,7 @@ Use PowerShell script or Azure CLI for advanced deployment options.
 
 ## 📋 What You Need
 
-- ✅ Existing CoPPA chatbot with Cosmos DB
+- ✅ Existing College of Policing - Policing Assistant chatbot with Cosmos DB
 - ✅ Azure subscription with Contributor permissions
 - ✅ Admin email address for reports
 - ✅ 5-10 minutes
@@ -87,7 +87,7 @@ Contact your IT/Azure teams - the solution uses standard Azure services.
 
 ## 🎉 Success Stories
 
-Forces already using CoPPA Analytics report:
+Forces already using College of Policing - Policing Assistant Analytics report:
 - **Better resource allocation** based on peak usage patterns
 - **Improved citizen satisfaction** through trend analysis
 - **Data-driven decisions** for service improvements
@@ -137,4 +137,4 @@ Email: digital.analytics@btp.police.uk
 - IT Service Managers
 - Business Intelligence Teams
 - Innovation/Digital Policing Teams
-- CoPPA Project Managers
+- College of Policing - Policing Assistant Project Managers
