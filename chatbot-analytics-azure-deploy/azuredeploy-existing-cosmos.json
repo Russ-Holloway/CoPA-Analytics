@@ -106,7 +106,6 @@
                 "family": "Y"
             },
             "properties": {
-                "reserved": true
             }
         },
         {
@@ -125,7 +124,7 @@
             "apiVersion": "2021-02-01",
             "name": "[variables('functionAppName')]",
             "location": "[variables('location')]",
-            "kind": "functionapp,linux",
+            "kind": "functionapp",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
@@ -192,7 +191,6 @@
                             "value": "587"
                         }
                     ],
-                    "linuxFxVersion": "Python|3.11",
                     "cors": {
                         "allowedOrigins": ["*"]
                     }
