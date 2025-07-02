@@ -55,7 +55,7 @@
         "functionAppName": "[concat('func-', variables('resourcePrefix'), '-analytics')]",
         "appServicePlanName": "[concat('plan-', variables('resourcePrefix'), '-analytics')]",
         "applicationInsightsName": "[concat('appi-', variables('resourcePrefix'), '-analytics')]",
-        "logAnalyticsWorkspaceName": "[concat('law-', variables('resourcePrefix'), '-analytics')]",
+        "logAnalyticsWorkspaceName": "[concat('log-', variables('resourcePrefix'), '-analytics')]",
         "location": "[resourceGroup().location]"
     },
     "resources": [
