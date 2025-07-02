@@ -6,7 +6,7 @@ import azure.functions as func
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('College of Policing - Policing Assistant Analytics function processed a request.')
+    logging.info('CoPPA Analytics function processed a request.')
 
     try:
         # Get query parameters
@@ -29,7 +29,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             start_date = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
             end_date = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
 
-        # Try to connect to Cosmos DB for real College of Policing - Policing Assistant data
+        # Try to connect to Cosmos DB for real CoPPA data
         cosmos_data = None
         data_source = "demo_data"
         
@@ -37,20 +37,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             cosmos_data = get_cosmos_analytics(force_id, start_date, end_date, category)
             data_source = "cosmos_db"
         except Exception as e:
-            logging.warning(f"Cosmos DB connection failed, using demo College of Policing - Policing Assistant data: {str(e)}")
+            logging.warning(f"Cosmos DB connection failed, using demo CoPPA data: {str(e)}")
             data_source = "demo_data"
 
         # Use Cosmos DB data if available, otherwise fall back to demo data
         if cosmos_data:
             analytics_data = cosmos_data
         else:
-            # Demo College of Policing - Policing Assistant analytics data (fallback when Cosmos DB is not available)
-            analytics_data = get_demo_analytics(force_id, start_date, end_date, category)
+            # Demo CoPPA analytics data (fallback when Cosmos DB is not available)
+            analytics_data = get_coppa_demo_analytics(force_id, start_date, end_date, category)
 
         # Add metadata about data source
         analytics_data["metadata"] = {
             "data_source": data_source,
-            "system": "College of Policing - Policing Assistant",
+            "system": "CoPPA",
             "force": force_id,
             "generated_at": datetime.now().isoformat(),
             "version": "2.0"
@@ -317,10 +317,10 @@ def get_mock_analytics_data(force_id, start_date, end_date):
     }
 
 
-def get_demo_analytics(force_id, start_date, end_date, category):
-    """Generate comprehensive College of Policing - Policing Assistant demo analytics data as fallback"""
+def get_coppa_demo_analytics(force_id, start_date, end_date, category):
+    """Generate comprehensive CoPPA demo analytics data as fallback"""
     
-    # Realistic College of Policing - Policing Assistant demo data for police forces
+    # Realistic CoPPA demo data for police forces
     demo_categories = {
         "crime_reporting": {
             "count": 285,
@@ -416,7 +416,7 @@ def get_demo_analytics(force_id, start_date, end_date, category):
         for i in range(7)
     }
     
-    # Top themes for College of Policing - Policing Assistant
+    # Top themes for CoPPA
     top_themes = [
         {"theme": "crime_reporting", "count": 285},
         {"theme": "general_enquiry", "count": 342}, 
@@ -526,7 +526,7 @@ def get_demo_analytics(force_id, start_date, end_date, category):
             "resolutionRate": f"{avg_resolution_rate}%"
         },
         "system_info": {
-            "system": "College of Policing - Policing Assistant",
+            "system": "CoPPA",
             "version": "2.0",
             "data_source": "demo_data",
             "force": force_id
