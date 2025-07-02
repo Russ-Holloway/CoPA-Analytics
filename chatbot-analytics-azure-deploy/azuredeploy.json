@@ -54,7 +54,7 @@
         "storageAccountName": "[take(concat('st', uniqueString(resourceGroup().id)), 24)]",
         "functionAppName": "[concat('func-', variables('resourcePrefix'), '-analytics')]",
         "appServicePlanName": "[concat('plan-', variables('resourcePrefix'), '-analytics')]",
-        "applicationInsightsName": "[concat('ai-', variables('resourcePrefix'), '-analytics')]",
+        "applicationInsightsName": "[concat('appi-', variables('resourcePrefix'), '-analytics')]",
         "location": "[resourceGroup().location]"
     },
     "resources": [
