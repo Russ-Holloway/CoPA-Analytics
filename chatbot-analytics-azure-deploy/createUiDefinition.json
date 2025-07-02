@@ -18,35 +18,28 @@
     },
     "basics": [
       {
-        "name": "forceInfo",
-        "type": "Microsoft.Common.Section",
-        "label": "Police Force Information",
-        "elements": [
-          {
-            "name": "forceIdentifier",
-            "type": "Microsoft.Common.TextBox",
-            "label": "Force Code",
-            "placeholder": "e.g., btp, met, gmp",
-            "toolTip": "Short identifier for your police force (3-8 characters, lowercase)",
-            "constraints": {
-              "required": true,
-              "regex": "^[a-z]{3,8}$",
-              "validationMessage": "Force code must be 3-8 lowercase letters only"
-            }
-          },
-          {
-            "name": "adminEmail",
-            "type": "Microsoft.Common.TextBox",
-            "label": "Administrator Email",
-            "placeholder": "admin@yourforce.police.uk",
-            "toolTip": "Email address for deployment notifications and automated reports",
-            "constraints": {
-              "required": true,
-              "regex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-              "validationMessage": "Please enter a valid email address"
-            }
-          }
-        ]
+        "name": "forcePrefix",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Force Code",
+        "placeholder": "e.g., BTP, MET, GMP",
+        "toolTip": "Short identifier for your police force (2-6 characters)",
+        "constraints": {
+          "required": true,
+          "regex": "^[A-Za-z]{2,6}$",
+          "validationMessage": "Force code must be 2-6 letters only"
+        }
+      },
+      {
+        "name": "adminEmail",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Administrator Email",
+        "placeholder": "admin@yourforce.police.uk",
+        "toolTip": "Email address for deployment notifications and automated reports",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+          "validationMessage": "Please enter a valid email address"
+        }
       }
     ],
     "steps": [
@@ -55,187 +48,64 @@
         "label": "Cosmos DB Configuration",
         "elements": [
           {
-            "name": "cosmosSection",
-            "type": "Microsoft.Common.Section",
-            "label": "CoPPA Cosmos DB Details",
-            "elements": [
-              {
-                "name": "cosmosConnectionString",
-                "type": "Microsoft.Common.PasswordBox",
-                "label": {
-                  "password": "Cosmos DB Connection String",
-                  "confirmPassword": "Confirm Connection String"
-                },
-                "toolTip": "Primary connection string from your existing CoPPA Cosmos DB account",
-                "constraints": {
-                  "required": true
-                },
-                "options": {
-                  "hideConfirmation": false
-                }
-              },
-              {
-                "name": "cosmosDatabaseName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Database Name",
-                "defaultValue": "coppa-chatbot",
-                "toolTip": "Name of the Cosmos DB database containing your chatbot data",
-                "constraints": {
-                  "required": true,
-                  "regex": "^[a-zA-Z0-9][a-zA-Z0-9-_]{0,254}$",
-                  "validationMessage": "Database name must be valid Cosmos DB identifier"
-                }
-              },
-              {
-                "name": "cosmosContainerName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Container Name",
-                "defaultValue": "conversations",
-                "toolTip": "Name of the container holding conversation data",
-                "constraints": {
-                  "required": true,
-                  "regex": "^[a-zA-Z0-9][a-zA-Z0-9-_]{0,254}$",
-                  "validationMessage": "Container name must be valid Cosmos DB identifier"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "emailConfig",
-        "label": "Email Configuration",
-        "elements": [
+            "name": "existingCosmosDbEndpoint",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Cosmos DB Endpoint URL (Optional)",
+            "placeholder": "https://your-cosmos-account.documents.azure.com:443/",
+            "toolTip": "The endpoint URL of your existing CoPPA Cosmos DB account. Leave blank to use demo data.",
+            "constraints": {
+              "required": false
+            }
+          },
           {
-            "name": "emailSection",
-            "type": "Microsoft.Common.Section",
-            "label": "Automated Reporting Setup",
-            "elements": [
-              {
-                "name": "smtpServer",
-                "type": "Microsoft.Common.TextBox",
-                "label": "SMTP Server",
-                "defaultValue": "smtp.office365.com",
-                "toolTip": "SMTP server for sending automated reports (Office 365 recommended)",
-                "constraints": {
-                  "required": true
-                }
-              },
-              {
-                "name": "smtpPort",
-                "type": "Microsoft.Common.TextBox",
-                "label": "SMTP Port",
-                "defaultValue": "587",
-                "toolTip": "SMTP port (587 for TLS, 465 for SSL)",
-                "constraints": {
-                  "required": true,
-                  "regex": "^[0-9]{1,5}$",
-                  "validationMessage": "Please enter a valid port number"
-                }
-              },
-              {
-                "name": "emailUsername",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Email Username",
-                "placeholder": "coppa-reports@yourforce.police.uk",
-                "toolTip": "Username for SMTP authentication",
-                "constraints": {
-                  "required": true
-                }
-              },
-              {
-                "name": "emailPassword",
-                "type": "Microsoft.Common.PasswordBox",
-                "label": {
-                  "password": "Email Password",
-                  "confirmPassword": "Confirm Password"
-                },
-                "toolTip": "Password or app password for SMTP authentication",
-                "constraints": {
-                  "required": true
-                },
-                "options": {
-                  "hideConfirmation": false
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "advancedConfig",
-        "label": "Advanced Configuration",
-        "elements": [
+            "name": "existingCosmosDbKey",
+            "type": "Microsoft.Common.PasswordBox",
+            "label": {
+              "password": "Cosmos DB Primary Key (Optional)",
+              "confirmPassword": "Confirm Primary Key"
+            },
+            "toolTip": "Primary key from your existing CoPPA Cosmos DB account. Leave blank to use demo data.",
+            "constraints": {
+              "required": false
+            },
+            "options": {
+              "hideConfirmation": true
+            }
+          },
           {
-            "name": "functionSettings",
-            "type": "Microsoft.Common.Section",
-            "label": "Function App Settings",
-            "elements": [
-              {
-                "name": "functionAppSku",
-                "type": "Microsoft.Common.DropDown",
-                "label": "Function App Plan",
-                "defaultValue": "Consumption",
-                "toolTip": "Choose the hosting plan for your Function App",
-                "constraints": {
-                  "allowedValues": [
-                    {
-                      "label": "Consumption (Pay-per-execution)",
-                      "value": "Y1"
-                    },
-                    {
-                      "label": "Premium (Always ready)",
-                      "value": "EP1"
-                    }
-                  ],
-                  "required": true
-                }
-              },
-              {
-                "name": "storageAccountType",
-                "type": "Microsoft.Common.DropDown",
-                "label": "Storage Replication",
-                "defaultValue": "Standard_LRS",
-                "toolTip": "Storage account replication type",
-                "constraints": {
-                  "allowedValues": [
-                    {
-                      "label": "Locally Redundant (Standard_LRS)",
-                      "value": "Standard_LRS"
-                    },
-                    {
-                      "label": "Geo-Redundant (Standard_GRS)",
-                      "value": "Standard_GRS"
-                    }
-                  ],
-                  "required": true
-                }
-              },
-              {
-                "name": "enableDashboard",
-                "type": "Microsoft.Common.CheckBox",
-                "label": "Deploy Analytics Dashboard",
-                "toolTip": "Enable to deploy a web-based analytics dashboard"
-              }
-            ]
+            "name": "cosmosDbDatabase",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Database Name",
+            "defaultValue": "db_conversation_history",
+            "toolTip": "Name of the Cosmos DB database containing your chatbot data",
+            "constraints": {
+              "required": true,
+              "regex": "^[a-zA-Z0-9][a-zA-Z0-9-_]{0,254}$",
+              "validationMessage": "Database name must be valid Cosmos DB identifier"
+            }
+          },
+          {
+            "name": "cosmosDbContainer",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Container Name",
+            "defaultValue": "conversations",
+            "toolTip": "Name of the container holding conversation data",
+            "constraints": {
+              "required": true,
+              "regex": "^[a-zA-Z0-9][a-zA-Z0-9-_]{0,254}$",
+              "validationMessage": "Container name must be valid Cosmos DB identifier"
+            }
           }
         ]
       }
     ],
     "outputs": {
-      "forceIdentifier": "[basics('forceInfo').forceIdentifier]",
-      "adminEmail": "[basics('forceInfo').adminEmail]",
-      "cosmosConnectionString": "[steps('cosmosConfig').cosmosSection.cosmosConnectionString]",
-      "cosmosDatabaseName": "[steps('cosmosConfig').cosmosSection.cosmosDatabaseName]",
-      "cosmosContainerName": "[steps('cosmosConfig').cosmosSection.cosmosContainerName]",
-      "smtpServer": "[steps('emailConfig').emailSection.smtpServer]",
-      "smtpPort": "[steps('emailConfig').emailSection.smtpPort]",
-      "emailUsername": "[steps('emailConfig').emailSection.emailUsername]",
-      "emailPassword": "[steps('emailConfig').emailSection.emailPassword]",
-      "functionAppSku": "[steps('advancedConfig').functionSettings.functionAppSku]",
-      "storageAccountType": "[steps('advancedConfig').functionSettings.storageAccountType]",
-      "enableDashboard": "[steps('advancedConfig').functionSettings.enableDashboard]",
-      "location": "[location()]"
+      "forcePrefix": "[basics('forcePrefix')]",
+      "adminEmail": "[basics('adminEmail')]",
+      "existingCosmosDbEndpoint": "[steps('cosmosConfig').existingCosmosDbEndpoint]",
+      "existingCosmosDbKey": "[steps('cosmosConfig').existingCosmosDbKey]",
+      "cosmosDbDatabase": "[steps('cosmosConfig').cosmosDbDatabase]",
+      "cosmosDbContainer": "[steps('cosmosConfig').cosmosDbContainer]"
     }
   }
 }
