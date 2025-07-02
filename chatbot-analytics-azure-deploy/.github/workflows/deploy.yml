@@ -1,0 +1,109 @@
+name: Deploy Chatbot Analytics to Azure
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'chatbot-analytics-azure-deploy/**'
+  pull_request:
+    branches: [ main ]
+    paths: 
+      - 'chatbot-analytics-azure-deploy/**'
+  workflow_dispatch:
+    inputs:
+      forceId:
+        description: 'Police Force Identifier'
+        required: true
+        default: 'demo'
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - staging
+        - production
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './chatbot-analytics-azure-deploy/function-code'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v3
+
+    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Pip'
+      shell: bash
+      run: |
+        pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+        popd
+
+    - name: 'Login to Azure'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Deploy ARM Template'
+      uses: azure/arm-deploy@v1
+      id: arm-deploy
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: rg-${{ github.event.inputs.forceId || 'demo' }}-chatbot-analytics
+        template: ./chatbot-analytics-azure-deploy/azuredeploy.json
+        parameters: |
+          forceIdentifier=${{ github.event.inputs.forceId || 'demo' }}
+          location="UK South"
+
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ steps.arm-deploy.outputs.functionAppName }}
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+    - name: 'Test Deployment'
+      run: |
+        echo "Testing deployment..."
+        sleep 30
+        
+        FUNCTION_URL="${{ steps.arm-deploy.outputs.functionAppUrl }}/api/TestFunction"
+        echo "Testing: $FUNCTION_URL"
+        
+        response=$(curl -s -w "%{http_code}" "$FUNCTION_URL?name=GitHub-Actions")
+        http_code="${response: -3}"
+        
+        if [ "$http_code" == "200" ]; then
+          echo "✅ Deployment test successful!"
+          echo "Function App URL: ${{ steps.arm-deploy.outputs.functionAppUrl }}"
+        else
+          echo "❌ Deployment test failed with HTTP code: $http_code"
+          exit 1
+        fi
+
+    - name: 'Post-Deployment Summary'
+      run: |
+        echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Force ID:** ${{ github.event.inputs.forceId || 'demo' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** ${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Function App:** ${{ steps.arm-deploy.outputs.functionAppName }}" >> $GITHUB_STEP_SUMMARY
+        echo "**URL:** ${{ steps.arm-deploy.outputs.functionAppUrl }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Available Endpoints:" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔍 Test: ${{ steps.arm-deploy.outputs.functionAppUrl }}/api/TestFunction" >> $GITHUB_STEP_SUMMARY
+        echo "- 📊 Analytics: ${{ steps.arm-deploy.outputs.functionAppUrl }}/api/GetAnalytics" >> $GITHUB_STEP_SUMMARY
+        echo "- ⏰ Timer: Automated (daily at 2 AM UTC)" >> $GITHUB_STEP_SUMMARY

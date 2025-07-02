@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "forceIdentifier": {
+      "value": "btp"
+    },
+    "location": {
+      "value": "UK South"
+    },
+    "storageAccountType": {
+      "value": "Standard_LRS"
+    },
+    "runtime": {
+      "value": "python"
+    },
+    "pythonVersion": {
+      "value": "3.9"
+    }
+  }
+}

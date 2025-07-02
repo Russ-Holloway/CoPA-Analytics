@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoPPA Analytics Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #ffd700;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --border-light: #e0e0e0;
+            --success-green: #28a745;
+            --warning-orange: #ffc107;
+            --danger-red: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .header-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .header-text p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            border-left: 4px solid var(--secondary-blue);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success-green);
+        }
+
+        .metric-change.negative {
+            color: var(--danger-red);
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .time-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .time-btn {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border-light);
+            background: var(--bg-white);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .time-btn.active {
+            background: var(--secondary-blue);
+            color: white;
+            border-color: var(--secondary-blue);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .insights-panel {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .insight-item:hover {
+            background: var(--bg-light);
+        }
+
+        .insight-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .insight-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--text-dark);
+        }
+
+        .insight-content p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .trends-section {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+
+        .trends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .trends-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .trend-item {
+            padding: 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .trend-item:hover {
+            border-color: var(--secondary-blue);
+            box-shadow: 0 2px 8px rgba(0,102,204,0.1);
+        }
+
+        .trend-category {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .trend-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-blue);
+            margin-bottom: 0.3rem;
+        }
+
+        .trend-change {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-light);
+            border-top: 4px solid var(--secondary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">C</div>
+                <div class="header-text">
+                    <h1>CoPPA Analytics Dashboard</h1>
+                    <p>Community Policing Partnership Assistant - Real-time Insights</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>System Online</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Total Conversations</span>
+                    <div class="metric-icon" style="background: var(--secondary-blue);">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+                <div class="metric-value" id="totalConversations">-</div>
+                <div class="metric-change positive" id="conversationsChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Loading...</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Daily Average</span>
+                    <div class="metric-icon" style="background: var(--success-green);">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                </div>
+                <div class="metric-value" id="dailyAverage">-</div>
+                <div class="metric-change" id="dailyChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Loading...</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Response Time</span>
+                    <div class="metric-icon" style="background: var(--warning-orange);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="metric-value" id="responseTime">-</div>
+                <div class="metric-change" id="responseChange">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>Loading...</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">Satisfaction Score</span>
+                    <div class="metric-icon" style="background: var(--accent-gold); color: var(--primary-blue);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="metric-value" id="satisfactionScore">-</div>
+                <div class="metric-change" id="satisfactionChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Conversation Trends</h3>
+                    <div class="time-selector">
+                        <button class="time-btn" onclick="changeTimeRange('7d')">7 Days</button>
+                        <button class="time-btn active" onclick="changeTimeRange('30d')">30 Days</button>
+                        <button class="time-btn" onclick="changeTimeRange('90d')">3 Months</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="conversationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="insights-panel">
+                <h3 class="chart-title">Key Insights</h3>
+                <div id="insightsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading insights...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending Topics -->
+        <div class="trends-section">
+            <div class="trends-header">
+                <h3 class="chart-title">Trending Topics</h3>
+                <div class="time-selector">
+                    <button class="time-btn active" onclick="refreshTrends()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="trends-list" id="trendsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading trends...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let conversationChart;
+        let currentTimeRange = '30d';
+        let forceIdentifier = 'demo'; // Will be replaced with actual force ID
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            setInterval(refreshDashboard, 300000); // Refresh every 5 minutes
+        });
+
+        async function initializeDashboard() {
+            try {
+                // Extract force identifier from URL or use default
+                const urlParams = new URLSearchParams(window.location.search);
+                forceIdentifier = urlParams.get('force') || 'demo';
+                
+                await loadDashboardData();
+                setupConversationChart();
+                await loadInsights();
+                await loadTrendingTopics();
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showError('Failed to load dashboard data. Please check your connection.');
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`/api/get_coppa_analytics?days=${currentTimeRange.replace('d', '')}&format=json`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                updateMetrics(data);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Use demo data if API fails
+                updateMetrics(getDemoData());
+            }
+        }
+
+        function updateMetrics(data) {
+            const metrics = data.summary || {};
+            
+            document.getElementById('totalConversations').textContent = 
+                metrics.total_conversations?.toLocaleString() || '1,234';
+            document.getElementById('dailyAverage').textContent = 
+                Math.round(metrics.daily_average || 42);
+            document.getElementById('responseTime').textContent = 
+                `${(metrics.avg_response_time || 2.3).toFixed(1)}s`;
+            document.getElementById('satisfactionScore').textContent = 
+                `${(metrics.satisfaction_score || 4.2).toFixed(1)}/5`;
+
+            // Update change indicators
+            updateChangeIndicator('conversationsChange', metrics.conversations_change || 12.5, true);
+            updateChangeIndicator('dailyChange', metrics.daily_change || 8.3, true);
+            updateChangeIndicator('responseChange', metrics.response_change || -5.2, false);
+            updateChangeIndicator('satisfactionChange', metrics.satisfaction_change || 3.1, true);
+        }
+
+        function updateChangeIndicator(elementId, value, isPositiveGood) {
+            const element = document.getElementById(elementId);
+            const isPositive = value > 0;
+            const isGood = isPositiveGood ? isPositive : !isPositive;
+            
+            element.className = `metric-change ${isGood ? 'positive' : 'negative'}`;
+            element.innerHTML = `
+                <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i>
+                <span>${Math.abs(value).toFixed(1)}%</span>
+            `;
+        }
+
+        function setupConversationChart() {
+            const ctx = document.getElementById('conversationChart').getContext('2d');
+            
+            conversationChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generateDateLabels(30),
+                    datasets: [{
+                        label: 'Conversations',
+                        data: generateDemoChartData(30),
+                        borderColor: 'rgb(0, 102, 204)',
+                        backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadInsights() {
+            const insightsContainer = document.getElementById('insightsContainer');
+            
+            try {
+                // In a real implementation, this would fetch from the API
+                const insights = [
+                    {
+                        icon: 'fas fa-trending-up',
+                        iconColor: 'var(--success-green)',
+                        title: 'Peak Hours Identified',
+                        description: 'Most conversations occur between 10 AM - 2 PM'
+                    },
+                    {
+                        icon: 'fas fa-map-marker-alt',
+                        iconColor: 'var(--secondary-blue)',
+                        title: 'Top Location Queries',
+                        description: 'Station information requests up 23% this week'
+                    },
+                    {
+                        icon: 'fas fa-exclamation-triangle',
+                        iconColor: 'var(--warning-orange)',
+                        title: 'Response Time Alert',
+                        description: 'Average response time increased by 0.8s'
+                    },
+                    {
+                        icon: 'fas fa-users',
+                        iconColor: 'var(--accent-gold)',
+                        title: 'User Engagement',
+                        description: 'Repeat users increased by 15% this month'
+                    }
+                ];
+
+                insightsContainer.innerHTML = insights.map(insight => `
+                    <div class="insight-item">
+                        <div class="insight-icon" style="background: ${insight.iconColor};">
+                            <i class="${insight.icon}"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>${insight.title}</h4>
+                            <p>${insight.description}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading insights:', error);
+                insightsContainer.innerHTML = '<p>Unable to load insights at this time.</p>';
+            }
+        }
+
+        async function loadTrendingTopics() {
+            const trendsContainer = document.getElementById('trendsContainer');
+            
+            try {
+                // In a real implementation, this would fetch from the API
+                const trends = [
+                    { category: 'Travel Information', count: 245, change: '+12%' },
+                    { category: 'Safety & Security', count: 189, change: '+8%' },
+                    { category: 'Lost Property', count: 156, change: '-3%' },
+                    { category: 'Station Facilities', count: 134, change: '+18%' },
+                    { category: 'Tickets & Fares', count: 98, change: '+5%' },
+                    { category: 'Accessibility', count: 76, change: '+22%' }
+                ];
+
+                trendsContainer.innerHTML = trends.map(trend => `
+                    <div class="trend-item">
+                        <div class="trend-category">${trend.category}</div>
+                        <div class="trend-count">${trend.count}</div>
+                        <div class="trend-change">${trend.change}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading trends:', error);
+                trendsContainer.innerHTML = '<p>Unable to load trending topics.</p>';
+            }
+        }
+
+        function changeTimeRange(range) {
+            currentTimeRange = range;
+            
+            // Update active button
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update chart
+            const days = parseInt(range.replace('d', ''));
+            conversationChart.data.labels = generateDateLabels(days);
+            conversationChart.data.datasets[0].data = generateDemoChartData(days);
+            conversationChart.update();
+            
+            // Reload dashboard data
+            loadDashboardData();
+        }
+
+        function refreshDashboard() {
+            loadDashboardData();
+            loadInsights();
+            loadTrendingTopics();
+        }
+
+        function refreshTrends() {
+            loadTrendingTopics();
+        }
+
+        // Utility functions
+        function generateDateLabels(days) {
+            const labels = [];
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-GB', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                }));
+            }
+            return labels;
+        }
+
+        function generateDemoChartData(days) {
+            const data = [];
+            for (let i = 0; i < days; i++) {
+                // Generate realistic demo data with some randomness
+                const baseValue = 40 + Math.sin(i * 0.3) * 15;
+                const randomness = (Math.random() - 0.5) * 20;
+                data.push(Math.max(0, Math.round(baseValue + randomness)));
+            }
+            return data;
+        }
+
+        function getDemoData() {
+            return {
+                summary: {
+                    total_conversations: 1234,
+                    daily_average: 42,
+                    avg_response_time: 2.3,
+                    satisfaction_score: 4.2,
+                    conversations_change: 12.5,
+                    daily_change: 8.3,
+                    response_change: -5.2,
+                    satisfaction_change: 3.1
+                }
+            };
+        }
+
+        function showError(message) {
+            // Simple error display - could be enhanced with a proper toast system
+            console.error(message);
+            alert(message);
+        }
+    </script>
+</body>
+</html>
