@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Azure](https://img.shields.io/badge/Azure-Functions-blue.svg)](https://azure.microsoft.com/en-us/services/functions/)
-[![Python](https://img.shields.io/badge/Python-3.9+-green.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-green.svg)](https://www.python.org/)
 
 ## 🚔 About CoPPA Analytics
 
@@ -19,35 +19,58 @@
 - **🏛️ Multi-Force Ready** - Easily customizable for different police forces
 - **📈 Performance Monitoring** - Built-in Application Insights and monitoring
 - **🔒 Secure by Design** - Enterprise-grade security with Azure best practices
+- **⚡ Python 3.11 Ready** - Latest runtime with optimized performance
 
-## 🚀 Quick Start
+## 🚀 Quick Start - Deploy to Azure
 
-### Prerequisites
-- Existing CoPPA chatbot deployment with Cosmos DB
-- Azure subscription with appropriate permissions
-- Email account for automated reports (Office 365 recommended)
+### Step 1: Click Deploy to Azure
+1. **Click the "Deploy to Azure" button above** ⬆️
+2. **Sign in to your Azure account** when prompted
+3. **Select your subscription** and choose or create a resource group
 
-### Deploy to Azure (Recommended)
+### Step 2: Fill in the Deployment Form
+- **Force Code**: Your police force identifier (e.g., "BTP", "MET", "GMP", "COP")
+- **Administrator Email**: Email for automated reports and notifications
+- **Cosmos DB Endpoint**: *(Optional)* Your existing CoPPA Cosmos DB URL
+- **Cosmos DB Key**: *(Optional)* Primary key for your Cosmos DB
+- **Database Name**: Default is "db_conversation_history"
+- **Container Name**: Default is "conversations"
 
-1. **Click the "Deploy to Azure" button above**
-2. **Fill in the deployment form:**
-   - **Force Code**: Your police force identifier (e.g., "btp", "met", "gmp")
-   - **Administrator Email**: Email for reports and notifications
-   - **Cosmos DB Details**: Connection string and database information from your existing CoPPA deployment
-   - **Email Configuration**: SMTP settings for automated reports
+> **💡 Tip**: Leave Cosmos DB fields blank to use demo data for testing
 
-3. **Review and Deploy**: The deployment typically takes 5-10 minutes
-
-### Alternative: PowerShell Deployment
+### Step 3: Deploy and Verify
+1. **Click "Review + create"** then **"Create"**
+2. **Wait 5-10 minutes** for deployment to complete
+3. **Run verification script** (optional but recommended):
 
 ```powershell
-# Clone the repository
-git clone https://github.com/Russ-Holloway/CoPPA-Analytics.git
-cd CoPPA-Analytics/chatbot-analytics-azure-deploy
-
-# Run deployment script
-.\deploy-coppa.ps1 -ForceId "your-force-code" -ResourceGroupName "rg-coppa-analytics" -Location "UK South" -AdminEmail "admin@yourforce.police.uk"
+# Download and run verification
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/verify-deployment.ps1" -OutFile "verify-deployment.ps1"
+.\verify-deployment.ps1 -ResourceGroupName "your-resource-group-name"
 ```
+
+### Step 4: Test Your Deployment
+After deployment, you'll get these URLs:
+- **📊 Analytics API**: `https://func-coppa-{force}-analytics.azurewebsites.net/api/GetAnalytics?days=7`
+- **🏠 Dashboard**: `https://func-coppa-{force}-analytics.azurewebsites.net/api/Dashboard`
+
+## ✅ What Gets Deployed
+
+The "Deploy to Azure" button creates:
+
+- **🔧 Azure Function App** (Python 3.11 runtime)
+- **📦 Storage Account** (for Function App and dashboard hosting)
+- **📊 Application Insights** (monitoring and logging)
+- **📋 Log Analytics Workspace** (centralized logging)
+- **⚙️ Optimized Configuration** (all Python runtime fixes included)
+
+### Included Functions:
+- `GetAnalytics` - Main analytics API endpoint
+- `Dashboard` - Interactive web dashboard
+- `GetQuestions` - Question analysis endpoint
+- `SeedData` - Demo data generator
+- `TestFunction` - Health check endpoint
+- `TimerTrigger` - Automated reporting (daily emails)
 
 ### Alternative: Azure CLI Deployment
 
@@ -286,3 +309,21 @@ This solution was developed by the British Transport Police Digital Innovation T
 ---
 
 *For technical support, feature requests, or partnership inquiries, please contact the development team or open an issue on GitHub.*
+
+## 🔧 Latest Updates - Python 3.11 Runtime Fixed!
+
+**✅ All Python runtime issues resolved for Deploy to Azure button!**
+
+The ARM template and function package have been updated to fix the "503 Service Unavailable - Function host is not running" error. Changes include:
+
+- **🐍 Python 3.11 Support**: Updated extension bundle and runtime configuration
+- **🏗️ Build Configuration**: Added Oryx build settings for proper dependency installation  
+- **📦 Updated Package**: New function-app-updated.zip with all fixes
+- **🔧 Auto-Fix Scripts**: Included verification and fix scripts for existing deployments
+
+**If you previously deployed and encountered errors**, use our fix script:
+```powershell
+# Download and run the fix
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/complete-python-fix.ps1" -OutFile "fix.ps1"
+.\fix.ps1 -ResourceGroupName "your-rg-name" -FunctionAppName "your-function-name"
+```
