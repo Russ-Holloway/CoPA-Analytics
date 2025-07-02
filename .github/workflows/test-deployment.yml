@@ -1,0 +1,41 @@
+name: Test CoPPA Analytics Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate-arm-template:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Validate ARM Template
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az deployment group validate \
+            --resource-group ${{ secrets.AZURE_RG_NAME }} \
+            --template-file chatbot-analytics-azure-deploy/azuredeploy.json \
+            --parameters forcePrefix="TEST" adminEmail="test@example.com"
+    
+    - name: Test Function Code Syntax
+      run: |
+        python -m py_compile chatbot-analytics-azure-deploy/function-code/GetAnalytics/__init__.py
+        python -m py_compile chatbot-analytics-azure-deploy/function-code/Dashboard/__init__.py
+    
+    - name: Validate JSON Files
+      run: |
+        python -m json.tool chatbot-analytics-azure-deploy/azuredeploy.json > /dev/null
+        python -m json.tool chatbot-analytics-azure-deploy/createUiDefinition.json > /dev/null
+        echo "✅ All JSON files are valid"
