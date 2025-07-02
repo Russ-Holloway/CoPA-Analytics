@@ -172,8 +172,20 @@
                             "value": "1"
                         },
                         {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))).ConnectionString]"
+                        },
+                        {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))).InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_PYTHON_DEFAULT_VERSION",
+                            "value": "3.11"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
                         },
                         {
                             "name": "FORCE_IDENTIFIER",
