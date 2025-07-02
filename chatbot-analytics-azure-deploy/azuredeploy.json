@@ -185,7 +185,7 @@
                         },
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
-                            "value": "1"
+                            "value": "https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app.zip"
                         },
                         {
                             "name": "FORCE_IDENTIFIER",
