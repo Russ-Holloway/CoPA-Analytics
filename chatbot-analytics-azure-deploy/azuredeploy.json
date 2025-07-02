@@ -164,6 +164,14 @@
                             "value": "python"
                         },
                         {
+                            "name": "FUNCTIONS_WORKER_RUNTIME_VERSION",
+                            "value": "3.11"
+                        },
+                        {
+                            "name": "WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED",
+                            "value": "1"
+                        },
+                        {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))).InstrumentationKey]"
                         },
