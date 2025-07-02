@@ -1,0 +1,229 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "metadata": {
+        "description": "CoPPA Analytics - Complete analytics solution for police chatbot deployment",
+        "author": "BTP Digital Analytics Team"
+    },
+    "parameters": {
+        "forcePrefix": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 6,
+            "metadata": {
+                "description": "Police force prefix (e.g., BTP, MET, WMP, GMP)"
+            }
+        },
+        "adminEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Email address for daily analytics reports"
+            }
+        },
+        "existingCosmosDbEndpoint": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Your existing CoPPA Cosmos DB endpoint URL (leave blank for demo data)"
+            }
+        },
+        "existingCosmosDbKey": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Your existing CoPPA Cosmos DB primary key (leave blank for demo data)"
+            }
+        },
+        "cosmosDbDatabase": {
+            "type": "string",
+            "defaultValue": "db_conversation_history",
+            "metadata": {
+                "description": "CoPPA Cosmos DB database name"
+            }
+        },
+        "cosmosDbContainer": {
+            "type": "string",
+            "defaultValue": "conversations",
+            "metadata": {
+                "description": "CoPPA Cosmos DB container name"
+            }
+        }
+    },
+    "variables": {
+        "resourcePrefix": "[concat('coppa-', toLower(parameters('forcePrefix')))]",
+        "storageAccountName": "[take(concat('st', uniqueString(resourceGroup().id)), 24)]",
+        "functionAppName": "[concat('func-', variables('resourcePrefix'), '-analytics')]",
+        "appServicePlanName": "[concat('plan-', variables('resourcePrefix'), '-analytics')]",
+        "applicationInsightsName": "[concat('ai-', variables('resourcePrefix'), '-analytics')]",
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-09-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[variables('location')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "properties": {
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": true
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2021-09-01",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": [
+                        {
+                            "allowedOrigins": ["*"],
+                            "allowedMethods": ["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"],
+                            "maxAgeInSeconds": 3600,
+                            "exposedHeaders": ["*"],
+                            "allowedHeaders": ["*"]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-02-01",
+            "name": "[variables('appServicePlanName')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y"
+            },
+            "properties": {
+                "reserved": true
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[variables('applicationInsightsName')]",
+            "location": "[variables('location')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Request_Source": "rest"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-02-01",
+            "name": "[variables('functionAppName')]",
+            "location": "[variables('location')]",
+            "kind": "functionapp,linux",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-09-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~4"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "python"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))).InstrumentationKey]"
+                        },
+                        {
+                            "name": "FORCE_IDENTIFIER",
+                            "value": "[parameters('forcePrefix')]"
+                        },
+                        {
+                            "name": "COSMOS_DB_ENDPOINT",
+                            "value": "[parameters('existingCosmosDbEndpoint')]"
+                        },
+                        {
+                            "name": "COSMOS_DB_KEY",
+                            "value": "[parameters('existingCosmosDbKey')]"
+                        },
+                        {
+                            "name": "COSMOS_DB_DATABASE",
+                            "value": "[parameters('cosmosDbDatabase')]"
+                        },
+                        {
+                            "name": "COSMOS_DB_CONTAINER",
+                            "value": "[parameters('cosmosDbContainer')]"
+                        },
+                        {
+                            "name": "EMAIL_ENABLED",
+                            "value": "true"
+                        },
+                        {
+                            "name": "EMAIL_TO",
+                            "value": "[parameters('adminEmail')]"
+                        },
+                        {
+                            "name": "EMAIL_FROM",
+                            "value": "[concat('coppa-analytics@', toLower(parameters('forcePrefix')), '.police.uk')]"
+                        },
+                        {
+                            "name": "SMTP_SERVER",
+                            "value": "smtp.office365.com"
+                        },
+                        {
+                            "name": "SMTP_PORT",
+                            "value": "587"
+                        }
+                    ],
+                    "linuxFxVersion": "Python|3.11",
+                    "cors": {
+                        "allowedOrigins": ["*"]
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "coppaAnalyticsDashboard": {
+            "type": "string",
+            "value": "[concat('https://', variables('storageAccountName'), '.z33.web.core.windows.net/')]"
+        },
+        "coppaAnalyticsAPI": {
+            "type": "string",
+            "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/analytics')]"
+        },
+        "functionAppName": {
+            "type": "string",
+            "value": "[variables('functionAppName')]"
+        },
+        "storageAccountName": {
+            "type": "string",
+            "value": "[variables('storageAccountName')]"
+        },
+        "resourceGroupName": {
+            "type": "string",
+            "value": "[resourceGroup().name]"
+        },
+        "nextSteps": {
+            "type": "string",
+            "value": "CoPPA Analytics deployed! Check the outputs for your dashboard URL and API endpoint."
+        }
+    }
+}
