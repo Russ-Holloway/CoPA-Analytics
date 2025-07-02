@@ -25,7 +25,7 @@ CoPPA Analytics provides comprehensive insights into your chatbot conversations:
 ## 🎯 Quick Deployment (5-10 minutes)
 
 ### Option 1: One-Click Deployment (Easiest)
-1. Visit: **https://github.com/british-transport-police/AI-Analytics**
+1. Visit: **https://github.com/Russ-Holloway/CoPPA-Analytics**
 2. Click the **"Deploy to Azure"** button
 3. Fill in your force details and existing CoPPA Cosmos DB connection
 4. Deploy and access your dashboard immediately
@@ -97,7 +97,7 @@ Forces already using CoPPA Analytics report:
 
 ## 📞 Next Steps
 
-1. **Visit the repository**: https://github.com/british-transport-police/AI-Analytics
+1. **Visit the repository**: https://github.com/Russ-Holloway/CoPPA-Analytics
 2. **Review the documentation** (5-minute read)
 3. **Click "Deploy to Azure"** when ready
 4. **Access your analytics** immediately after deployment

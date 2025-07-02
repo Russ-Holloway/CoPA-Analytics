@@ -1,6 +1,6 @@
 # CoPPA Analytics - Azure Deployment Solution
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbritish-transport-police%2FAI-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2Fbritish-transport-police%2FAI-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2FcreateUiDefinition.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2FcreateUiDefinition.json)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Azure](https://img.shields.io/badge/Azure-Functions-blue.svg)](https://azure.microsoft.com/en-us/services/functions/)
@@ -42,8 +42,8 @@
 
 ```powershell
 # Clone the repository
-git clone https://github.com/british-transport-police/AI-Analytics.git
-cd AI-Analytics/chatbot-analytics-azure-deploy
+git clone https://github.com/Russ-Holloway/CoPPA-Analytics.git
+cd CoPPA-Analytics/chatbot-analytics-azure-deploy
 
 # Run deployment script
 .\deploy-coppa.ps1 -ForceId "your-force-code" -ResourceGroupName "rg-coppa-analytics" -Location "UK South" -AdminEmail "admin@yourforce.police.uk"
@@ -53,8 +53,8 @@ cd AI-Analytics/chatbot-analytics-azure-deploy
 
 ```bash
 # Clone the repository
-git clone https://github.com/british-transport-police/AI-Analytics.git
-cd AI-Analytics/chatbot-analytics-azure-deploy
+git clone https://github.com/Russ-Holloway/CoPPA-Analytics.git
+cd CoPPA-Analytics/chatbot-analytics-azure-deploy
 
 # Deploy using Azure CLI
 az group create --name rg-coppa-analytics --location "UK South"

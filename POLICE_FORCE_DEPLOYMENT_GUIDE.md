@@ -22,7 +22,7 @@ This guide explains how any police force can deploy CoPPA Analytics in their Azu
 
 1. **Visit the GitHub Repository:**
    ```
-   https://github.com/british-transport-police/AI-Analytics
+   https://github.com/Russ-Holloway/CoPPA-Analytics
    ```
 
 2. **Click "Deploy to Azure" Button** in the README
@@ -45,8 +45,8 @@ This guide explains how any police force can deploy CoPPA Analytics in their Azu
 
 1. **Clone Repository:**
    ```powershell
-   git clone https://github.com/british-transport-police/AI-Analytics.git
-   cd AI-Analytics/chatbot-analytics-azure-deploy
+   git clone https://github.com/Russ-Holloway/CoPPA-Analytics.git
+   cd CoPPA-Analytics/chatbot-analytics-azure-deploy
    ```
 
 2. **Run Deployment Script:**
@@ -68,7 +68,7 @@ az group create --name rg-coppa-analytics --location "UK South"
 # Deploy template
 az deployment group create \
   --resource-group rg-coppa-analytics \
-  --template-uri https://raw.githubusercontent.com/british-transport-police/AI-Analytics/main/chatbot-analytics-azure-deploy/azuredeploy.json \
+  --template-uri https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/azuredeploy.json \
   --parameters forcePrefix=YourForce adminEmail=analytics@yourforce.police.uk
 ```
 
