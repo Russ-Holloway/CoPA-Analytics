@@ -55,6 +55,7 @@
         "functionAppName": "[concat('func-', variables('resourcePrefix'), '-analytics')]",
         "appServicePlanName": "[concat('plan-', variables('resourcePrefix'), '-analytics')]",
         "applicationInsightsName": "[concat('appi-', variables('resourcePrefix'), '-analytics')]",
+        "logAnalyticsWorkspaceName": "[concat('law-', variables('resourcePrefix'), '-analytics')]",
         "location": "[resourceGroup().location]"
     },
     "resources": [
@@ -109,14 +110,30 @@
             }
         },
         {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2020-08-01",
+            "name": "[variables('logAnalyticsWorkspaceName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "sku": {
+                    "name": "PerGB2018"
+                },
+                "retentionInDays": 30
+            }
+        },
+        {
             "type": "Microsoft.Insights/components",
             "apiVersion": "2020-02-02",
             "name": "[variables('applicationInsightsName')]",
             "location": "[variables('location')]",
             "kind": "web",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+            ],
             "properties": {
                 "Application_Type": "web",
-                "Request_Source": "rest"
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
             }
         },
         {
