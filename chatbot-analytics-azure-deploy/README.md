@@ -6,6 +6,8 @@
 [![Azure](https://img.shields.io/badge/Azure-Functions-blue.svg)](https://azure.microsoft.com/en-us/services/functions/)
 [![Python](https://img.shields.io/badge/Python-3.11-green.svg)](https://www.python.org/)
 
+> 🎯 **LATEST UPDATE**: Deployment issues **RESOLVED**! The ARM template now uses ZipDeploy for reliable one-click deployment on Linux Function Apps. All 6 functions load automatically. See [ONE_CLICK_DEPLOYMENT_FINAL.md](ONE_CLICK_DEPLOYMENT_FINAL.md) for details.
+
 ## 🚔 About CoPPA Analytics
 
 **CoPPA Analytics** is a comprehensive analytics and reporting solution designed specifically for police forces using the **College of Policing - Policing Assistant (CoPPA)** chatbot platform. This solution provides automated insights, reporting, and dashboard capabilities to help police forces understand citizen engagement patterns and improve community policing effectiveness.
@@ -23,9 +25,9 @@
 
 ## 🚀 Quick Start - Deploy to Azure
 
-### Step 1: Deploy Infrastructure (8-10 minutes)
+### Step 1: Deploy Infrastructure (5-10 minutes)
 1. **Click the "Deploy to Azure" button above** ⬆️
-2. **Sign in to your Azure account** when prompted
+2. **Sign in to your Azure account** when prompted  
 3. **Select your subscription** and choose or create a resource group
 4. **Fill in the required parameters** and click "Create"
 5. **Wait for deployment to complete** (creates Function App with Python 3.11)
@@ -335,12 +337,17 @@ The ARM template and function package have been updated to fix the "503 Service 
 
 - **🐍 Python 3.11 Support**: Updated extension bundle and runtime configuration
 - **🏗️ Build Configuration**: Added Oryx build settings for proper dependency installation  
-- **📦 Updated Package**: New function-app-updated.zip with all fixes
+- **📦 Updated Package**: New function-app-final.zip with ZipDeploy method
 - **🔧 Auto-Fix Scripts**: Included verification and fix scripts for existing deployments
+
+## 📚 Additional Documentation
+
+- **[ONE_CLICK_DEPLOYMENT_FINAL.md](ONE_CLICK_DEPLOYMENT_FINAL.md)** - Complete deployment guide and troubleshooting
+- **[TECHNICAL_SUMMARY_FINAL.md](TECHNICAL_SUMMARY_FINAL.md)** - Technical details of the ZipDeploy solution
 
 **If you previously deployed and encountered errors**, use our fix script:
 ```powershell
-# Download and run the fix
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/complete-python-fix.ps1" -OutFile "fix.ps1"
-.\fix.ps1 -ResourceGroupName "your-rg-name" -FunctionAppName "your-function-name"
+# Download and run the emergency fix
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/emergency-fix.ps1" -OutFile "emergency-fix.ps1"
+.\emergency-fix.ps1 -ResourceGroupName "your-rg-name" -FunctionAppName "your-function-name"
 ```
