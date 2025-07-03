@@ -41,6 +41,6 @@ Your dashboard URL: `https://[your-function-app-name].azurewebsites.net/api/Dash
 
 ---
 
-**⚠️ If upload fails:** Your Function App might be on Windows instead of Linux. Contact your IT team to recreate it on a Linux plan.
+**✅ The Function App is now configured to allow portal uploads - no CLI commands needed!**
 
-**💡 Need help?** The functions are already built and ready - this is just uploading them to your Function App.
+**💡 This approach works for all users regardless of technical skill level.**
