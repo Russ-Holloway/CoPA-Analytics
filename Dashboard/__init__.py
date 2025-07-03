@@ -15,7 +15,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Police Chatbot Analytics Dashboard</title>
+    <title>CoPPA Analytics Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {{
@@ -109,8 +109,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚔 Police Chatbot Analytics Dashboard</h1>
-            <p>Real-time insights into citizen interactions</p>
+            <h1>🚔 CoPPA Analytics Dashboard</h1>
+            <p>College of Policing Assistant - Real-time insights into citizen interactions</p>
         </div>
 
         <div class="controls">
