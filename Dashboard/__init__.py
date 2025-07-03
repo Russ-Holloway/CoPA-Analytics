@@ -110,7 +110,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <div class="container">
         <div class="header">
             <h1>🚔 CoPPA Analytics Dashboard</h1>
-            <p>College of Policing Assistant - Real-time insights into citizen interactions</p>
+            <p>College of Policing - Policing Assistant - Real Time Insights into User Interactions</p>
         </div>
 
         <div class="controls">
