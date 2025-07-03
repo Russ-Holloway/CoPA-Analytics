@@ -180,15 +180,31 @@
                         },
                         {
                             "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                            "value": "true"
+                            "value": "false"
                         },
                         {
                             "name": "ENABLE_ORYX_BUILD",
-                            "value": "true"
+                            "value": "false"
                         },
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
-                            "value": "https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-final.zip"
+                            "value": "https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip"
+                        },
+                        {
+                            "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
+                            "value": "true"
+                        },
+                        {
+                            "name": "WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED",
+                            "value": "0"
+                        },
+                        {
+                            "name": "WEBSITE_MOUNT_ENABLED",
+                            "value": "1"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_PROCESS_COUNT",
+                            "value": "1"
                         },
                         {
                             "name": "AzureWebJobsDisableHomepage",
