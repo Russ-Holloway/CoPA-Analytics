@@ -263,6 +263,26 @@
                             "value": "true"
                         },
                         {
+                            "name": "WEBSITE_RESTART_MODE",
+                            "value": "1"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_AUTOINSTALL",
+                            "value": "1"
+                        },
+                        {
+                            "name": "WEBSITE_FORCE_RESTART",
+                            "value": "1"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": ""
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": ""
+                        },
+                        {
                             "name": "WEBSITE_TIME_ZONE",
                             "value": "GMT Standard Time"
                         }
