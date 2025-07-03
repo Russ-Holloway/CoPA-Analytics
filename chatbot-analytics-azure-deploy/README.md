@@ -1,53 +1,54 @@
-# CoPPA Analytics - Azure Deployment Solution
+# 🚀 CoPPA Analytics - Simple Two-Step Deployment
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2FcreateUiDefinition.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Azure](https://img.shields.io/badge/Azure-Functions-blue.svg)](https://azure.microsoft.com/en-us/services/functions/)
-[![Python](https://img.shields.io/badge/Python-3.11-green.svg)](https://www.python.org/)
+## ⚡ Quick Start (2 Steps)
 
-> 🎯 **LATEST UPDATE**: Deployment issues **RESOLVED**! The ARM template now uses ZipDeploy for reliable one-click deployment on Linux Function Apps. All 6 functions load automatically. See [ONE_CLICK_DEPLOYMENT_FINAL.md](ONE_CLICK_DEPLOYMENT_FINAL.md) for details.
+### Step 1: Deploy Infrastructure
+**Click the "Deploy to Azure" button above**
+- Fill in your police force code (e.g., "BTP", "MET")
+- Enter admin email address
+- Add your existing Cosmos DB details
+- Click "Create" and wait 5-10 minutes
 
-## 🚔 About CoPPA Analytics
+### Step 2: Upload Functions
+1. **Download**: [function-app-corrected.zip](https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip)
+2. **Go to your Function App** in Azure Portal
+3. **Functions** → **Create** → **Upload ZIP file**
+4. **Upload the ZIP** and wait for deployment
 
-**CoPPA Analytics** is a comprehensive analytics and reporting solution designed specifically for police forces using the **College of Policing - Policing Assistant (CoPPA)** chatbot platform. This solution provides automated insights, reporting, and dashboard capabilities to help police forces understand citizen engagement patterns and improve community policing effectiveness.
+## ✅ You're Done!
 
-### ✨ Key Features
+- **Dashboard**: `https://[function-app-name].azurewebsites.net/api/Dashboard`
+- **Analytics API**: `https://[function-app-name].azurewebsites.net/api/GetAnalytics?days=7`
+- **Daily reports** will be emailed automatically
 
-- **📊 Real-time Analytics Dashboard** - Interactive web dashboard showing chatbot usage, citizen engagement, and trending topics
-- **📧 Automated Daily Reports** - Email reports sent to administrators with key metrics and insights
-- **🔄 Seamless Integration** - Connects directly to existing CoPPA Cosmos DB deployments
-- **🎯 One-Click Deployment** - Complete Azure infrastructure deployed in minutes
-- **🏛️ Multi-Force Ready** - Easily customizable for different police forces
-- **📈 Performance Monitoring** - Built-in Application Insights and monitoring
-- **🔒 Secure by Design** - Enterprise-grade security with Azure best practices
-- **⚡ Python 3.11 Ready** - Latest runtime with optimized performance
+## � What Gets Deployed
 
-## 🚀 Quick Start - Deploy to Azure
+- **Function App** (Linux, Python 3.11) - Ready for ZIP upload
+- **Storage Account** - For function storage
+- **Application Insights** - For monitoring
 
-### Step 1: Deploy Infrastructure (5-10 minutes)
-1. **Click the "Deploy to Azure" button above** ⬆️
-2. **Sign in to your Azure account** when prompted  
-3. **Select your subscription** and choose or create a resource group
-4. **Fill in the required parameters** and click "Create"
-5. **Wait for deployment to complete** (creates Function App with Python 3.11)
+## � Includes 7 Functions
 
-### Step 2: Deploy Functions (2-3 minutes)
-**After Step 1 completes, run this PowerShell command:**
+1. **GetAnalytics** - Main analytics API
+2. **Dashboard** - Interactive web dashboard  
+3. **GetQuestions** - Question analysis
+4. **SeedData** - Demo data generator
+5. **TestFunction** - Health check
+6. **TimerTrigger** - Scheduled tasks
+7. **FunctionSync** - Function status monitoring
 
-```powershell
-# Download and run the function deployment script
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/Deploy-After-ARM.ps1" -OutFile "Deploy-After-ARM.ps1"
-.\Deploy-After-ARM.ps1
-```
+## 🚨 Troubleshooting
 
-**Alternative methods:**
-- **Azure CLI**: See [TWO_STEP_DEPLOYMENT.md](TWO_STEP_DEPLOYMENT.md)
-- **Manual Kudu**: See [TWO_STEP_DEPLOYMENT.md](TWO_STEP_DEPLOYMENT.md)
+If you have issues, try:
+1. **Delete the Function App** and redeploy
+2. **Use fresh resource group** for clean deployment
+3. **Check the ZIP upload** completed successfully
 
-✅ **Total time: 10-13 minutes for complete working solution**
+## 📞 Support
 
-### Step 2: Fill in the Deployment Form
+For deployment issues or questions, please open an issue in this repository.
 - **Force Code**: Your police force identifier (e.g., "BTP", "MET", "GMP", "COP")
 - **Administrator Email**: Email for automated reports and notifications
 - **Cosmos DB Endpoint**: *(Optional)* Your existing CoPPA Cosmos DB URL

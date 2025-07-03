@@ -1,10 +1,10 @@
 # CoPPA Analytics - Azure Deployment Solution
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2FcreateUiDefinition.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Azure](https://img.shields.io/badge/Azure-Functions-blue.svg)](https://azure.microsoft.com/en-us/services/functions/)
-[![Python](https://img.shields.io/badge/Python-3.9+-green.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11-green.svg)](https://www.python.org/)
 
 ## 🚔 About CoPPA Analytics
 
@@ -15,51 +15,38 @@
 - **📊 Real-time Analytics Dashboard** - Interactive web dashboard showing chatbot usage, citizen engagement, and trending topics
 - **📧 Automated Daily Reports** - Email reports sent to administrators with key metrics and insights
 - **🔄 Seamless Integration** - Connects directly to existing CoPPA Cosmos DB deployments
-- **🎯 One-Click Deployment** - Complete Azure infrastructure deployed in minutes
+- **🎯 Two-Step Deployment** - Simple deployment process for non-technical users
 - **🏛️ Multi-Force Ready** - Easily customizable for different police forces
 - **📈 Performance Monitoring** - Built-in Application Insights and monitoring
 - **🔒 Secure by Design** - Enterprise-grade security with Azure best practices
 
-## 🚀 Quick Start
+## 🚀 Deployment Instructions
 
-### Prerequisites
-- Existing CoPPA chatbot deployment with Cosmos DB
-- Azure subscription with appropriate permissions
-- Email account for automated reports (Office 365 recommended)
+### Step 1: Deploy Infrastructure (Click Button Above)
 
-### Deploy to Azure (Recommended)
-
-1. **Click the "Deploy to Azure" button above**
+1. **Click the "Deploy to Azure" button** 
 2. **Fill in the deployment form:**
-   - **Force Code**: Your police force identifier (e.g., "btp", "met", "gmp")
-   - **Administrator Email**: Email for reports and notifications
-   - **Cosmos DB Details**: Connection string and database information from your existing CoPPA deployment
-   - **Email Configuration**: SMTP settings for automated reports
+   - **Force Prefix**: Your police force code (e.g., "BTP", "MET", "GMP")
+   - **Admin Email**: Email address for reports and notifications
+   - **Cosmos DB Details**: Your existing CoPPA database connection details
+3. **Click "Review + create"** then **"Create"**
+4. **Wait 5-10 minutes** for deployment to complete
 
-3. **Review and Deploy**: The deployment typically takes 5-10 minutes
+### Step 2: Upload Functions
 
-### Alternative: PowerShell Deployment
+1. **Download the function package**: [function-app-corrected.zip](https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip)
+2. **Go to your new Function App** in the Azure Portal
+3. **Click "Functions"** in the left menu
+4. **Click "Create"** → **"Upload ZIP file"**
+5. **Upload the ZIP file** and wait for deployment
 
-```powershell
-# Clone the repository
-git clone https://github.com/Russ-Holloway/CoPPA-Analytics.git
-cd CoPPA-Analytics/chatbot-analytics-azure-deploy
+### ✅ That's It!
 
-# Run deployment script
-.\deploy-coppa.ps1 -ForceId "your-force-code" -ResourceGroupName "rg-coppa-analytics" -Location "UK South" -AdminEmail "admin@yourforce.police.uk"
-```
+Your analytics solution is now running. Access your dashboard at:
+`https://[your-function-app-name].azurewebsites.net/api/Dashboard`
 
-### Alternative: Azure CLI Deployment
-
-```bash
-# Clone the repository
-git clone https://github.com/Russ-Holloway/CoPPA-Analytics.git
-cd CoPPA-Analytics/chatbot-analytics-azure-deploy
-
-# Deploy using Azure CLI
-az group create --name rg-coppa-analytics --location "UK South"
-az deployment group create --resource-group rg-coppa-analytics --template-file azuredeploy.json --parameters forceIdentifier=yourforce adminEmail=admin@yourforce.police.uk
-```
+Test your analytics API at:
+`https://[your-function-app-name].azurewebsites.net/api/GetAnalytics?days=7`
 
 ## 🏗️ Architecture
 
