@@ -187,8 +187,16 @@
                             "value": "[toLower(variables('functionAppName'))]"
                         },
                         {
+                            "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+                            "value": "true"
+                        },
+                        {
+                            "name": "ENABLE_ORYX_BUILD",
+                            "value": "true"
+                        },
+                        {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
-                            "value": "https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app.zip"
+                            "value": "1"
                         },
                         {
                             "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
@@ -239,14 +247,6 @@
                             "value": "587"
                         },
                         {
-                            "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                            "value": "true"
-                        },
-                        {
-                            "name": "ENABLE_ORYX_BUILD",
-                            "value": "true"
-                        },
-                        {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "18.x"
                         },
@@ -259,6 +259,24 @@
                         "allowedOrigins": ["*"]
                     }
                 }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/sourcecontrols",
+            "apiVersion": "2021-02-01",
+            "name": "[concat(variables('functionAppName'), '/web')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+            ],
+            "properties": {
+                "repoUrl": "https://github.com/Russ-Holloway/CoPPA-Analytics.git",
+                "branch": "main",
+                "isManualIntegration": true,
+                "deploymentRollbackEnabled": false,
+                "isMercurial": false,
+                "isGitHubAction": false,
+                "publishingUsername": "$coppa-analytics",
+                "projectPath": "chatbot-analytics-azure-deploy/function-code"
             }
         }
     ],

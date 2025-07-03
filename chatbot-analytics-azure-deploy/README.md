@@ -23,10 +23,27 @@
 
 ## 🚀 Quick Start - Deploy to Azure
 
-### Step 1: Click Deploy to Azure
+### Step 1: Deploy Infrastructure (8-10 minutes)
 1. **Click the "Deploy to Azure" button above** ⬆️
 2. **Sign in to your Azure account** when prompted
 3. **Select your subscription** and choose or create a resource group
+4. **Fill in the required parameters** and click "Create"
+5. **Wait for deployment to complete** (creates Function App with Python 3.11)
+
+### Step 2: Deploy Functions (2-3 minutes)
+**After Step 1 completes, run this PowerShell command:**
+
+```powershell
+# Download and run the function deployment script
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Russ-Holloway/CoPPA-Analytics/main/chatbot-analytics-azure-deploy/Deploy-After-ARM.ps1" -OutFile "Deploy-After-ARM.ps1"
+.\Deploy-After-ARM.ps1
+```
+
+**Alternative methods:**
+- **Azure CLI**: See [TWO_STEP_DEPLOYMENT.md](TWO_STEP_DEPLOYMENT.md)
+- **Manual Kudu**: See [TWO_STEP_DEPLOYMENT.md](TWO_STEP_DEPLOYMENT.md)
+
+✅ **Total time: 10-13 minutes for complete working solution**
 
 ### Step 2: Fill in the Deployment Form
 - **Force Code**: Your police force identifier (e.g., "BTP", "MET", "GMP", "COP")
