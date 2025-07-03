@@ -20,7 +20,7 @@
 - **📈 Performance Monitoring** - Built-in Application Insights and monitoring
 - **🔒 Secure by Design** - Enterprise-grade security with Azure best practices
 
-## 🚀 Deployment Instructions
+## 🚀 Quick Deployment (2 Steps)
 
 ### Step 1: Deploy Infrastructure (Click Button Above)
 
@@ -32,17 +32,22 @@
 3. **Click "Review + create"** then **"Create"**
 4. **Wait 5-10 minutes** for deployment to complete
 
-### Step 2: Upload Functions
+### Step 2: Configure GitHub Deployment
 
-1. **Download the function package**: [function-app-corrected.zip](https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip)
-2. **Go to your new Function App** in the Azure Portal
-3. **Click "Functions"** in the left menu
-4. **Click "Create"** → **"Upload ZIP file"**
-5. **Upload the ZIP file** and wait for deployment
+1. **Go to your new Function App** in the Azure Portal
+2. **Navigate to "Deployment Center"** in the left menu
+3. **Select "GitHub"** as the deployment source
+4. **Configure the following:**
+   - **Organization**: `Russ-Holloway`
+   - **Repository**: `CoPPA-Analytics`
+   - **Branch**: `main`
+5. **Click "Save"** and wait 2-3 minutes for automatic deployment
 
 ### ✅ That's It!
 
-Your analytics solution is now running. Access your dashboard at:
+All 7 functions will be automatically deployed from GitHub. No manual ZIP uploads required!
+
+Access your dashboard at:
 `https://[your-function-app-name].azurewebsites.net/api/Dashboard`
 
 Test your analytics API at:
