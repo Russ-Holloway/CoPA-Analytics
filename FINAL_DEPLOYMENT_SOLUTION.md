@@ -4,7 +4,7 @@
 
 The CoPPA Analytics solution is now configured for **simple, reliable deployment** across all 44 police forces.
 
-## 🚀 The Final Solution: Two-Step Deployment
+## 🚀 The Final Solution: GitHub Deployment
 
 ### Step 1: Deploy Infrastructure (5-10 minutes)
 **Deploy to Azure Button**: https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json
@@ -12,46 +12,48 @@ The CoPPA Analytics solution is now configured for **simple, reliable deployment
 - ✅ Creates Function App (Linux, Python 3.11) 
 - ✅ Creates Storage Account
 - ✅ Creates Application Insights
-- ✅ **NO READ-ONLY MODE** - Ready for ZIP upload
+- ✅ **Ready for GitHub deployment**
 
-### Step 2: Upload Functions (2-3 minutes)
-**ZIP Package**: https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip
+### Step 2: Configure GitHub Deployment (2-3 minutes)
+**GitHub Repository**: https://github.com/Russ-Holloway/CoPPA-Analytics
 
-- ✅ Go to Function App → Functions → Create → Upload ZIP
-- ✅ 7 functions deploy automatically
+- ✅ Go to Function App → Deployment Center
+- ✅ Select GitHub as source (Organization: Russ-Holloway, Repository: CoPPA-Analytics, Branch: main)
+- ✅ 7 functions deploy automatically from repo root
 - ✅ Dashboard and analytics immediately available
 
 ## 🔧 What Was Fixed
 
-### ARM Template Cleaned Up:
-- ❌ Removed `WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED`
-- ❌ Removed `WEBSITE_MOUNT_ENABLED`
-- ❌ Removed `WEBSITE_DEPLOYMENT_RESTART_BEHAVIOR`
-- ❌ Removed `WEBSITE_RESTART_MODE`
-- ❌ Removed `WEBSITE_FORCE_RESTART`
-- ❌ Removed `WEBSITE_ENABLE_SYNC_UPDATE_SITE`
-- ❌ Never includes `WEBSITE_RUN_FROM_PACKAGE`
+### ARM Template Updated:
+- ✅ Removed `WEBSITE_RUN_FROM_PACKAGE` setting
+- ✅ Removed all problematic app settings
+- ✅ Clean deployment ready for GitHub source
+
+### Function Code Organization:
+- ✅ All 7 functions moved to repository root
+- ✅ `host.json` and `requirements.txt` at root level
+- ✅ Proper structure for GitHub deployment
 
 ### Result:
-✅ **Function Apps deploy WITHOUT read-only mode**  
-✅ **"+ Create" button available immediately**  
-✅ **ZIP uploads work from deployment**  
-✅ **No manual configuration required**  
+✅ **Function Apps use GitHub as deployment source**  
+✅ **Automatic deployment from main branch**  
+✅ **No manual ZIP uploads needed**  
+✅ **Read-only mode is expected and correct**  
 
 ## 📚 Documentation Updated
 
-- **Main README**: Simplified to two-step process only
-- **Deployment README**: Clear, simple instructions
-- **Removed**: All alternative deployment methods
-- **Focus**: Deploy button + ZIP upload = Done
+- **Main README**: Updated to GitHub deployment process
+- **GitHub Deployment Guide**: Comprehensive instructions created
+- **ARM Template**: Cleaned for GitHub deployment
+- **Focus**: Deploy button + GitHub source = Done
 
 ## 🎯 Perfect for Police Force Rollout
 
-- **Non-technical friendly**: Click button, upload ZIP, done
-- **Consistent results**: Same process for all 44 forces
+- **Non-technical friendly**: Click button, configure GitHub, done
+- **Automatic deployment**: Functions deploy from GitHub automatically
 - **No CLI required**: Everything through Azure Portal
-- **Reliable**: No complex automation that can fail
-- **Support-friendly**: Easy to troubleshoot
+- **Reliable**: No ZIP uploads that can fail
+- **Support-friendly**: Easy to troubleshoot via GitHub commits
 
 ## 📊 Expected Results After Deployment
 
@@ -63,11 +65,11 @@ The CoPPA Analytics solution is now configured for **simple, reliable deployment
 
 **Next Steps:**
 1. Test the deployment button with fresh Azure subscription
-2. Verify Function App is NOT in read-only mode
-3. Confirm ZIP upload works immediately
-4. Validate all 7 functions load correctly
-5. Test analytics API and dashboard
+2. Configure GitHub deployment source in Deployment Center
+3. Verify all 7 functions deploy automatically from GitHub
+4. Validate analytics API and dashboard work correctly
+5. Test with multiple police forces
 
 **Deploy Test**: https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRuss-Holloway%2FCoPPA-Analytics%2Fmain%2Fchatbot-analytics-azure-deploy%2Fazuredeploy.json
 
-This solution is now **production-ready** for police force deployments! 🚔
+This solution is now **production-ready** for police force deployments using **GitHub deployment**! 🚔
