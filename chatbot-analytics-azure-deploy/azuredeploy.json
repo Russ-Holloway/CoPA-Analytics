@@ -264,6 +264,24 @@
                     }
                 }
             }
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "ensureFunctionAppReady",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+            ],
+            "kind": "AzureCLI",
+            "properties": {
+                "azCliVersion": "2.50.0",
+                "timeout": "PT30M",
+                "arguments": "[concat(resourceGroup().name, ' ', variables('functionAppName'))]",
+                "scriptContent": "#!/bin/bash\nRG_NAME=$1\nFUNC_NAME=$2\n\necho \"Waiting for Function App to be fully ready...\"\nsleep 120\n\necho \"Checking Function App status...\"\naz functionapp show --name $FUNC_NAME --resource-group $RG_NAME --query 'state' -o tsv\n\necho \"Restarting Function App to ensure clean state...\"\naz functionapp restart --name $FUNC_NAME --resource-group $RG_NAME\n\nsleep 60\n\necho \"Syncing function triggers...\"\naz functionapp function sync --name $FUNC_NAME --resource-group $RG_NAME\n\necho \"Function App ready with all functions loaded\"",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
+            }
         }
     ],
     "outputs": {
