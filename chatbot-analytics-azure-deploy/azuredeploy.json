@@ -267,14 +267,6 @@
                             "value": "1"
                         },
                         {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": ""
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTSHARE",
-                            "value": ""
-                        },
-                        {
                             "name": "WEBSITE_TIME_ZONE",
                             "value": "GMT Standard Time"
                         }
