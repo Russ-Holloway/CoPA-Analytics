@@ -1,5 +1,5 @@
-# EMERGENCY FIX for Runtime Version Error
-# This script provides commands to fix "Runtime version: Error" issue
+# EMERGENCY FIX for Function App Read-Only Mode
+# This script fixes Function Apps that are stuck in read-only mode
 # Designed for cross-tenant scenarios - outputs commands for Azure Cloud Shell
 
 param(
@@ -8,8 +8,15 @@ param(
     [string]$FunctionAppName
 )
 
-Write-Host "🚨 EMERGENCY FIX: Runtime Version Error" -ForegroundColor Red
-Write-Host "====================================" -ForegroundColor Red
+Write-Host "🚨 EMERGENCY FIX: Function App Read-Only Mode" -ForegroundColor Red
+Write-Host "=============================================" -ForegroundColor Red
+Write-Host ""
+Write-Host "🔍 DIAGNOSIS: Function App is in read-only mode" -ForegroundColor Yellow
+Write-Host "   - Cannot upload ZIP files via portal" -ForegroundColor Yellow
+Write-Host "   - '+ Create' button is missing or disabled" -ForegroundColor Yellow
+Write-Host "   - May be caused by deployment settings" -ForegroundColor Yellow
+Write-Host ""
+
 Write-Host ""
 Write-Host "This script provides Azure CLI commands for cross-tenant deployments." -ForegroundColor Yellow
 Write-Host "Use these commands in Azure Cloud Shell with the target tenant." -ForegroundColor Yellow
@@ -44,14 +51,19 @@ Write-Host ""
 Write-Host "# Stop function app" -ForegroundColor Gray
 Write-Host "az functionapp stop --name $FunctionAppName --resource-group $ResourceGroupName" -ForegroundColor White
 Write-Host ""
-Write-Host "# Clear problematic settings" -ForegroundColor Gray
-Write-Host "az functionapp config appsettings delete --name $FunctionAppName --resource-group $ResourceGroupName --setting-names WEBSITE_RUN_FROM_PACKAGE" -ForegroundColor White
+Write-Host "# Clear ALL settings that can cause read-only mode" -ForegroundColor Gray
+Write-Host "az functionapp config appsettings delete --name $FunctionAppName --resource-group $ResourceGroupName --setting-names WEBSITE_RUN_FROM_PACKAGE WEBSITE_RUN_FROM_ZIP SCM_RUN_FROM_PACKAGE" -ForegroundColor White
+Write-Host ""
+Write-Host "# Remove deployment-related settings that may lock the app" -ForegroundColor Gray  
+Write-Host "az functionapp config appsettings delete --name $FunctionAppName --resource-group $ResourceGroupName --setting-names WEBSITE_DEPLOYMENT_RESTART_BEHAVIOR WEBSITE_FORCE_RESTART WEBSITE_RESTART_MODE" -ForegroundColor White
 Write-Host ""
 Write-Host "# Update core settings" -ForegroundColor Gray
 Write-Host "az functionapp config appsettings set --name $FunctionAppName --resource-group $ResourceGroupName --settings 'FUNCTIONS_EXTENSION_VERSION=~4' 'FUNCTIONS_WORKER_RUNTIME=python' 'FUNCTIONS_WORKER_RUNTIME_VERSION=3.11' 'WEBSITE_PYTHON_DEFAULT_VERSION=3.11' 'PYTHON_ISOLATE_WORKER_DEPENDENCIES=1' 'SCM_DO_BUILD_DURING_DEPLOYMENT=true' 'ENABLE_ORYX_BUILD=true'" -ForegroundColor White
 Write-Host ""
-Write-Host "# Set package URL" -ForegroundColor Gray
-Write-Host "az functionapp config appsettings set --name $FunctionAppName --resource-group $ResourceGroupName --settings 'WEBSITE_RUN_FROM_PACKAGE=https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip'" -ForegroundColor White
+Write-Host "# DON'T set any package-related settings - this enables portal uploads!" -ForegroundColor Gray
+Write-Host "# SKIP: WEBSITE_RUN_FROM_PACKAGE (this would make the app read-only)" -ForegroundColor Red
+Write-Host "# SKIP: WEBSITE_RUN_FROM_ZIP (this would also make the app read-only)" -ForegroundColor Red
+Write-Host "# SKIP: SCM_RUN_FROM_PACKAGE (this would also make the app read-only)" -ForegroundColor Red
 Write-Host ""
 Write-Host "# Start function app" -ForegroundColor Gray
 Write-Host "az functionapp start --name $FunctionAppName --resource-group $ResourceGroupName" -ForegroundColor White

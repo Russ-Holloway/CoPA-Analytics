@@ -186,18 +186,7 @@
                             "name": "ENABLE_ORYX_BUILD",
                             "value": "true"
                         },
-                        {
-                            "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
-                            "value": "true"
-                        },
-                        {
-                            "name": "WEBSITE_USE_PLACEHOLDER_DOTNETISOLATED",
-                            "value": "0"
-                        },
-                        {
-                            "name": "WEBSITE_MOUNT_ENABLED",
-                            "value": "1"
-                        },
+
                         {
                             "name": "FUNCTIONS_WORKER_PROCESS_COUNT",
                             "value": "1"
@@ -258,22 +247,12 @@
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "18.x"
                         },
-                        {
-                            "name": "WEBSITE_DEPLOYMENT_RESTART_BEHAVIOR", 
-                            "value": "2"
-                        },
-                        {
-                            "name": "WEBSITE_RESTART_MODE",
-                            "value": "1"
-                        },
+
                         {
                             "name": "FUNCTIONS_EXTENSION_AUTOINSTALL",
                             "value": "1"
                         },
-                        {
-                            "name": "WEBSITE_FORCE_RESTART",
-                            "value": "1"
-                        },
+
                         {
                             "name": "WEBSITE_TIME_ZONE",
                             "value": "GMT Standard Time"
