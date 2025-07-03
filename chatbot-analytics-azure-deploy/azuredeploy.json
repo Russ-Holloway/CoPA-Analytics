@@ -180,15 +180,15 @@
                         },
                         {
                             "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                            "value": "false"
+                            "value": "true"
                         },
                         {
                             "name": "ENABLE_ORYX_BUILD",
-                            "value": "false"
+                            "value": "true"
                         },
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
-                            "value": "https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-corrected.zip"
+                            "value": "1"
                         },
                         {
                             "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
