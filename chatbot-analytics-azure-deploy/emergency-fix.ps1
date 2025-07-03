@@ -33,7 +33,7 @@ try {
         Write-Host "az functionapp config appsettings set --name $FunctionAppName --resource-group $ResourceGroupName --settings 'FUNCTIONS_EXTENSION_VERSION=~4' 'FUNCTIONS_WORKER_RUNTIME=python' 'FUNCTIONS_WORKER_RUNTIME_VERSION=3.11' 'WEBSITE_PYTHON_DEFAULT_VERSION=3.11' 'PYTHON_ISOLATE_WORKER_DEPENDENCIES=1' 'SCM_DO_BUILD_DURING_DEPLOYMENT=true' 'ENABLE_ORYX_BUILD=true'" -ForegroundColor White
         Write-Host ""
         Write-Host "# Set package URL" -ForegroundColor Gray
-        Write-Host "az functionapp config appsettings set --name $FunctionAppName --resource-group $ResourceGroupName --settings 'WEBSITE_RUN_FROM_PACKAGE=https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app.zip'" -ForegroundColor White
+        Write-Host "az functionapp config appsettings set --name $FunctionAppName --resource-group $ResourceGroupName --settings 'WEBSITE_RUN_FROM_PACKAGE=https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-final.zip'" -ForegroundColor White
         Write-Host ""
         Write-Host "# Start function app" -ForegroundColor Gray
         Write-Host "az functionapp start --name $FunctionAppName --resource-group $ResourceGroupName" -ForegroundColor White
@@ -77,7 +77,7 @@ az functionapp config appsettings set --name $FunctionAppName --resource-group $
 # Step 4: Set the package URL
 Write-Host "🔄 Setting package deployment..." -ForegroundColor Yellow
 az functionapp config appsettings set --name $FunctionAppName --resource-group $ResourceGroupName --settings `
-    "WEBSITE_RUN_FROM_PACKAGE=https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app.zip"
+    "WEBSITE_RUN_FROM_PACKAGE=https://github.com/Russ-Holloway/CoPPA-Analytics/raw/main/chatbot-analytics-azure-deploy/function-app-final.zip"
 
 # Step 5: Start the function app
 Write-Host "🔄 Starting Function App..." -ForegroundColor Yellow
