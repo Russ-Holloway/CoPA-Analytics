@@ -1,6 +1,7 @@
 azure-functions>=1.19.0
 azure-cosmos==4.5.1
+azure-identity>=1.12.0
 requests>=2.31.0
 python-dateutil>=2.8.2
 email-validator>=2.0.0
-# Updated with specific azure-cosmos version for better compatibility
+# Force specific azure-cosmos version and add azure-identity for compatibility

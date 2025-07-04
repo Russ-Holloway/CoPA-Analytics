@@ -38,12 +38,16 @@ jobs:
         run: |
           source venv/bin/activate
           pip install --upgrade pip
+          pip install --upgrade setuptools wheel
           pip install -r requirements.txt
+          pip install azure-cosmos==4.5.1 --force-reinstall
+          pip list | grep azure
 
       - name: Test dependencies
         run: |
           source venv/bin/activate
           python test_dependencies.py
+          python -c "import azure.cosmos; print('Azure Cosmos installed successfully')"
 
       # Optional: Add step to run tests here
 
