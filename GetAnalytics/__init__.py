@@ -531,3 +531,4 @@ def get_coppa_demo_analytics(force_id, start_date, end_date, category):
             "force": force_id
         }
     }
+[...existing code from source file...]

