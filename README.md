@@ -20,19 +20,23 @@
 - **📈 Performance Monitoring** - Built-in Application Insights and monitoring
 - **🔒 Secure by Design** - Enterprise-grade security with Azure best practices
 
-## 🚀 Quick Deployment (2 Steps)
+## 🚀 Quick Deployment Guide
 
-### Step 1: Deploy Infrastructure (Click Button Above)
+### **Step 1: Deploy Infrastructure (5-10 minutes)**
 
-1. **Click the "Deploy to Azure" button** 
+1. **Click the "Deploy to Azure" button above** ⬆️
 2. **Fill in the deployment form:**
-   - **Force Prefix**: Your police force code (e.g., "BTP", "MET", "GMP")
-   - **Admin Email**: Email address for reports and notifications
-   - **Cosmos DB Details**: Your existing CoPPA database connection details
+   - **Force Prefix**: Your police force code (e.g., "BTP", "MET", "GMP", "WMP")
+   - **Admin Email**: Email address for daily analytics reports
+   - **Existing Cosmos DB Endpoint**: Your CoPPA Cosmos DB URL (or leave blank for demo data)
+   - **Existing Cosmos DB Key**: Your CoPPA Cosmos DB primary key (or leave blank for demo data)
+   - **Cosmos DB Database**: Usually `db_conversation_history` (check your CoPPA database)
+   - **Cosmos DB Container**: Usually `conversations` (check your CoPPA container)
 3. **Click "Review + create"** then **"Create"**
 4. **Wait 5-10 minutes** for deployment to complete
+5. **Note your Function App name** - it will be `func-[your-prefix]-analytics`
 
-### Step 2: Configure GitHub Deployment
+### **Step 2: Configure GitHub Deployment (2-3 minutes)**
 
 1. **Go to your new Function App** in the Azure Portal
 2. **Navigate to "Deployment Center"** in the left menu
@@ -41,17 +45,72 @@
    - **Organization**: `Russ-Holloway`
    - **Repository**: `CoPPA-Analytics`
    - **Branch**: `main`
+   - **Workflow Option**: Select "Overwrite the workflow"
+   - **Authentication Type**: Select "User-assigned identity"
+   - **Identity**: Select "(Create new)"
 5. **Click "Save"** and wait 2-3 minutes for automatic deployment
 
-### ✅ That's It!
+### **✅ Verification**
 
-All 7 functions will be automatically deployed from GitHub. No manual ZIP uploads required!
+Your analytics solution is now running! Access:
 
-Access your dashboard at:
-`https://[your-function-app-name].azurewebsites.net/api/Dashboard`
+**Dashboard**: `https://func-[your-prefix]-analytics.azurewebsites.net/api/Dashboard`  
+**Analytics API**: `https://func-[your-prefix]-analytics.azurewebsites.net/api/GetAnalytics?days=7`
 
-Test your analytics API at:
-`https://[your-function-app-name].azurewebsites.net/api/GetAnalytics?days=7`
+### **🔧 Troubleshooting**
+
+**Dashboard shows "Error loading data":**
+- Check your Cosmos DB environment variables in Function App → Settings → Environment variables
+- Ensure Cosmos DB allows access from Azure services (Networking → Firewall settings)
+- Verify database and container names match your CoPPA deployment
+
+**401 Authorization errors:**
+- Functions should be set to "anonymous" authorization (this is automatic with GitHub deployment)
+- If issues persist, check Function App logs in Monitoring → Log stream
+
+**Functions not appearing:**
+- Check GitHub Actions at https://github.com/Russ-Holloway/CoPPA-Analytics/actions
+- Wait for deployment to complete (green checkmark)
+- Functions may take 2-3 minutes to appear after GitHub deployment
+
+## 📋 What Gets Deployed
+
+After successful deployment, you'll have **7 Azure Functions** providing comprehensive analytics:
+
+### **🎛️ Dashboard** - `/api/Dashboard`
+- **Purpose**: Interactive web-based analytics dashboard
+- **Features**: Real-time charts, metrics, and data visualization
+- **Access**: Direct browser access to view all analytics
+
+### **📊 GetAnalytics** - `/api/GetAnalytics` 
+- **Purpose**: Main analytics API endpoint
+- **Features**: Conversation metrics, trending topics, engagement data
+- **Parameters**: `?days=7` (last 7 days), `?category=crime` (filter by topic)
+
+### **❓ GetQuestions** - `/api/GetQuestions`
+- **Purpose**: Most asked questions and topics analysis
+- **Features**: Question frequency, trending queries, topic clustering
+- **Use**: Identify citizen concerns and popular topics
+
+### **🌱 SeedData** - `/api/SeedData`
+- **Purpose**: Generate demo/test data for new deployments
+- **Features**: Creates sample conversations for testing
+- **Use**: Test analytics with realistic demo data
+
+### **🧪 TestFunction** - `/api/TestFunction`
+- **Purpose**: Health check and connectivity testing
+- **Features**: Verifies Cosmos DB connection and function status
+- **Use**: Troubleshooting and system validation
+
+### **⏰ TimerTrigger** - (Automatic)
+- **Purpose**: Scheduled daily analytics processing
+- **Features**: Generates daily email reports, data aggregation
+- **Schedule**: Runs automatically at 7:00 AM UTC daily
+
+### **🔄 FunctionSync** - `/api/FunctionSync`
+- **Purpose**: Data synchronization and maintenance
+- **Features**: Updates analytics data, cleans old records
+- **Use**: Keeps analytics data current and optimized
 
 ## 🏗️ Architecture
 
