@@ -252,11 +252,6 @@
                         {
                             "name": "FUNCTIONS_EXTENSION_AUTOINSTALL",
                             "value": "1"
-                        },
-
-                        {
-                            "name": "WEBSITE_TIME_ZONE",
-                            "value": "GMT Standard Time"
                         }
                     ],
                     "cors": {
