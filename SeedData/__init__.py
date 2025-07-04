@@ -141,4 +141,3 @@ def get_query_type_for_category(category):
     }
     
     return random.choice(query_types.get(category, ['general']))
-[...existing code from source file...]
