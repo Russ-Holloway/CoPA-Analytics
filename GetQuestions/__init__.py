@@ -124,6 +124,7 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
         questions.append(question_data)
     
     return {
+
         "forceId": force_id,
         "period": {
             "startDate": start_date.isoformat(),
@@ -141,4 +142,3 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
             "version": "1.0"
         }
     }
-[...existing code from source file...]
