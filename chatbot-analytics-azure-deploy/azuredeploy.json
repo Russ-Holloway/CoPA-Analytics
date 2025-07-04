@@ -175,17 +175,16 @@
                             "value": "3.11"
                         },
                         {
-                            "name": "PYTHON_ISOLATE_WORKER_DEPENDENCIES",
-                            "value": "1"
-                        },
-
-                        {
                             "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
                             "value": "true"
                         },
                         {
                             "name": "ENABLE_ORYX_BUILD",
                             "value": "true"
+                        },
+                        {
+                            "name": "POST_BUILD_COMMAND",
+                            "value": "pip install -r requirements.txt"
                         },
 
                         {
