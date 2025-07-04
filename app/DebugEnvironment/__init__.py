@@ -1,8 +1,8 @@
 import logging
-import json
-import os
-import sys
 import azure.functions as func
-from datetime import datetime
+import os
+import json
 
-# ...existing code...
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('DebugEnvironment function processed a request.')
+    return func.HttpResponse("Debug info", status_code=200)
