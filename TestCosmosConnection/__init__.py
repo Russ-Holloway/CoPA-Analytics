@@ -50,8 +50,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             database = client.get_database_client(database_name)
             container = database.get_container_client(container_name)
             
-            # Test 3: Try to query data
-            query = "SELECT TOP 5 * FROM c ORDER BY c._ts DESC"
+            # Test 3: Try to query data - updated for CoPPA data structure
+            query = "SELECT TOP 5 * FROM c WHERE c.type = 'message' ORDER BY c.createdAt DESC"
             items = list(container.query_items(
                 query=query,
                 enable_cross_partition_query=True
@@ -59,18 +59,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             
             test_results["connection_test"] = "✅ SUCCESS"
             test_results["data_count"] = len(items)
-            test_results["sample_data"] = items if items else "No data found"
+            test_results["sample_data"] = items if items else "No message data found"
             
-            # Test 4: Check if data exists for this force
+            # Test 4: Check total message count
             if items:
-                force_query = "SELECT COUNT(1) as count FROM c WHERE c.forceId = @force_id"
-                force_params = [{"name": "@force_id", "value": force_id}]
-                force_count = list(container.query_items(
-                    query=force_query,
-                    parameters=force_params,
+                count_query = "SELECT VALUE COUNT(1) FROM c WHERE c.type = 'message'"
+                total_count = list(container.query_items(
+                    query=count_query,
                     enable_cross_partition_query=True
                 ))
-                test_results["force_data_count"] = force_count[0]["count"] if force_count else 0
+                test_results["total_message_count"] = total_count[0] if total_count else 0
             
         except Exception as e:
             test_results["connection_test"] = "❌ FAILED - Connection error"

@@ -104,17 +104,16 @@ def get_cosmos_analytics(force_id, start_date, end_date, category):
     database = client.get_database_client(database_name)
     container = database.get_container_client(container_name)
     
-    # Enhanced query to get detailed data
+    # Enhanced query to get detailed data - updated for CoPPA data structure
     query = """
     SELECT * FROM c 
-    WHERE c.forceId = @force_id 
-    AND c.timestamp >= @start_date 
-    AND c.timestamp <= @end_date
-    ORDER BY c.timestamp DESC
+    WHERE c.createdAt >= @start_date 
+    AND c.createdAt <= @end_date
+    AND c.type = 'message'
+    ORDER BY c.createdAt DESC
     """
     
     parameters = [
-        {"name": "@force_id", "value": force_id},
         {"name": "@start_date", "value": start_date.isoformat()},
         {"name": "@end_date", "value": end_date.isoformat()}
     ]

@@ -69,18 +69,17 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
     database = client.get_database_client(database_name)
     container = database.get_container_client(container_name)
     
-    # Build query based on category filter
+    # Build query based on category filter - updated for CoPPA data structure
     if category != 'all':
         query = """
         SELECT TOP @limit * FROM c 
-        WHERE c.forceId = @force_id 
-        AND c.timestamp >= @start_date 
-        AND c.timestamp <= @end_date
+        WHERE c.createdAt >= @start_date 
+        AND c.createdAt <= @end_date
+        AND c.type = 'message'
         AND c.category = @category
-        ORDER BY c.timestamp DESC
+        ORDER BY c.createdAt DESC
         """
         parameters = [
-            {"name": "@force_id", "value": force_id},
             {"name": "@start_date", "value": start_date.isoformat()},
             {"name": "@end_date", "value": end_date.isoformat()},
             {"name": "@category", "value": category},
@@ -89,13 +88,12 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
     else:
         query = """
         SELECT TOP @limit * FROM c 
-        WHERE c.forceId = @force_id 
-        AND c.timestamp >= @start_date 
-        AND c.timestamp <= @end_date
-        ORDER BY c.timestamp DESC
+        WHERE c.createdAt >= @start_date 
+        AND c.createdAt <= @end_date
+        AND c.type = 'message'
+        ORDER BY c.createdAt DESC
         """
         parameters = [
-            {"name": "@force_id", "value": force_id},
             {"name": "@start_date", "value": start_date.isoformat()},
             {"name": "@end_date", "value": end_date.isoformat()},
             {"name": "@limit", "value": limit}
@@ -108,21 +106,20 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
         enable_cross_partition_query=True
     ))
     
-    # Process and format the questions
+    # Process and format the questions - updated for CoPPA data structure
     questions = []
     for item in items:
         question_data = {
             "id": item.get('id'),
-            "timestamp": item.get('timestamp'),
-            "question": item.get('question', item.get('query', item.get('content', 'No question recorded'))),
-            "category": item.get('category', 'general_enquiry'),
-            "theme": item.get('query_type', item.get('topic', 'unclassified')),
+            "timestamp": item.get('createdAt'),
+            "question": item.get('content', 'No question recorded'),
+            "conversationId": item.get('conversationId'),
             "userId": item.get('userId', 'anonymous'),
-            "satisfaction": item.get('satisfaction'),
-            "resolved": item.get('resolved', False),
-            "response_time": item.get('response_time', 0),
-            "duration": item.get('duration', 0),
-            "session_id": item.get('session_id')
+            "type": item.get('type', 'message'),
+            "category": item.get('category', 'general_enquiry'),
+            "attachments": item.get('attachments', []),
+            "self": item.get('_self'),
+            "etag": item.get('_etag')
         }
         questions.append(question_data)
     
