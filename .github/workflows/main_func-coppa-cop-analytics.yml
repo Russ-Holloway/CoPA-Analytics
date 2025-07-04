@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './app' # set this to the path to your web app project, now using the app subfolder
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
 
 jobs:
@@ -35,28 +35,12 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: |
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install -r requirements.txt
-          pip install azure-cosmos==4.5.1 --force-reinstall
-          pip list | grep azure
-
-      - name: Test dependencies
-        run: |
-          source venv/bin/activate
-          python test_dependencies.py
-          python -c "import azure.cosmos; print('Azure Cosmos installed successfully')"
+        run: pip install -r requirements.txt
 
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: |
-          # Remove any existing zip file
-          rm -f release.zip
-          # Create zip excluding unnecessary files
-          zip -r release.zip . -x "venv/*" ".git/*" ".github/*" "*.md" ".DS_Store" "__pycache__/*" "*.pyc" "azure-deploy/*" "chatbot-analytics-azure-deploy/*"
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -85,9 +69,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B5FB86811EDE41EBAAE371FB190F089E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D168315B4AF949078CA089299755B361 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_01B157E0C36F41B7ADFE4A30827286A0 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FF27C75C883E4C65A16B3696E8A23E58 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E48369691D7F4F97A245AEFD96DAE842 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0ACC0054E3D042A58EB17F1AFD9B176B }}
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
