@@ -1,4 +1,3 @@
-def main(req: func.HttpRequest) -> func.HttpResponse:
 import logging
 import json
 import os
