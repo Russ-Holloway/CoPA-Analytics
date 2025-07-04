@@ -54,77 +54,56 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 def get_detailed_questions(force_id, start_date, end_date, category, limit):
     """Retrieve detailed questions from Cosmos DB"""
     from azure.cosmos import CosmosClient
-    
-    # Get Cosmos DB configuration
+    import logging
+
     endpoint = os.environ.get('COSMOS_DB_ENDPOINT')
     key = os.environ.get('COSMOS_DB_KEY')
     database_name = os.environ.get('COSMOS_DB_DATABASE', 'chatbot-analytics')
-    container_name = os.environ.get('COSMOS_DB_CONTAINER', 'interactions')
-    
+    container_name = os.environ.get('COSMOS_DB_CONTAINER', 'conversations')
+
     if not endpoint or not key:
         raise Exception("Cosmos DB configuration not found")
-    
-    # Initialize Cosmos client
+
     client = CosmosClient(endpoint, key)
     database = client.get_database_client(database_name)
     container = database.get_container_client(container_name)
-    
-    # Build query based on category filter - updated for CoPPA data structure
-    if category != 'all':
-        query = """
-        SELECT TOP @limit * FROM c 
-        WHERE c.createdAt >= @start_date 
-        AND c.createdAt <= @end_date
-        AND c.type = 'message'
-        AND c.category = @category
-        ORDER BY c.createdAt DESC
-        """
-        parameters = [
-            {"name": "@start_date", "value": start_date.isoformat()},
-            {"name": "@end_date", "value": end_date.isoformat()},
-            {"name": "@category", "value": category},
-            {"name": "@limit", "value": limit}
-        ]
-    else:
-        query = """
-        SELECT TOP @limit * FROM c 
-        WHERE c.createdAt >= @start_date 
-        AND c.createdAt <= @end_date
-        AND c.type = 'message'
-        ORDER BY c.createdAt DESC
-        """
-        parameters = [
-            {"name": "@start_date", "value": start_date.isoformat()},
-            {"name": "@end_date", "value": end_date.isoformat()},
-            {"name": "@limit", "value": limit}
-        ]
-    
-    # Execute query
+
+    # Query for Conversation type documents (matches your data)
+    query = """
+    SELECT TOP @limit * FROM c 
+    WHERE c.createdAt >= @start_date 
+    AND c.createdAt <= @end_date
+    AND c.type = 'Conversation'
+    ORDER BY c.createdAt DESC
+    """
+    parameters = [
+        {"name": "@start_date", "value": start_date.isoformat()},
+        {"name": "@end_date", "value": end_date.isoformat()},
+        {"name": "@limit", "value": limit}
+    ]
+
     items = list(container.query_items(
         query=query,
         parameters=parameters,
         enable_cross_partition_query=True
     ))
-    
-    # Process and format the questions - updated for CoPPA data structure
+
     questions = []
     for item in items:
         question_data = {
             "id": item.get('id'),
             "timestamp": item.get('createdAt'),
-            "question": item.get('content', 'No question recorded'),
-            "conversationId": item.get('conversationId'),
+            "question": item.get('title', 'No question recorded'),
             "userId": item.get('userId', 'anonymous'),
-            "type": item.get('type', 'message'),
-            "category": item.get('category', 'general_enquiry'),
-            "attachments": item.get('attachments', []),
+            "type": item.get('type', 'Conversation'),
+            # "category": item.get('category', 'general_enquiry'),  # Not present in your data
+            # "attachments": item.get('attachments', []),           # Not present in your data
             "self": item.get('_self'),
             "etag": item.get('_etag')
         }
         questions.append(question_data)
-    
-    return {
 
+    return {
         "forceId": force_id,
         "period": {
             "startDate": start_date.isoformat(),
@@ -141,4 +120,5 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
             "generated_at": datetime.now().isoformat(),
             "version": "1.0"
         }
+    }
     }
