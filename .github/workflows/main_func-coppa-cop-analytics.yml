@@ -37,9 +37,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: List installed packages
-        run: pip freeze
-
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
@@ -72,9 +69,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FF27C75C883E4C65A16B3696E8A23E58 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E48369691D7F4F97A245AEFD96DAE842 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0ACC0054E3D042A58EB17F1AFD9B176B }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_30CBAF0BFC9243DC80952CCCE5E1B96B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A27B77884A9A4F92A6475656E0028CA0 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_84F43C8ADB4949CDB1EB73D771D18BF9 }}
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
@@ -83,3 +80,4 @@ jobs:
           app-name: 'func-coppa-cop-analytics'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          
