@@ -1,12 +1,27 @@
+def main(req: func.HttpRequest) -> func.HttpResponse:
 import logging
 import json
 import os
 from datetime import datetime, timedelta
 import azure.functions as func
 
+try:
+    from azure.cosmos import CosmosClient
+    cosmos_available = True
+except ImportError as e:
+    cosmos_available = False
+    cosmos_import_error = str(e)
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('CoPPA Analytics function processed a request.')
+
+    if not cosmos_available:
+        logging.error(f"ImportError: {cosmos_import_error}")
+        return func.HttpResponse(
+            json.dumps({"error": "azure-cosmos module not installed", "details": cosmos_import_error}),
+            status_code=500,
+            headers={"Content-Type": "application/json"}
+        )
 
     try:
         # Get query parameters
