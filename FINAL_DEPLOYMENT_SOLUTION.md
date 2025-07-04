@@ -26,8 +26,16 @@ The CoPPA Analytics solution is now configured for **simple, reliable deployment
 
 ### ARM Template Updated:
 - ✅ Removed `WEBSITE_RUN_FROM_PACKAGE` setting
-- ✅ Removed all problematic app settings
-- ✅ Clean deployment ready for GitHub source
+- ✅ Removed `PYTHON_ISOLATE_WORKER_DEPENDENCIES` setting  
+- ✅ Removed `WEBSITE_NODE_DEFAULT_VERSION` setting
+- ✅ Removed `FUNCTIONS_EXTENSION_AUTOINSTALL` setting
+- ✅ Clean deployment ready for GitHub source - no warnings
+
+### Python Dependencies Fixed:
+- ✅ Created `.funcignore` file to exclude conflicting files
+- ✅ Updated GitHub Actions workflow with proper dependency installation
+- ✅ Fixed `requirements.txt` with specific azure-cosmos version
+- ✅ Added build verification and testing
 
 ### Function Code Organization:
 - ✅ All 7 functions moved to repository root
