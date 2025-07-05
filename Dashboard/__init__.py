@@ -3,13 +3,14 @@ import azure.functions as func
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Dashboard function processed a request.')
+    try:
+        logging.info('Dashboard function processed a request.')
 
-    # Get the function app URL from the request
-    host = req.headers.get('host', 'your-function-app.azurewebsites.net')
-    base_url = f"https://{host}/api"
+        # Get the function app URL from the request
+        host = req.headers.get('host', 'your-function-app.azurewebsites.net')
+        base_url = f"https://{host}/api"
 
-    html_content = f"""
+        html_content = f"""
 <!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -367,10 +368,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     </script>
 </body>
 </html>
-    """
+        """
 
-    return func.HttpResponse(
-        html_content,
-        status_code=200,
-        headers={"Content-Type": "text/html"}
-    )
+        return func.HttpResponse(
+            html_content,
+            status_code=200,
+            headers={"Content-Type": "text/html"}
+        )
+    except Exception as e:
+        logging.error(f"Dashboard error: {str(e)}")
+        return func.HttpResponse(
+            f"Dashboard error: {str(e)}",
+            status_code=500,
+            headers={"Content-Type": "text/plain"}
+        )
