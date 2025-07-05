@@ -284,7 +284,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             <div id="chatModalContent"></div>
         </div>
     </div>
-        }}
         function updateCategoryChart(categories) {{
             const ctx = document.getElementById('categoryChart').getContext('2d');
             if (categoryChart) {{
