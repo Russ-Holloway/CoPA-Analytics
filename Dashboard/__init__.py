@@ -345,15 +345,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 const response = await fetch(url);
                 const data = await response.json();
 
-                if (data.questions) {{
+                if (data.questions) {
                     const questionsHtml = data.questions.map(q => 
-                        `<div class=\"question-item\">
-                            <div class=\"question-text\">${{q.question}}</div>
-                            <div class=\"question-meta\">
-                                Theme: ${{q.theme}} | Category: ${{q.category}} | 
-                                Satisfaction: ${{q.satisfaction || 'N/A'}} | 
-                                Resolved: ${{q.resolved ? 'Yes' : 'No'}} |
-                                ${{new Date(q.timestamp).toLocaleString()}}
+                        `<div class="question-item">
+                            <div class="question-text">${q.title || '(No title)'}</div>
+                            <div class="question-meta">
+                                ID: ${q.id} | Type: ${q.type} | User: ${q.userId} | Created: ${q.createdAt ? new Date(q.createdAt).toLocaleString() : ''} | Updated: ${q.updatedAt ? new Date(q.updatedAt).toLocaleString() : ''}
                             </div>
                         </div>`
                     ).join('');
