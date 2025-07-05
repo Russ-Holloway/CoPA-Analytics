@@ -350,9 +350,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         `<div class="question-item">
                             <div class="question-text">${{q.question}}</div>
                             <div class="question-meta">
-                                Theme: ${{q.theme}} | Category: ${{q.category}} | 
-                                Satisfaction: ${{q.satisfaction || 'N/A'}} | 
-                                Resolved: ${{q.resolved ? 'Yes' : 'No'}} |
+                                Category: ${{q.category}} | User: ${{q.userId}} | 
                                 ${{new Date(q.timestamp).toLocaleString()}}
                             </div>
                         </div>`
