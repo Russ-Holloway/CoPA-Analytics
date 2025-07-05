@@ -44,6 +44,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Query all items (filtering in Python for flexibility)
         query = "SELECT * FROM c"
         items = list(container.query_items(query=query, enable_cross_partition_query=True))
+        logging.info(f"GetAnalytics: Retrieved {len(items)} items from Cosmos DB.")
+        if items:
+            logging.info(f"GetAnalytics: Sample item: {json.dumps(items[0], indent=2)}")
         # Filter by date and category if provided
         if start_dt and end_dt:
             def in_range(item):
