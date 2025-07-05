@@ -9,16 +9,23 @@ from azure.cosmos import CosmosClient, PartitionKey
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         logging.info('GetAnalytics function processed a request.')
-        # Cosmos DB connection from environment variable
-        COSMOS_CONN_STR = os.environ.get('CosmosDbConnectionString')
-        DATABASE_NAME = os.environ.get('CosmosDbDatabaseName', 'coppa-db')
-        CONTAINER_NAME = os.environ.get('CosmosDbContainerName', 'questions')
-        if not COSMOS_CONN_STR:
-            raise Exception('CosmosDbConnectionString environment variable not set')
+        # Cosmos DB connection using endpoint and key (align with GetQuestions)
+        endpoint = os.environ.get('COSMOS_DB_ENDPOINT')
+        key = os.environ.get('COSMOS_DB_KEY')
+        database_name = os.environ.get('COSMOS_DB_DATABASE', 'coppa-db')
+        container_name = os.environ.get('COSMOS_DB_CONTAINER', 'questions')
+        if not endpoint or not key:
+            raise Exception('COSMOS_DB_ENDPOINT or COSMOS_DB_KEY environment variable not set')
 
-        client = CosmosClient.from_connection_string(COSMOS_CONN_STR)
-        db = client.get_database_client(DATABASE_NAME)
-        container = db.get_container_client(CONTAINER_NAME)
+        # Debug logging for diagnostics (do not log key value)
+        logging.info(f"Cosmos DB endpoint: {endpoint}")
+        logging.info(f"Cosmos DB key length: {len(key) if key else 'None'}")
+        logging.info(f"Cosmos DB database: {database_name}")
+        logging.info(f"Cosmos DB container: {container_name}")
+
+        client = CosmosClient(endpoint, key)
+        db = client.get_database_client(database_name)
+        container = db.get_container_client(container_name)
 
         # Parse date filters from query params
         from datetime import datetime, timezone
