@@ -246,34 +246,37 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 document.getElementById('questions').innerHTML = questionsHtml;
             }}
             // Hide chat modal if open
-            hideChatModal();
+            if (typeof hideChatModal === 'function') hideChatModal();
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
+        }}
+
         // Chat modal
-        function showConversation(conversationId) {
+        function showConversation(conversationId) {{
             fetch(`${baseUrl}/GetConversation?conversationId=${conversationId}`)
                 .then(resp => resp.json())
-                .then(data => {
+                .then(data => {{
                     if (!data.conversation) return;
                     let html = '<div style="max-height:60vh;overflow-y:auto;padding:10px;">';
-                    data.conversation.forEach(msg => {
+                    data.conversation.forEach(msg => {{
                         let who = msg.type === 'conversation' ? 'User' : (msg.role === 'tool' ? 'AI' : (msg.role || msg.type));
                         let time = msg.createdAt ? new Date(msg.createdAt).toLocaleString() : '';
                         let content = msg.title || msg.question || msg.content || '';
-                        if (typeof content === 'string' && content.startsWith('{')) {
-                            try { content = JSON.parse(content).text || content; } catch(e) {}
-                        }
+                        if (typeof content === 'string' && content.startsWith('{')) {{
+                            try {{ content = JSON.parse(content).text || content; }} catch(e) {{}}
+                        }}
                         html += `<div style="margin-bottom:10px;"><b>${who}</b> <span style="color:#888;font-size:0.9em;">${time}</span><div style="margin-left:10px;">${content}</div></div>`;
-                    });
+                    }});
                     html += '</div>';
                     document.getElementById('chatModalContent').innerHTML = html;
                     document.getElementById('chatModal').style.display = 'block';
-                });
-        }
-        function hideChatModal() {
+                }});
+        }}
+        function hideChatModal() {{
             const modal = document.getElementById('chatModal');
             if (modal) modal.style.display = 'none';
-        }
+        }}
+    </script>
     <div id="chatModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
         <div style="background:white;max-width:600px;margin:40px auto;padding:20px;border-radius:8px;position:relative;">
             <button onclick="hideChatModal()" style="position:absolute;top:10px;right:10px;">Close</button>
