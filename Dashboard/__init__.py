@@ -233,58 +233,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
             if (data.questions?.recent) {{
                 const questionsHtml = data.questions.recent.map(q =>
-                    `<div class="question-item" style="cursor:pointer;" onclick="showConversation('${q.id}')">
-                        <div class="question-text">${q.title || 'No question recorded'}</div>
+                    `<div class="question-item">
+                        <div class="question-text">${{q.title || 'No question recorded'}}</div>
                         <div class="question-meta">
-                            Category: ${q.category} |
-                            ${q.createdAt ? new Date(q.createdAt).toLocaleString() : ''}
-                            ${q.themes && q.themes.length ? ' | Themes: ' + q.themes.join(', ') : ''}
-                            ${typeof q.responseTimeSeconds === 'number' ? ' | Response: ' + Math.round(q.responseTimeSeconds) + 's' : ''}
+                            Category: ${{q.category}} |
+                            ${{q.createdAt ? new Date(q.createdAt).toLocaleString() : ''}}
                         </div>
                     </div>`
                 ).join('');
                 document.getElementById('questions').innerHTML = questionsHtml;
             }}
-            // Hide chat modal if open
-            if (typeof hideChatModal === 'function') hideChatModal();
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
         }}
-
-        // Chat modal
-        function showConversation(conversationId) {{
-            fetch(`${baseUrl}/GetConversation?conversationId=${conversationId}`)
-                .then(resp => resp.json())
-                .then(data => {{
-                    if (!data.conversation) return;
-                    let html = '<div style="max-height:60vh;overflow-y:auto;padding:10px;">';
-                    data.conversation.forEach(msg => {{
-                        let who = msg.type === 'conversation' ? 'User' : (msg.role === 'tool' ? 'AI' : (msg.role || msg.type));
-                        let time = msg.createdAt ? new Date(msg.createdAt).toLocaleString() : '';
-                        let content = msg.title || msg.question || msg.content || '';
-                        if (typeof content === 'string' && content.startsWith('{')) {{
-                            try {{ content = JSON.parse(content).text || content; }} catch(e) {{}}
-                        }}
-                        html += `<div style="margin-bottom:10px;"><b>${who}</b> <span style="color:#888;font-size:0.9em;">${time}</span><div style="margin-left:10px;">${content}</div></div>`;
-                    }});
-                    html += '</div>';
-                    document.getElementById('chatModalContent').innerHTML = html;
-                    document.getElementById('chatModal').style.display = 'block';
-                }});
-        }}
-        function hideChatModal() {{
-            const modal = document.getElementById('chatModal');
-            if (modal) modal.style.display = 'none';
-        }}
-    </script>
-    <div id="chatModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
-        <div style="background:white;max-width:600px;margin:40px auto;padding:20px;border-radius:8px;position:relative;">
-            <button onclick="hideChatModal()" style="position:absolute;top:10px;right:10px;">Close</button>
-            <h3>Conversation</h3>
-            <div id="chatModalContent"></div>
-        </div>
-    </div>
-    <script>
         function updateCategoryChart(categories) {{
             const ctx = document.getElementById('categoryChart').getContext('2d');
             if (categoryChart) {{
