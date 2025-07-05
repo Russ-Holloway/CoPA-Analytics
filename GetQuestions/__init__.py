@@ -120,5 +120,5 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
             "generated_at": datetime.now().isoformat(),
             "version": "1.0"
         }
-    }
+    
     }
