@@ -1,3 +1,121 @@
+import logging
+import azure.functions as func
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Dashboard function processed a request.')
+    host = req.headers.get('host', 'your-function-app.azurewebsites.net')
+    base_url = f"https://{host}/api"
+    html_content = f"""
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>CoPPA Analytics Dashboard</title>
+    <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }}
+        .header {{ background-color: #1e3a8a; color: white; padding: 20px; text-align: center; margin-bottom: 20px; border-radius: 8px; }}
+        .container {{ max-width: 1200px; margin: 0 auto; }}
+        .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }}
+        .card {{ background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .questions-list {{ max-height: 400px; overflow-y: auto; }}
+        .question-item {{ border-bottom: 1px solid #eee; padding: 10px 0; }}
+        .question-text {{ font-weight: bold; margin-bottom: 5px; }}
+        .question-meta {{ font-size: 0.9em; color: #666; }}
+        .controls {{ background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .controls input, .controls select, .controls button {{ margin: 5px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }}
+        .controls button {{ background-color: #1e3a8a; color: white; cursor: pointer; }}
+        .loading {{ text-align: center; padding: 20px; color: #666; }}
+        .chart-container {{ position: relative; height: 300px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>🚔 CoPPA Analytics Dashboard</h1>
+            <p>College of Policing - Policing Assistant - Real Time Insights into User Interactions</p>
+        </div>
+        <div class='controls'>
+            <label>Start Date: <input type='date' id='startDate'></label>
+            <label>End Date: <input type='date' id='endDate'></label>
+            <button onclick='loadData()'>Update Dashboard</button>
+        </div>
+        <div id='loading' class='loading'>Loading dashboard data...</div>
+        <div id='dashboard' style='display: none;'>
+            <div class='grid'>
+                <div class='card'>
+                    <h3>Recent Questions</h3>
+                    <div id='questions' class='questions-list'></div>
+                </div>
+                <div class='card'>
+                    <h3>Categories Breakdown</h3>
+                    <div class='chart-container'>
+                        <canvas id='categoryChart'></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const baseUrl = '{base_url}';
+        let categoryChart;
+        function setDefaultDates() {
+            const today = new Date();
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+            document.getElementById('startDate').value = weekAgo.toISOString().split('T')[0];
+        }
+        async function loadData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            try {
+                let url = `${baseUrl}/GetQuestions`;
+                const params = new URLSearchParams();
+                if (startDate) params.append('startDate', startDate + 'T00:00:00Z');
+                if (endDate) params.append('endDate', endDate + 'T23:59:59Z');
+                params.append('limit', '20');
+                if (params.toString()) url += '?' + params.toString();
+                const response = await fetch(url);
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').innerHTML = 'Error loading data: ' + error.message;
+            }
+        }
+        function updateDashboard(data) {
+            if (data.questions) {
+                const questionsHtml = data.questions.map(q =>
+                    `<div class='question-item'>
+                        <div class='question-text'>${q.title || q.question || 'No question recorded'}</div>
+                        <div class='question-meta'>
+                            Type: ${q.type || ''} |
+                            User: ${q.userId || 'anonymous'} |
+                            ID: ${q.id} |
+                            ${new Date(q.createdAt || q.timestamp).toLocaleString()}
+                        </div>
+                    </div>`
+                ).join('');
+                document.getElementById('questions').innerHTML = questionsHtml;
+            }
+            // If you have category breakdown data, update the chart here
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+        setDefaultDates();
+        loadData();
+    </script>
+</body>
+</html>
+    """
+    return func.HttpResponse(
+        html_content,
+        status_code=200,
+        headers={"Content-Type": "text/html"}
+    )
 def main(req: func.HttpRequest) -> func.HttpResponse:
 import logging
 import azure.functions as func
