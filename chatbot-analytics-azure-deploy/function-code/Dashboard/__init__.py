@@ -1,18 +1,14 @@
-import logging
-import azure.functions as func
-
-
+def main(req: func.HttpRequest) -> func.HttpResponse:
 import logging
 import azure.functions as func
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    try:
-        logging.info('Dashboard function processed a request.')
+    logging.info('Dashboard function processed a request.')
 
-        host = req.headers.get('host', 'your-function-app.azurewebsites.net')
-        base_url = f"https://{host}/api"
+    host = req.headers.get('host', 'your-function-app.azurewebsites.net')
+    base_url = f"https://{host}/api"
 
-        html_content = f"""
+    html_content = f"""
 <!DOCTYPE html>
 <html lang='en'>
 <head>
