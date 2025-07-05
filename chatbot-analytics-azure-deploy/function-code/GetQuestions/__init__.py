@@ -107,25 +107,23 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
         parameters=parameters,
         enable_cross_partition_query=True
     ))
-    
-    # Process and format the questions
+    # Process and format the questions to match actual Cosmos DB fields
     questions = []
     for item in items:
         question_data = {
             "id": item.get('id'),
-            "timestamp": item.get('timestamp'),
-            "question": item.get('question', item.get('query', item.get('content', 'No question recorded'))),
-            "category": item.get('category', 'general_enquiry'),
-            "theme": item.get('query_type', item.get('topic', 'unclassified')),
+            "timestamp": item.get('createdAt', item.get('timestamp', '')),
+            "question": item.get('title', 'No question recorded'),
+            "category": item.get('type', 'general_enquiry'),
+            "theme": item.get('theme', 'unclassified'),
             "userId": item.get('userId', 'anonymous'),
-            "satisfaction": item.get('satisfaction'),
+            "satisfaction": item.get('satisfaction', None),
             "resolved": item.get('resolved', False),
             "response_time": item.get('response_time', 0),
             "duration": item.get('duration', 0),
-            "session_id": item.get('session_id')
+            "session_id": item.get('session_id', None)
         }
         questions.append(question_data)
-    
     return {
         "forceId": force_id,
         "period": {
@@ -142,5 +140,7 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
             "data_source": "cosmos_db",
             "generated_at": datetime.now().isoformat(),
             "version": "1.0"
+        }
+    }
         }
     }
