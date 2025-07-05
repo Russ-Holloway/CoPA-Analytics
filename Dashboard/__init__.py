@@ -7,7 +7,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info('Dashboard function processed a request.')
         host = req.headers.get('host', 'your-function-app.azurewebsites.net')
         base_url = f"https://{host}/api"
-        html_content = """
+        html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +17,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {{
-
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
@@ -260,7 +259,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     responsive: true,
                     maintainAspectRatio: false
                 }}
-            }};
+            }});
         }}
         function updateHourlyChart(hourlyData) {{
             const ctx = document.getElementById('hourlyChart').getContext('2d');
@@ -287,7 +286,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         }}
                     }}
                 }}
-            }};
+            }});
         }}
         async function loadQuestions() {{
             const startDate = document.getElementById('startDate').value;
@@ -323,7 +322,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     </script>
 </body>
 </html>
-        """.format(base_url=base_url)
+        """
         return func.HttpResponse(
             html_content,
             status_code=200,
