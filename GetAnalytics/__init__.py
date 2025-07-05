@@ -48,6 +48,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if items:
             logging.info(f"GetAnalytics: Sample item: {json.dumps(items[0], indent=2)}")
         # Filter by date and category if provided
+        filtered_items = items
         if start_dt and end_dt:
             def in_range(item):
                 ts = item.get('createdAt') or item.get('timestamp')
@@ -58,9 +59,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     return start_dt <= dt <= end_dt
                 except Exception:
                     return False
-            items = [item for item in items if in_range(item)]
+            filtered_items = [item for item in filtered_items if in_range(item)]
+            logging.info(f"GetAnalytics: {len(filtered_items)} items after date filter.")
         if category_filter and category_filter != 'all':
-            items = [item for item in items if (item.get('category') or item.get('type')) == category_filter]
+            filtered_items = [item for item in filtered_items if (item.get('category') or item.get('type')) == category_filter]
+            logging.info(f"GetAnalytics: {len(filtered_items)} items after category filter.")
+        items = filtered_items
 
         total_interactions = len(items)
         unique_users = set()
