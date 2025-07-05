@@ -20,9 +20,37 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         db = client.get_database_client(DATABASE_NAME)
         container = db.get_container_client(CONTAINER_NAME)
 
-        # Query all questions/interactions (customize as needed)
+        # Parse date filters from query params
+        from datetime import datetime, timezone
+        start_date = req.params.get('startDate')
+        end_date = req.params.get('endDate')
+        category_filter = req.params.get('category')
+        date_filter = None
+        start_dt = None
+        end_dt = None
+        if start_date and end_date:
+            try:
+                start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+                end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            except Exception as e:
+                logging.warning(f"Invalid date filter: {e}")
+        # Query all items (filtering in Python for flexibility)
         query = "SELECT * FROM c"
         items = list(container.query_items(query=query, enable_cross_partition_query=True))
+        # Filter by date and category if provided
+        if start_dt and end_dt:
+            def in_range(item):
+                ts = item.get('createdAt') or item.get('timestamp')
+                if not ts:
+                    return False
+                try:
+                    dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+                    return start_dt <= dt <= end_dt
+                except Exception:
+                    return False
+            items = [item for item in items if in_range(item)]
+        if category_filter and category_filter != 'all':
+            items = [item for item in items if (item.get('category') or item.get('type')) == category_filter]
 
         total_interactions = len(items)
         unique_users = set()
