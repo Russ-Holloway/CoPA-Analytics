@@ -102,13 +102,14 @@
             "location": "[variables('location')]",
             "kind": "linux",
             "sku": {
-                "name": "Y1",
-                "tier": "Dynamic",
-                "size": "Y1",
-                "family": "Y"
+                "name": "EP1",
+                "tier": "ElasticPremium",
+                "size": "EP1",
+                "family": "EP"
             },
             "properties": {
-                "reserved": true
+                "reserved": true,
+                "maximumElasticWorkerCount": 20
             }
         },
         {
