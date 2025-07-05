@@ -71,6 +71,12 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
     database_name = os.environ.get('COSMOS_DB_DATABASE', 'chatbot-analytics')
     container_name = os.environ.get('COSMOS_DB_CONTAINER', 'interactions')
 
+    # Debug logging for diagnostics (do not log key value)
+    logging.info(f"Cosmos DB endpoint: {endpoint}")
+    logging.info(f"Cosmos DB key length: {len(key) if key else 'None'}")
+    logging.info(f"Cosmos DB database: {database_name}")
+    logging.info(f"Cosmos DB container: {container_name}")
+
     if not endpoint or not key:
         raise Exception("Cosmos DB configuration not found")
 
