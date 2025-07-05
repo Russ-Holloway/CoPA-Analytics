@@ -69,38 +69,14 @@ def get_detailed_questions(force_id, start_date, end_date, category, limit):
     database = client.get_database_client(database_name)
     container = database.get_container_client(container_name)
     
-    # Build query based on category filter
-    if category != 'all':
-        query = """
-        SELECT TOP @limit * FROM c 
-        WHERE c.forceId = @force_id 
-        AND c.timestamp >= @start_date 
-        AND c.timestamp <= @end_date
-        AND c.category = @category
-        ORDER BY c.timestamp DESC
-        """
-        parameters = [
-            {"name": "@force_id", "value": force_id},
-            {"name": "@start_date", "value": start_date.isoformat()},
-            {"name": "@end_date", "value": end_date.isoformat()},
-            {"name": "@category", "value": category},
-            {"name": "@limit", "value": limit}
-        ]
-    else:
-        query = """
-        SELECT TOP @limit * FROM c 
-        WHERE c.forceId = @force_id 
-        AND c.timestamp >= @start_date 
-        AND c.timestamp <= @end_date
-        ORDER BY c.timestamp DESC
-        """
-        parameters = [
-            {"name": "@force_id", "value": force_id},
-            {"name": "@start_date", "value": start_date.isoformat()},
-            {"name": "@end_date", "value": end_date.isoformat()},
-            {"name": "@limit", "value": limit}
-        ]
-    
+    # Query all documents, order by createdAt (matches your Cosmos DB schema)
+    query = """
+    SELECT TOP @limit * FROM c
+    ORDER BY c.createdAt DESC
+    """
+    parameters = [
+        {"name": "@limit", "value": limit}
+    ]
     # Execute query
     items = list(container.query_items(
         query=query,
