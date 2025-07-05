@@ -27,7 +27,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './chatbot-analytics-azure-deploy/function-code'
-  PYTHON_VERSION: '3.9'
+  PYTHON_VERSION: '3.11'
 
 jobs:
   build-and-deploy:
@@ -64,7 +64,7 @@ jobs:
         resourceGroupName: rg-${{ github.event.inputs.forceId || 'demo' }}-chatbot-analytics
         template: ./chatbot-analytics-azure-deploy/azuredeploy.json
         parameters: |
-          forceIdentifier=${{ github.event.inputs.forceId || 'demo' }}
+          forcePrefix=${{ github.event.inputs.forceId || 'demo' }}
           location="UK South"
 
     - name: 'Run Azure Functions Action'
