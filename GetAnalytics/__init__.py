@@ -81,6 +81,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         hourly_distribution = [0]*24
         recent_questions = []
         response_times = []
+        # Pre-index all responses by conversationId for fast lookup
+        responses_by_conversation = defaultdict(list)
+        for item in items:
+            if item.get('type') == 'message' and item.get('role') == 'tool' and item.get('conversationId'):
+                responses_by_conversation[item['conversationId']].append(item)
+
+        # Theme keywords (expand as needed)
+        theme_keywords = [
+            'stalking', 'domestic abuse', 'warrant', 'warrants', 'theft', 'burglary', 'assault',
+            'missing', 'runaway', 'violence', 'abuse', 'drugs', 'alcohol', 'mental health',
+            'child', 'safeguarding', 'investigation', 'arrest', 'bail', 'custody', 'suicide',
+            'complaint', 'noise', 'property', 'traffic', 'crime', 'enquiry', 'lost', 'report',
+        ]
 
         for item in items:
             # Unique users
@@ -91,8 +104,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             cat = item.get('category') or item.get('type')
             if cat:
                 categories[cat] += 1
-                # Themes: use category/type as theme, or add more logic here
-                themes[cat] += 1
             # Hourly distribution
             ts = item.get('createdAt') or item.get('timestamp')
             if ts:
@@ -101,21 +112,30 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     hourly_distribution[dt.hour] += 1
                 except Exception:
                     pass
-            # Average response time (requires both createdAt and respondedAt fields)
-            created_at = item.get('createdAt')
-            responded_at = item.get('respondedAt')
-            if created_at and responded_at:
-                try:
-                    dt_created = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-                    dt_responded = datetime.fromisoformat(responded_at.replace('Z', '+00:00'))
-                    delta = (dt_responded - dt_created).total_seconds()
-                    if delta >= 0:
-                        response_times.append(delta)
-                except Exception:
-                    pass
-            # Questions
-            if item.get('title') or item.get('question'):
+            # Questions (user questions)
+            if item.get('type') == 'conversation' and (item.get('title') or item.get('question')):
                 total_questions += 1
+                qid = item.get('id')
+                # Find first AI response for this question
+                resp_time = None
+                if qid and qid in responses_by_conversation:
+                    # Sort responses by createdAt
+                    responses = sorted(responses_by_conversation[qid], key=lambda r: r.get('createdAt') or '')
+                    if responses:
+                        try:
+                            dt_q = datetime.fromisoformat(item['createdAt'].replace('Z', '+00:00'))
+                            dt_r = datetime.fromisoformat(responses[0]['createdAt'].replace('Z', '+00:00'))
+                            delta = (dt_r - dt_q).total_seconds()
+                            if delta >= 0:
+                                response_times.append(delta)
+                                resp_time = delta
+                        except Exception:
+                            pass
+                # Theme extraction from title
+                title = (item.get('title') or '').lower()
+                found_themes = [kw for kw in theme_keywords if kw in title]
+                for theme in found_themes:
+                    themes[theme] += 1
                 recent_questions.append({
                     'title': item.get('title') or item.get('question'),
                     'category': cat,
@@ -124,6 +144,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     'updatedAt': item.get('updatedAt'),
                     'type': item.get('type'),
                     'id': item.get('id'),
+                    'themes': found_themes,
+                    'responseTimeSeconds': resp_time,
                 })
 
         # Sort recent questions by createdAt desc
