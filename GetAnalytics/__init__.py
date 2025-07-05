@@ -50,12 +50,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Filter by date and category if provided
         filtered_items = items
         if start_dt and end_dt:
+            # Make start_dt and end_dt naive for comparison with naive DB datetimes
+            if start_dt.tzinfo is not None:
+                start_dt = start_dt.replace(tzinfo=None)
+            if end_dt.tzinfo is not None:
+                end_dt = end_dt.replace(tzinfo=None)
             def in_range(item):
                 ts = item.get('createdAt') or item.get('timestamp')
                 if not ts:
                     return False
                 try:
-                    dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+                    dt = datetime.fromisoformat(ts)
+                    if dt.tzinfo is not None:
+                        dt = dt.replace(tzinfo=None)
                     return start_dt <= dt <= end_dt
                 except Exception:
                     return False
