@@ -73,6 +73,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             logging.info(f"GetAnalytics: {len(filtered_items)} items after category filter.")
         items = filtered_items
 
+        # --- All-time totals (before filtering) ---
+        all_time_total_questions = sum(
+            1 for item in items if item.get('type') == 'conversation' and (item.get('title') or item.get('question'))
+        )
+        all_time_unique_users = len(set(item.get('userId') for item in items if item.get('userId')))
+
         total_interactions = len(items)
         unique_users = set()
         total_questions = 0
@@ -192,7 +198,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "themes": {"top_themes": top_themes},
             "conversationThemesBreakdown": conversation_themes_breakdown,
             "trends": {"hourly_distribution": hourly_distribution},
-            "questions": {"recent": recent_questions}
+            "questions": {"recent": recent_questions},
+            # --- NEW FIELD: allTime ---
+            "allTime": {
+                "totalQuestions": all_time_total_questions,
+                "uniqueUsers": all_time_unique_users
+            }
         }
         return func.HttpResponse(
             json.dumps(data),

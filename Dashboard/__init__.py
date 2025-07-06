@@ -129,7 +129,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         <div id="loading" class="loading">Loading dashboard data...</div>
         <div id="dashboard" style="display: none;">
             <div class="grid">
-                <!-- Removed Total Interactions metric -->
+                <!-- All-Time Totals Cards (NEW) -->
+                <div class="card metric" style="background:#f0f8ff;">
+                    <div class="metric-value" id="allTimeTotalQuestions">0</div>
+                    <div class="metric-label">Total Questions (All-Time)</div>
+                </div>
+                <div class="card metric" style="background:#f0f8ff;">
+                    <div class="metric-value" id="allTimeUniqueUsers">0</div>
+                    <div class="metric-label">Unique Users (All-Time)</div>
+                </div>
+                <!-- Existing Filtered Metrics -->
                 <div class="card metric">
                     <div class="metric-value" id="totalUserQuestions">0</div>
                     <div class="metric-label">Total Number of Questions</div>
@@ -138,7 +147,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div class="metric-value" id="uniqueUsers">0</div>
                     <div class="metric-label">Unique Users</div>
                 </div>
-                <!-- Removed Avg Response Time metric -->
             </div>
             <div class="grid">
                 <div class="card">
@@ -197,7 +205,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
         }}
         function updateDashboard(data) {{
-            // Removed totalInteractions display
+            // All-time metrics (NEW)
+            document.getElementById('allTimeTotalQuestions').textContent = data.allTime?.totalQuestions ?? 'N/A';
+            document.getElementById('allTimeUniqueUsers').textContent = data.allTime?.uniqueUsers ?? 'N/A';
+            // Existing filtered metrics
             document.getElementById('uniqueUsers').textContent = data.summary?.uniqueUsers || 0;
             document.getElementById('totalUserQuestions').textContent = data.summary?.totalUserQuestions || 0;
             // Removed avg response time display
