@@ -137,10 +137,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div class="metric-value" id="uniqueUsers">0</div>
                     <div class="metric-label">Unique Users</div>
                 </div>
-                <div class="card metric">
-                    <div class="metric-value" id="avgResponseTime">0s</div>
-                    <div class="metric-label">Avg Response Time</div>
-                </div>
+                <!-- Removed Avg Response Time metric -->
             </div>
             <div class="grid">
                 <div class="card">
@@ -201,22 +198,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         function updateDashboard(data) {{
             document.getElementById('totalInteractions').textContent = data.summary?.totalInteractions || 0;
             document.getElementById('uniqueUsers').textContent = data.summary?.uniqueUsers || 0;
-            // Format avg response time as h:mm:ss or m:ss or s
-            let avgSec = data.summary?.avgResponseTimeSeconds;
-            let formatted = 'N/A';
-            if (typeof avgSec === 'number' && !isNaN(avgSec)) {{
-                let sec = Math.floor(avgSec % 60);
-                let min = Math.floor((avgSec / 60) % 60);
-                let hr = Math.floor(avgSec / 3600);
-                if (hr > 0) {{
-                    formatted = `${{hr}}h ${{min}}m ${{sec}}s`;
-                }} else if (min > 0) {{
-                    formatted = `${{min}}m ${{sec}}s`;
-                }} else {{
-                    formatted = `${{sec}}s`;
-                }}
-            }}
-            document.getElementById('avgResponseTime').textContent = formatted;
+            // Removed avg response time display
             if (data.themes?.top_themes) {{
                 const themesHtml = data.themes.top_themes.map(theme =>
                     `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">
