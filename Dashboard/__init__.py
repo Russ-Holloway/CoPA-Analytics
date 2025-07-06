@@ -131,12 +131,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             <div class="grid">
                 <!-- Removed Total Interactions metric -->
                 <div class="card metric">
-                    <div class="metric-value" id="uniqueUsers">0</div>
-                    <div class="metric-label">Unique Users</div>
-                </div>
-                <div class="card metric">
                     <div class="metric-value" id="totalUserQuestions">0</div>
                     <div class="metric-label">Total Number of Questions</div>
+                </div>
+                <div class="card metric">
+                    <div class="metric-value" id="uniqueUsers">0</div>
+                    <div class="metric-label">Unique Users</div>
                 </div>
                 <!-- Removed Avg Response Time metric -->
             </div>
