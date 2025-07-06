@@ -74,10 +74,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         items = filtered_items
 
         # --- All-time totals (before filtering) ---
-        all_time_total_questions = sum(
-            1 for item in items if item.get('type') == 'conversation' and (item.get('title') or item.get('question'))
-        )
-        all_time_unique_users = len(set(item.get('userId') for item in items if item.get('userId')))
+        # Re-query all items for all-time stats (not filtered)
+        all_items = list(container.query_items(query="SELECT * FROM c", enable_cross_partition_query=True))
+        all_time_total_questions = sum(1 for item in all_items if item.get('role') == 'user')
+        all_time_unique_users = len(set(item.get('userId') for item in all_items if item.get('role') == 'user' and item.get('userId')))
 
         total_interactions = len(items)
         unique_users = set()
