@@ -159,6 +159,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <h3>Top Conversation Themes</h3>
                     <div id="themes"></div>
                 </div>
+                <div class="card">
+                    <h3>Top Conversation Topics</h3>
+                    <div id="conversationTitles"></div>
+                </div>
             </div>
             <div class="grid">
                 <div class="card">
@@ -220,6 +224,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 ).join('');
                 document.getElementById('themes').innerHTML = themesHtml;
             }}
+            // Render Top Conversation Topics
+            if (data.conversationTitleBreakdown?.length) {
+                const titlesHtml = data.conversationTitleBreakdown.map(
+                    t => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>${t.title}</strong>: ${t.count} times</div>`
+                ).join('');
+                document.getElementById('conversationTitles').innerHTML = titlesHtml;
+            } else {
+                document.getElementById('conversationTitles').innerHTML = '<em>No data</em>';
+            }
             if (data.categories) {{
                 updateCategoryChart(data.categories);
             }}
