@@ -48,6 +48,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if items:
             logging.info(f"GetAnalytics: Sample item: {json.dumps(items[0], indent=2)}")
         # Filter by date and category if provided
+        # Calculate all-time totals BEFORE filtering
+        all_time_unique_users = set()
+        all_time_total_user_questions = 0
+        for item in items:
+            if item.get('role') == 'user':
+                all_time_total_user_questions += 1
+            user_id = item.get('userId')
+            if user_id:
+                all_time_unique_users.add(user_id)
+
+        # Now apply filters for all other metrics
         filtered_items = items
         if start_dt and end_dt:
             # Make start_dt and end_dt naive for comparison with naive DB datetimes
@@ -74,9 +85,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         items = filtered_items
 
         total_interactions = len(items)
-        unique_users = set()
+        # Filtered (date/category) unique users and user questions
+        filtered_unique_users = set()
+        filtered_total_user_questions = 0
         total_questions = 0
-        total_user_questions = sum(1 for item in items if item.get('role') == 'user')
+        for item in items:
+            if item.get('role') == 'user':
+                filtered_total_user_questions += 1
+            user_id = item.get('userId')
+            if user_id:
+                filtered_unique_users.add(user_id)
+
         categories = Counter()
         themes = Counter()
         hourly_distribution = [0]*24
@@ -182,9 +201,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         data = {
             "summary": {
                 "totalInteractions": total_interactions,
-                "uniqueUsers": len(unique_users),
+                "uniqueUsers": len(all_time_unique_users),
+                "uniqueUsersFiltered": len(filtered_unique_users),
                 "totalQuestions": total_questions,
-                "totalUserQuestions": total_user_questions,
+                "totalUserQuestions": all_time_total_user_questions,
+                "totalUserQuestionsFiltered": filtered_total_user_questions,
                 "peakUsageHour": peak_hour,
                 "avgResponseTimeSeconds": avg_response_time
             },
