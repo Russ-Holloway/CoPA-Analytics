@@ -151,6 +151,25 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Sort recent questions by createdAt desc
         recent_questions = sorted(recent_questions, key=lambda x: x.get('createdAt') or '', reverse=True)[:20]
 
+
+        # Conversation themes breakdown (group conversations by theme)
+        # Only consider 'conversation' type items
+        conversation_theme_counter = Counter()
+        for item in items:
+            if item.get('type') == 'conversation':
+                conv_themes = item.get('themes', [])
+                # If themes not present, try to extract from title
+                if not conv_themes:
+                    title = (item.get('title') or '').lower()
+                    conv_themes = [kw for kw in theme_keywords if kw in title]
+                for theme in conv_themes:
+                    conversation_theme_counter[theme] += 1
+
+        conversation_themes_breakdown = [
+            {"theme": theme, "count": count}
+            for theme, count in conversation_theme_counter.most_common()
+        ]
+
         # Top themes (by category/type)
         top_themes = [{'theme': k, 'count': v} for k, v in themes.most_common(5)]
 
@@ -169,6 +188,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             },
             "categories": {k: {"count": v} for k, v in categories.items()},
             "themes": {"top_themes": top_themes},
+            "conversationThemesBreakdown": conversation_themes_breakdown,
             "trends": {"hourly_distribution": hourly_distribution},
             "questions": {"recent": recent_questions}
         }

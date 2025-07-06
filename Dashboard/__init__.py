@@ -207,9 +207,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 ).join('');
                 document.getElementById('themes').innerHTML = themesHtml;
             }}
-            if (data.categories) {{
-                updateCategoryChart(data.categories);
-            }}
+            // Use conversationThemesBreakdown for the chart if available
+            if (data.conversationThemesBreakdown && Array.isArray(data.conversationThemesBreakdown) && data.conversationThemesBreakdown.length > 0) {
+                updateCategoryChart(data.conversationThemesBreakdown, true);
+            } else if (data.categories) {
+                updateCategoryChart(data.categories, false);
+            }
             if (data.trends?.hourly_distribution) {{
                 updateHourlyChart(data.trends.hourly_distribution);
             }}
@@ -227,30 +230,56 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-        }}
-        function updateCategoryChart(categories) {{
+        // If isThemeBreakdown is true, expects array of {theme, count}, else object as before
+        function updateCategoryChart(data, isThemeBreakdown) {
             const ctx = document.getElementById('categoryChart').getContext('2d');
-            if (categoryChart) {{
+            if (categoryChart) {
                 categoryChart.destroy();
-            }}
-            const labels = Object.keys(categories);
-            const counts = labels.map(label => categories[label].count);
-            categoryChart = new Chart(ctx, {{
+            }
+            let labels, counts;
+            if (isThemeBreakdown) {
+                labels = data.map(item => item.theme || '(No Theme)');
+                counts = data.map(item => item.count || 0);
+            } else {
+                labels = Object.keys(data);
+                counts = labels.map(label => data[label].count);
+            }
+            categoryChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {{
+                data: {
                     labels: labels,
-                    datasets: [{{
+                    datasets: [{
                         data: counts,
                         backgroundColor: [
-                            '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe'
+                            '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe', '#fbbf24', '#f87171', '#34d399', '#a78bfa', '#f472b6'
                         ]
-                    }}]
-                }},
-                options: {{
+                    }]
+                },
+                options: {
                     responsive: true,
-                    maintainAspectRatio: false
-                }}
-            }});
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.parsed || 0;
+                                    return `${label}: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
         }}
         function updateHourlyChart(hourlyData) {{
             const ctx = document.getElementById('hourlyChart').getContext('2d');
