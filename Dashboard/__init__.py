@@ -159,7 +159,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     </div>
                 </div>
                 <div class="card">
-                    <h3>Recent Questions</h3>
+                    <h3>Recent Conversations</h3>
                     <div id="questions" class="questions-list"></div>
                 </div>
             </div>
