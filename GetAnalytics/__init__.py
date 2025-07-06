@@ -73,6 +73,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             logging.info(f"GetAnalytics: {len(filtered_items)} items after category filter.")
         items = filtered_items
 
+        # Conversation title breakdown (AI-generated overviews, filtered period)
+        conversation_title_counter = Counter()
+        for item in items:
+            if item.get('type') == 'conversation':
+                title = (item.get('title') or '').strip()
+                if title:
+                    conversation_title_counter[title] += 1
+        conversation_title_breakdown = [
+            {"title": title, "count": count}
+            for title, count in conversation_title_counter.most_common(10)
+        ]
+
         # --- All-time totals (before filtering) ---
         # Re-query all items for all-time stats (not filtered)
         all_items = list(container.query_items(query="SELECT * FROM c", enable_cross_partition_query=True))
@@ -197,6 +209,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "categories": {k: {"count": v} for k, v in categories.items()},
             "themes": {"top_themes": top_themes},
             "conversationThemesBreakdown": conversation_themes_breakdown,
+            "conversationTitleBreakdown": conversation_title_breakdown,
             "trends": {"hourly_distribution": hourly_distribution},
             "questions": {"recent": recent_questions},
             # --- NEW FIELD: allTime ---
