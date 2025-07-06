@@ -228,30 +228,59 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
         }}
-        function updateCategoryChart(categories) {{
+        // Show breakdown by conversation title
+        function updateCategoryChart(conversations) {
             const ctx = document.getElementById('categoryChart').getContext('2d');
-            if (categoryChart) {{
+            if (categoryChart) {
                 categoryChart.destroy();
-            }}
-            const labels = Object.keys(categories);
-            const counts = labels.map(label => categories[label].count);
-            categoryChart = new Chart(ctx, {{
+            }
+            // conversations is expected to be an array of objects with 'title' and 'count'
+            let titles = [];
+            let counts = [];
+            if (Array.isArray(conversations)) {
+                titles = conversations.map(c => c.title || '(No Title)');
+                counts = conversations.map(c => c.count || 0);
+            } else if (typeof conversations === 'object') {
+                // fallback for old API: object with keys as titles
+                titles = Object.keys(conversations);
+                counts = titles.map(t => conversations[t].count);
+            }
+            categoryChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {{
-                    labels: labels,
-                    datasets: [{{
+                data: {
+                    labels: titles,
+                    datasets: [{
                         data: counts,
                         backgroundColor: [
-                            '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe'
+                            '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe', '#fbbf24', '#f87171', '#34d399', '#a78bfa', '#f472b6'
                         ]
-                    }}]
-                }},
-                options: {{
+                    }]
+                },
+                options: {
                     responsive: true,
-                    maintainAspectRatio: false
-                }}
-            }});
-        }}
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.parsed || 0;
+                                    return `${label}: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
         function updateHourlyChart(hourlyData) {{
             const ctx = document.getElementById('hourlyChart').getContext('2d');
             if (hourlyChart) {{
