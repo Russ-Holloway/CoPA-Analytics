@@ -76,6 +76,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         total_interactions = len(items)
         unique_users = set()
         total_questions = 0
+        total_user_questions = sum(1 for item in items if item.get('role') == 'user')
         categories = Counter()
         themes = Counter()
         hourly_distribution = [0]*24
@@ -183,6 +184,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 "totalInteractions": total_interactions,
                 "uniqueUsers": len(unique_users),
                 "totalQuestions": total_questions,
+                "totalUserQuestions": total_user_questions,
                 "peakUsageHour": peak_hour,
                 "avgResponseTimeSeconds": avg_response_time
             },
