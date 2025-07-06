@@ -73,16 +73,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             logging.info(f"GetAnalytics: {len(filtered_items)} items after category filter.")
         items = filtered_items
 
-        # Calculate all-time totals (before filtering)
-        all_time_unique_users = set()
-        all_time_total_user_questions = 0
-        for item in list(container.query_items(query=query, enable_cross_partition_query=True)):
-            if item.get('role') == 'user':
-                all_time_total_user_questions += 1
-            user_id = item.get('userId')
-            if user_id:
-                all_time_unique_users.add(user_id)
-
         total_interactions = len(items)
         unique_users = set()
         total_questions = 0
@@ -195,8 +185,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 "uniqueUsers": len(unique_users),
                 "totalQuestions": total_questions,
                 "totalUserQuestions": total_user_questions,
-                "allTimeUniqueUsers": len(all_time_unique_users),
-                "allTimeTotalUserQuestions": all_time_total_user_questions,
                 "peakUsageHour": peak_hour,
                 "avgResponseTimeSeconds": avg_response_time
             },
