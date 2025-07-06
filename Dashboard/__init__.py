@@ -141,13 +141,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             </div>
             <div class="grid">
                 <div class="card">
-                    <h3>Categories Breakdown</h3>
+                    <h3>Conversations Breakdown</h3>
                     <div class="chart-container">
                         <canvas id="categoryChart"></canvas>
                     </div>
                 </div>
                 <div class="card">
-                    <h3>Top Themes</h3>
+                    <h3>Top Conversation Themes</h3>
                     <div id="themes"></div>
                 </div>
             </div>
