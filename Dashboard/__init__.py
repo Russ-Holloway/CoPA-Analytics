@@ -215,7 +215,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             // Existing filtered metrics
             document.getElementById('uniqueUsers').textContent = data.summary?.uniqueUsers || 0;
             document.getElementById('totalUserQuestions').textContent = data.summary?.totalUserQuestions || 0;
-            // Removed avg response time display
+            // Top Conversation Themes
             if (data.themes?.top_themes) {{
                 const themesHtml = data.themes.top_themes.map(theme =>
                     `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">
@@ -224,15 +224,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 ).join('');
                 document.getElementById('themes').innerHTML = themesHtml;
             }}
-            // Render Top Conversation Topics
-            if (data.conversationTitleBreakdown?.length) {
+            // Top Conversation Topics (NEW, same style)
+            if (data.conversationTitleBreakdown?.length) {{
                 const titlesHtml = data.conversationTitleBreakdown.map(
-                    t => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>${t.title}</strong>: ${t.count} times</div>`
+                    t => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>${{t.title}}</strong>: ${{t.count}} times</div>`
                 ).join('');
                 document.getElementById('conversationTitles').innerHTML = titlesHtml;
-            } else {
+            }} else {{
                 document.getElementById('conversationTitles').innerHTML = '<em>No data</em>';
-            }
+            }}
             if (data.categories) {{
                 updateCategoryChart(data.categories);
             }}
