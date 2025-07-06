@@ -230,6 +230,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
+        }}
+
         // If isThemeBreakdown is true, expects array of {theme, count}, else object as before
         function updateCategoryChart(data, isThemeBreakdown) {
             const ctx = document.getElementById('categoryChart').getContext('2d');
