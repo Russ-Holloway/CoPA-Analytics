@@ -131,14 +131,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             <div class="grid">
                 <!-- Removed Total Interactions metric -->
                 <div class="card metric">
-                    <div class="metric-label" style="font-size:1.1em;font-weight:bold;">Total Number of Questions (All Time)</div>
-                    <div class="metric-value" id="totalUserQuestions">0</div>
-                    <div class="metric-subvalue" id="totalUserQuestionsFiltered" style="font-size: 0.95em; color: #555; margin-top: 2px;">In Selected Period: 0</div>
+                    <div class="metric-value" id="uniqueUsers">0</div>
+                    <div class="metric-label">Unique Users</div>
                 </div>
                 <div class="card metric">
-                    <div class="metric-label" style="font-size:1.1em;font-weight:bold;">Unique Users (All Time)</div>
-                    <div class="metric-value" id="uniqueUsers">0</div>
-                    <div class="metric-subvalue" id="uniqueUsersFiltered" style="font-size: 0.95em; color: #555; margin-top: 2px;">In Selected Period: 0</div>
+                    <div class="metric-value" id="totalUserQuestions">0</div>
+                    <div class="metric-label">Total Number of Questions</div>
                 </div>
                 <!-- Removed Avg Response Time metric -->
             </div>
@@ -199,12 +197,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
         }}
         function updateDashboard(data) {{
-            // All-time totals
+            // Removed totalInteractions display
             document.getElementById('uniqueUsers').textContent = data.summary?.uniqueUsers || 0;
             document.getElementById('totalUserQuestions').textContent = data.summary?.totalUserQuestions || 0;
-            // Filtered (date/category) totals
-            document.getElementById('uniqueUsersFiltered').textContent = `In Selected Period: ${data.summary?.uniqueUsersFiltered || 0}`;
-            document.getElementById('totalUserQuestionsFiltered').textContent = `In Selected Period: ${data.summary?.totalUserQuestionsFiltered || 0}`;
             // Removed avg response time display
             if (data.themes?.top_themes) {{
                 const themesHtml = data.themes.top_themes.map(theme =>
