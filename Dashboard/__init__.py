@@ -207,16 +207,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 ).join('');
                 document.getElementById('themes').innerHTML = themesHtml;
             }}
-            // Prefer conversationThemesBreakdown if present and valid, else fallback to categories
-            if (Array.isArray(data.conversationThemesBreakdown) && data.conversationThemesBreakdown.length > 0 &&
-                data.conversationThemesBreakdown.every(item => item && (item.theme || item.name) && typeof item.count === 'number')) {
-                updateCategoryChart(data.conversationThemesBreakdown);
-            } else if (data.categories && typeof data.categories === 'object' && Object.keys(data.categories).length > 0) {
+            if (data.categories) {{
                 updateCategoryChart(data.categories);
-            } else {
-                // No valid data for chart
-                updateCategoryChart([]);
-            }
+            }}
             if (data.trends?.hourly_distribution) {{
                 updateHourlyChart(data.trends.hourly_distribution);
             }}
@@ -236,45 +229,28 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             document.getElementById('dashboard').style.display = 'block';
         }}
         function updateCategoryChart(categories) {{
-            try {
-                const ctx = document.getElementById('categoryChart').getContext('2d');
-                if (categoryChart) {
-                    categoryChart.destroy();
-                }
-                let labels = [];
-                let counts = [];
-                // Accept either array (themes) or object (categories)
-                if (Array.isArray(categories)) {
-                    labels = categories.map(item => (item && (item.theme || item.name)) ? (item.theme || item.name) : 'Unknown');
-                    counts = categories.map(item => (item && typeof item.count === 'number') ? item.count : 0);
-                } else if (typeof categories === 'object' && categories !== null) {
-                    labels = Object.keys(categories);
-                    counts = labels.map(label => categories[label] && typeof categories[label].count === 'number' ? categories[label].count : 0);
-                }
-                // If no data, show a placeholder
-                if (labels.length === 0) {
-                    labels = ['No Data'];
-                    counts = [1];
-                }
-                categoryChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: counts,
-                            backgroundColor: [
-                                '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe'
-                            ]
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                });
-            } catch (err) {
-                console.error('Error updating category chart:', err, categories);
-            }
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            if (categoryChart) {{
+                categoryChart.destroy();
+            }}
+            const labels = Object.keys(categories);
+            const counts = labels.map(label => categories[label].count);
+            categoryChart = new Chart(ctx, {{
+                type: 'doughnut',
+                data: {{
+                    labels: labels,
+                    datasets: [{{
+                        data: counts,
+                        backgroundColor: [
+                            '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe'
+                        ]
+                    }}]
+                }},
+                options: {{
+                    responsive: true,
+                    maintainAspectRatio: false
+                }}
+            }});
         }}
         function updateHourlyChart(hourlyData) {{
             const ctx = document.getElementById('hourlyChart').getContext('2d');
