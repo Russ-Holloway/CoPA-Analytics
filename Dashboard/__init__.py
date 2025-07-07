@@ -20,33 +20,40 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
             font-size: 18px;
             margin: 0;
-            padding: 24px;
-            background: linear-gradient(120deg, #e0e7ff 0%, #f5f5f5 100%);
-            color: #22223b;
+            padding: 32px;
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+            color: #232946;
+            min-height: 100vh;
         }}
         .header {{
-            background-color: #1e3a8a;
-            color: white;
-            padding: 20px;
+            background: linear-gradient(90deg, #6366f1 0%, #1e3a8a 100%);
+            color: #fff;
+            padding: 32px 20px 24px 20px;
             text-align: center;
-            margin-bottom: 20px;
-            border-radius: 8px;
+            margin-bottom: 32px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(30,58,138,0.10);
         }}
         .container {{
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
         }}
         .grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin-bottom: 28px;
         }}
         .card {{
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95);
+            border-radius: 18px;
+            padding: 32px 26px 26px 26px;
+            box-shadow: 0 8px 32px rgba(30,58,138,0.13);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }}
+        .card:hover {{
+            box-shadow: 0 12px 40px rgba(30,58,138,0.18);
+            transform: translateY(-2px) scale(1.01);
         }}
         .metric {{
             text-align: center;
