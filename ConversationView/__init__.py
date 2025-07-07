@@ -30,5 +30,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <p><b>User:</b> {conv.get('userId')}</p>
     <p><b>Date:</b> {conv.get('createdAt')}</p>
     <pre>{json.dumps(conv, indent=2)}</pre>
-    </body></html>"""
+    """
+    # --- Minimal transcript section below JSON ---
+    conversation_id = conv.get('id')
+    html += "<hr><div><b>Transcript:</b><br>"
+    try:
+        messages_query = "SELECT * FROM c WHERE c.conversationId = @cid ORDER BY c.createdAt ASC"
+        messages = list(container.query_items(
+            query=messages_query,
+            parameters=[{"name": "@cid", "value": conversation_id}],
+            enable_cross_partition_query=True
+        ))
+        for msg in messages:
+            html += f"<div><b>{msg.get('role','')}</b>: {msg.get('content','')}</div>"
+    except Exception as ex:
+        html += f"<div style='color:red;'>Transcript error: {str(ex)}</div>"
+    html += "</div></body></html>"
     return func.HttpResponse(html, status_code=200, mimetype='text/html')
