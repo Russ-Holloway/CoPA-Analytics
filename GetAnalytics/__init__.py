@@ -70,13 +70,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             filtered_items = [item for item in filtered_items if in_range(item)]
             logging.info(f"GetAnalytics: {len(filtered_items)} items after date filter.")
         if theme_filter and theme_filter != 'all':
+            theme_filter_lc = theme_filter.strip().lower()
             def has_theme(item):
-                # Check if the theme is in the item's themes list or in the title
-                themes_list = item.get('themes', [])
-                if theme_filter in themes_list:
+                # Check if the theme is in the item's themes list (case-insensitive) or in the title
+                themes_list = [str(t).strip().lower() for t in item.get('themes', []) if t]
+                if theme_filter_lc in themes_list:
                     return True
                 title = (item.get('title') or '').lower()
-                return theme_filter.lower() in title
+                return theme_filter_lc in title
             filtered_items = [item for item in filtered_items if has_theme(item)]
             logging.info(f"GetAnalytics: {len(filtered_items)} items after theme filter.")
         elif category_filter and category_filter != 'all':
