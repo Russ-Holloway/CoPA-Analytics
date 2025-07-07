@@ -166,6 +166,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <h3>Top Conversation Topics</h3>
                     <div id="conversationTitles"></div>
                 </div>
+                <div class="card">
+                    <h3>Recent Conversations by Theme</h3>
+                    <div id="conversationTitlesByTheme"></div>
+                </div>
             </div>
             <div class="grid">
                 <div class="card">
@@ -251,6 +255,25 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 document.getElementById('conversationTitles').innerHTML = titlesHtml;
             }} else {{
                 document.getElementById('conversationTitles').innerHTML = '<em>No data</em>';
+            }}
+            // --- Additional: Recent Conversations by Theme ---
+            if (data.themes && data.themes.top_themes && data.questions && data.questions.recent) {{
+                var themeToRecent = {{}};
+                for (var i = 0; i < data.themes.top_themes.length; i++) {{
+                    var theme = data.themes.top_themes[i].theme;
+                    for (var j = 0; j < data.questions.recent.length; j++) {{
+                        var q = data.questions.recent[j];
+                        if (Array.isArray(q.themes) && q.themes.indexOf(theme) !== -1) {{
+                            if (!themeToRecent[theme]) themeToRecent[theme] = q;
+                        }}
+                    }}
+                }}
+                var byThemeHtml = Object.keys(themeToRecent).map(function(theme) {{
+                    var q = themeToRecent[theme];
+                    return `<div style='padding:5px 0; border-bottom:1px solid #eee;'><a href='/conversation?title=${{encodeURIComponent(q.title || '')}}' target='_blank' style='text-decoration:underline;color:#1e3a8a;cursor:pointer;'><strong>` + theme.charAt(0).toUpperCase() + theme.slice(1) + `</strong></a>: ` + (q.title || '(No title)') + ` <span style='color:#888;font-size:0.9em;'>(` + (q.createdAt ? new Date(q.createdAt).toLocaleString() : '') + `)</span></div>`;
+                }}).join('');
+                var container = document.getElementById('conversationTitlesByTheme');
+                if (container) container.innerHTML = byThemeHtml || '<em>No data</em>';
             }}
             if (data.categories) {{
                 updateCategoryChart(data.categories);
