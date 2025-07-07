@@ -122,14 +122,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         <div class="controls">
             <label>Start Date: <input type="date" id="startDate"></label>
             <label>End Date: <input type="date" id="endDate"></label>
-            <label>Category:
+            <label>Conversation:
                 <select id="category">
-                    <option value="all">All Categories</option>
-                    <option value="crime_reporting">Crime Reporting</option>
-                    <option value="traffic_incidents">Traffic Incidents</option>
-                    <option value="general_enquiry">General Enquiry</option>
-                    <option value="lost_property">Lost Property</option>
-                    <option value="noise_complaints">Noise Complaints</option>
+                    <option value="all">All Conversation Themes</option>
                 </select>
             </label>
             <button onclick="loadData()">Update Dashboard</button>
@@ -217,6 +212,21 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 document.getElementById('loading').innerHTML = 'Error loading data: ' + error.message;
             }}
         }}
+        // Populate the dropdown with conversation themes from the themes box after dashboard loads
+        function updateThemeDropdown(data) {{
+            if (data.themes && data.themes.top_themes) {{
+                const categorySelect = document.getElementById('category');
+                const current = categorySelect.value;
+                categorySelect.innerHTML = '<option value="all">All Conversation Themes</option>';
+                data.themes.top_themes.forEach(t => {{
+                    const opt = document.createElement('option');
+                    opt.value = t.theme;
+                    opt.textContent = t.theme.charAt(0).toUpperCase() + t.theme.slice(1);
+                    if (t.theme === current) opt.selected = true;
+                    categorySelect.appendChild(opt);
+                }});
+            }}
+        }}
         function updateDashboard(data) {{
             // All-time metrics (NEW)
             document.getElementById('allTimeTotalQuestions').textContent = data.allTime?.totalQuestions ?? 'N/A';
@@ -232,6 +242,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     </div>`
                 ).join('');
                 document.getElementById('themes').innerHTML = themesHtml;
+                updateThemeDropdown(data);
             }}
             // Top Conversation Topics (NEW, same style)
             if (data.conversationTitleBreakdown?.length) {{
