@@ -194,7 +194,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         async function loadData() {{
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
-            const category = document.getElementById('category').value;
+            const theme = document.getElementById('category').value;
             document.getElementById('loading').style.display = 'block';
             document.getElementById('dashboard').style.display = 'none';
             try {{
@@ -202,7 +202,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 const params = new URLSearchParams();
                 if (startDate) params.append('startDate', startDate + 'T00:00:00Z');
                 if (endDate) params.append('endDate', endDate + 'T23:59:59Z');
-                if (category !== 'all') params.append('category', category);
+                if (theme !== 'all') params.append('theme', theme);
                 if (params.toString()) url += '?' + params.toString();
                 const response = await fetch(url);
                 const data = await response.json();
