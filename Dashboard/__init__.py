@@ -17,10 +17,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {{
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 18px;
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 24px;
+            background: linear-gradient(120deg, #e0e7ff 0%, #f5f5f5 100%);
+            color: #22223b;
         }}
         .header {{
             background-color: #1e3a8a;
