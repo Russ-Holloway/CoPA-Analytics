@@ -137,8 +137,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         </div>
         <div id="loading" class="loading">Loading dashboard data...</div>
         <div id="dashboard" style="display: none;">
-            <div class="grid">
-                <!-- All-Time Totals Cards (NEW) -->
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 0;">
                 <div class="card metric" style="background:#f0f8ff;">
                     <div class="metric-value" id="allTimeTotalQuestions">0</div>
                     <div class="metric-label">Total Questions (All-Time)</div>
@@ -147,7 +146,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div class="metric-value" id="allTimeUniqueUsers">0</div>
                     <div class="metric-label">Unique Users (All-Time)</div>
                 </div>
-                <!-- Existing Filtered Metrics -->
+            </div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 12px; margin-bottom: 28px;">
                 <div class="card metric">
                     <div class="metric-value" id="totalUserQuestions">0</div>
                     <div class="metric-label">Total Number of Questions</div>
