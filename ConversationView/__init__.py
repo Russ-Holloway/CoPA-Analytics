@@ -45,7 +45,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <body>
     <div class="container">
         <h2>{conv.get('title')}</h2>
-        <div class="meta"><b>User:</b> {conv.get('userId')}<br><b>Date:</b> {conv.get('createdAt')}</div>
+        <div class="meta"><b>Date:</b> {conv.get('createdAt')}</div>
         <div class="transcript">
             <h3>Transcript</h3>
     """
@@ -57,16 +57,56 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             parameters=[{"name": "@cid", "value": conversation_id}],
             enable_cross_partition_query=True
         ))
-        for msg in messages:
+        i = 0
+        while i < len(messages):
+            msg = messages[i]
             role = msg.get('role', '')
             content = msg.get('content', '')
-            # Try to parse content as JSON for tool/citation messages
             if role == 'user':
                 html += f'<div class="msg-q"><span class="msg-role">Q:</span> {content}</div>'
+                # Look ahead for assistant and tool (citations) and render in order: answer, then citations
+                if i+1 < len(messages) and messages[i+1].get('role') == 'assistant':
+                    a_msg = messages[i+1]
+                    a_content = a_msg.get('content', '')
+                    html += f'<div class="msg-a"><span class="msg-role">A:</span> {a_content}</div>'
+                    i += 1
+                    # After assistant, check for tool/citations
+                    if i+1 < len(messages) and messages[i+1].get('role') == 'tool':
+                        t_msg = messages[i+1]
+                        t_content = t_msg.get('content', '')
+                        try:
+                            tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
+                            citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
+                            if citations and isinstance(citations, list):
+                                for c in citations:
+                                    title = c.get('title', '(citation)')
+                                    c_content = c.get('content', '')
+                                    html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>'
+                            else:
+                                html += f'<div class="msg-tool">{t_content}</div>'
+                        except Exception:
+                            html += f'<div class="msg-tool">{t_content}</div>'
+                        i += 1
+                elif i+1 < len(messages) and messages[i+1].get('role') == 'tool':
+                    # If no assistant, but tool/citations next
+                    t_msg = messages[i+1]
+                    t_content = t_msg.get('content', '')
+                    try:
+                        tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
+                        citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
+                        if citations and isinstance(citations, list):
+                            for c in citations:
+                                title = c.get('title', '(citation)')
+                                c_content = c.get('content', '')
+                                html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>'
+                        else:
+                            html += f'<div class="msg-tool">{t_content}</div>'
+                    except Exception:
+                        html += f'<div class="msg-tool">{t_content}</div>'
+                    i += 1
             elif role == 'assistant':
                 html += f'<div class="msg-a"><span class="msg-role">A:</span> {content}</div>'
             elif role == 'tool':
-                # Try to pretty print citations if present
                 try:
                     tool_data = json.loads(content) if isinstance(content, str) else content
                     citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
@@ -81,6 +121,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     html += f'<div class="msg-tool">{content}</div>'
             else:
                 html += f'<div><span class="msg-role">{role}:</span> {content}</div>'
+            i += 1
     except Exception as ex:
         html += f"<div style='color:red;'>Transcript error: {str(ex)}</div>"
     html += """
