@@ -64,7 +64,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             content = msg.get('content', '')
             if role == 'user':
                 html += f'<div class="msg-q"><span class="msg-role">Q:</span> {content}</div>'
-                # Look ahead for answer and citations, always render in order: Q, A, Citations
+                # Always render in order: Q, A, Citations (all citations after answer)
                 next_idx = i + 1
                 # Find the next assistant (answer)
                 if next_idx < len(messages) and messages[next_idx].get('role') == 'assistant':
@@ -72,7 +72,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     a_content = a_msg.get('content', '')
                     html += f'<div class="msg-a"><span class="msg-role">A:</span> {a_content}</div>'
                     next_idx += 1
-                # After answer, check for tool/citations (can be multiple in a row)
+                # Collect all tool/citation messages after the answer (and only after the answer)
                 while next_idx < len(messages) and messages[next_idx].get('role') == 'tool':
                     t_msg = messages[next_idx]
                     t_content = t_msg.get('content', '')
@@ -91,6 +91,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     next_idx += 1
                 i = next_idx
                 continue
+            # If not part of a Q/A/citation group, render as before
             elif role == 'assistant':
                 html += f'<div class="msg-a"><span class="msg-role">A:</span> {content}</div>'
             elif role == 'tool':
