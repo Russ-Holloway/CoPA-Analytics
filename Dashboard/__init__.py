@@ -150,11 +150,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 12px; margin-bottom: 28px;">
                 <div class="card metric">
                     <div class="metric-value" id="totalUserQuestions">0</div>
-                    <div class="metric-label">Total Number of Questions</div>
+                    <div class="metric-label">Number of Questions in Selected Date Range</div>
                 </div>
                 <div class="card metric">
                     <div class="metric-value" id="uniqueUsers">0</div>
-                    <div class="metric-label">Unique Users</div>
+                    <div class="metric-label">New Unique Users in Selected Date Range</div>
                 </div>
             </div>
             <div class="grid">
