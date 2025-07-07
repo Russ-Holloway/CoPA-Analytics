@@ -128,7 +128,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 </select>
             </label>
             <button onclick="loadData()">Update Dashboard</button>
-            <button onclick="loadQuestions()">Load Recent Questions</button>
         </div>
         <div id="loading" class="loading">Loading dashboard data...</div>
         <div id="dashboard" style="display: none;">
@@ -326,33 +325,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }});
         }}
         async function loadQuestions() {{
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const category = document.getElementById('category').value;
-            try {{
-                let url = `${{baseUrl}}/GetQuestions`;
-                const params = new URLSearchParams();
-                if (startDate) params.append('startDate', startDate + 'T00:00:00Z');
-                if (endDate) params.append('endDate', endDate + 'T23:59:59Z');
-                if (category !== 'all') params.append('category', category);
-                params.append('limit', '20');
-                if (params.toString()) url += '?' + params.toString();
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.questions) {{
-                    const questionsHtml = data.questions.map(q =>
-                        `<div class="question-item">
-                            <div class="question-text">${{q.title || '(No title)'}} </div>
-                            <div class="question-meta">
-                                ID: ${{q.id}} | Type: ${{q.type}} | User: ${{q.userId}} | Created: ${{q.createdAt ? new Date(q.createdAt).toLocaleString() : ''}} | Updated: ${{q.updatedAt ? new Date(q.updatedAt).toLocaleString() : ''}}
-                            </div>
-                        </div>`
-                    ).join('');
-                    document.getElementById('questions').innerHTML = questionsHtml;
-                }}
-            }} catch (error) {{
-                console.error('Error loading questions:', error);
-            }}
+            // Removed: No longer needed, recent questions update with dashboard
         }}
         setDefaultDates();
         loadData();
