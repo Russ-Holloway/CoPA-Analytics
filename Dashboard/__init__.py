@@ -257,7 +257,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 }}
                 var byThemeHtml = Object.keys(themeToRecent).map(function(theme) {{
                     var q = themeToRecent[theme];
-                    return `<div style='padding:5px 0; border-bottom:1px solid #eee;'><a href='/conversation?title=${{encodeURIComponent(q.title || '')}}' target='_blank' style='text-decoration:underline;color:#1e3a8a;cursor:pointer;'><strong>` + theme.charAt(0).toUpperCase() + theme.slice(1) + `</strong></a>: ` + (q.title || '(No title)') + ` <span style='color:#888;font-size:0.9em;'>(` + (q.createdAt ? new Date(q.createdAt).toLocaleString() : '') + `)</span></div>`;
+                    return `<div style='padding:5px 0; border-bottom:1px solid #eee;'><a href='/api/conversation?title=${{encodeURIComponent(q.title || '')}}' target='_blank' style='text-decoration:underline;color:#1e3a8a;cursor:pointer;'><strong>` + theme.charAt(0).toUpperCase() + theme.slice(1) + `</strong></a>: ` + (q.title || '(No title)') + ` <span style='color:#888;font-size:0.9em;'>(` + (q.createdAt ? new Date(q.createdAt).toLocaleString() : '') + `)</span></div>`;
                 }}).join('');
                 var container = document.getElementById('conversationTitlesByTheme');
                 if (container) container.innerHTML = byThemeHtml || '<em>No data</em>';
