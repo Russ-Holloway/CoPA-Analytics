@@ -123,7 +123,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             <label>Start Date: <input type="date" id="startDate"></label>
             <label>End Date: <input type="date" id="endDate"></label>
             <label>Conversation:
-                <select id="category">
+                <select id="category" onchange="loadData()">
                     <option value="all">All Conversation Themes</option>
                 </select>
             </label>
