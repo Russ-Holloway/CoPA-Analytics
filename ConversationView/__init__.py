@@ -64,15 +64,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             content = msg.get('content', '')
             if role == 'user':
                 html += f'<div class="msg-q"><span class="msg-role">Q:</span> {content}</div>'
-                # Collect the next assistant and all tool/citation messages until the next user
+                next_idx = i + 1
                 a_content = None
                 citation_htmls = []
-                j = i + 1
+                j = next_idx
                 while j < len(messages):
                     next_role = messages[j].get('role', '')
                     if next_role == 'assistant' and a_content is None:
                         a_content = messages[j].get('content', '')
-                    elif next_role == 'tool' and a_content is not None:
+                    elif next_role == 'tool':
                         t_content = messages[j].get('content', '')
                         try:
                             tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
@@ -91,8 +91,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     j += 1
                 if a_content is not None:
                     html += f'<div class="msg-a"><span class="msg-role">A:</span> {a_content}</div>'
-                    for c_html in citation_htmls:
-                        html += c_html
+                for c_html in citation_htmls:
+                    html += c_html
                 i = j
                 continue
             elif role == 'assistant':
