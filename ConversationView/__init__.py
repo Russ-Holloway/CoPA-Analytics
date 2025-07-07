@@ -64,31 +64,34 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             content = msg.get('content', '')
             if role == 'user':
                 html += f'<div class="msg-q"><span class="msg-role">Q:</span> {content}</div>'
-                # Always render in order: Q, A, Citations (all citations after answer)
+                # Always render in order: Q, A, Citations (citations only after answer)
                 next_idx = i + 1
-                # Find the next assistant (answer)
+                # Only show citations if there is an answer
+                has_answer = False
                 if next_idx < len(messages) and messages[next_idx].get('role') == 'assistant':
                     a_msg = messages[next_idx]
                     a_content = a_msg.get('content', '')
                     html += f'<div class="msg-a"><span class="msg-role">A:</span> {a_content}</div>'
+                    has_answer = True
                     next_idx += 1
-                # Collect all tool/citation messages after the answer (and only after the answer)
-                while next_idx < len(messages) and messages[next_idx].get('role') == 'tool':
-                    t_msg = messages[next_idx]
-                    t_content = t_msg.get('content', '')
-                    try:
-                        tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
-                        citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
-                        if citations and isinstance(citations, list):
-                            for c in citations:
-                                title = c.get('title', '(citation)')
-                                c_content = c.get('content', '')
-                                html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>'
-                        else:
+                # Only after answer, collect all tool/citation messages
+                if has_answer:
+                    while next_idx < len(messages) and messages[next_idx].get('role') == 'tool':
+                        t_msg = messages[next_idx]
+                        t_content = t_msg.get('content', '')
+                        try:
+                            tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
+                            citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
+                            if citations and isinstance(citations, list):
+                                for c in citations:
+                                    title = c.get('title', '(citation)')
+                                    c_content = c.get('content', '')
+                                    html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>'
+                            else:
+                                html += f'<div class="msg-tool">{t_content}</div>'
+                        except Exception:
                             html += f'<div class="msg-tool">{t_content}</div>'
-                    except Exception:
-                        html += f'<div class="msg-tool">{t_content}</div>'
-                    next_idx += 1
+                        next_idx += 1
                 i = next_idx
                 continue
             # If not part of a Q/A/citation group, render as before
