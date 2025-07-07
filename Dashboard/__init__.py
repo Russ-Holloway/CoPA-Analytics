@@ -163,10 +163,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div id="themes"></div>
                 </div>
                 <div class="card">
-                    <h3>Top Conversation Topics</h3>
-                    <div id="conversationTitles"></div>
-                </div>
-                <div class="card">
                     <h3>Recent Conversations by Theme</h3>
                     <div id="conversationTitlesByTheme"></div>
                 </div>
@@ -246,15 +242,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 ).join('');
                 document.getElementById('themes').innerHTML = themesHtml;
                 updateThemeDropdown(data);
-            }}
-            // Top Conversation Topics (NEW, same style)
-            if (data.conversationTitleBreakdown?.length) {{
-                const titlesHtml = data.conversationTitleBreakdown.map(
-                    t => `<div style="padding: 5px 0; border-bottom: 1px solid #eee;"><strong>${{t.title}}</strong>: ${{t.count}} times</div>`
-                ).join('');
-                document.getElementById('conversationTitles').innerHTML = titlesHtml;
-            }} else {{
-                document.getElementById('conversationTitles').innerHTML = '<em>No data</em>';
             }}
             // --- Additional: Recent Conversations by Theme ---
             if (data.themes && data.themes.top_themes && data.questions && data.questions.recent) {{
