@@ -64,32 +64,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             content = msg.get('content', '')
             if role == 'user':
                 html += f'<div class="msg-q"><span class="msg-role">Q:</span> {content}</div>'
-                # Look ahead for assistant and tool (citations) and render in order: answer, then citations
-                if i+1 < len(messages) and messages[i+1].get('role') == 'assistant':
-                    a_msg = messages[i+1]
+                # Look ahead for answer and citations, always render in order: Q, A, Citations
+                next_idx = i + 1
+                # Find the next assistant (answer)
+                if next_idx < len(messages) and messages[next_idx].get('role') == 'assistant':
+                    a_msg = messages[next_idx]
                     a_content = a_msg.get('content', '')
                     html += f'<div class="msg-a"><span class="msg-role">A:</span> {a_content}</div>'
-                    i += 1
-                    # After assistant, check for tool/citations
-                    if i+1 < len(messages) and messages[i+1].get('role') == 'tool':
-                        t_msg = messages[i+1]
-                        t_content = t_msg.get('content', '')
-                        try:
-                            tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
-                            citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
-                            if citations and isinstance(citations, list):
-                                for c in citations:
-                                    title = c.get('title', '(citation)')
-                                    c_content = c.get('content', '')
-                                    html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>'
-                            else:
-                                html += f'<div class="msg-tool">{t_content}</div>'
-                        except Exception:
-                            html += f'<div class="msg-tool">{t_content}</div>'
-                        i += 1
-                elif i+1 < len(messages) and messages[i+1].get('role') == 'tool':
-                    # If no assistant, but tool/citations next
-                    t_msg = messages[i+1]
+                    next_idx += 1
+                # After answer, check for tool/citations (can be multiple in a row)
+                while next_idx < len(messages) and messages[next_idx].get('role') == 'tool':
+                    t_msg = messages[next_idx]
                     t_content = t_msg.get('content', '')
                     try:
                         tool_data = json.loads(t_content) if isinstance(t_content, str) else t_content
@@ -103,7 +88,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                             html += f'<div class="msg-tool">{t_content}</div>'
                     except Exception:
                         html += f'<div class="msg-tool">{t_content}</div>'
-                    i += 1
+                    next_idx += 1
+                i = next_idx
+                continue
             elif role == 'assistant':
                 html += f'<div class="msg-a"><span class="msg-role">A:</span> {content}</div>'
             elif role == 'tool':
