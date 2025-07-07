@@ -32,6 +32,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         start_date = req.params.get('startDate')
         end_date = req.params.get('endDate')
         category_filter = req.params.get('category')
+        theme_filter = req.params.get('theme')
         date_filter = None
         start_dt = None
         end_dt = None
@@ -68,7 +69,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     return False
             filtered_items = [item for item in filtered_items if in_range(item)]
             logging.info(f"GetAnalytics: {len(filtered_items)} items after date filter.")
-        if category_filter and category_filter != 'all':
+        if theme_filter and theme_filter != 'all':
+            def has_theme(item):
+                # Check if the theme is in the item's themes list or in the title
+                themes_list = item.get('themes', [])
+                if theme_filter in themes_list:
+                    return True
+                title = (item.get('title') or '').lower()
+                return theme_filter.lower() in title
+            filtered_items = [item for item in filtered_items if has_theme(item)]
+            logging.info(f"GetAnalytics: {len(filtered_items)} items after theme filter.")
+        elif category_filter and category_filter != 'all':
             filtered_items = [item for item in filtered_items if (item.get('category') or item.get('type')) == category_filter]
             logging.info(f"GetAnalytics: {len(filtered_items)} items after category filter.")
         items = filtered_items
