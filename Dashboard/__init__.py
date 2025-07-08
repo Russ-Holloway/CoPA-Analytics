@@ -160,7 +160,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 </div>
                 <div class="card">
                     <h3>Top Conversation Themes</h3>
-                    <div id="themes"></div>
+                    <div style="height:300px;">
+                        <canvas id="themesChart"></canvas>
+                    </div>
                 </div>
                 <div class="card">
                     <h3>Recent Conversations by Theme</h3>
@@ -235,12 +237,33 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             document.getElementById('totalUserQuestions').textContent = data.summary?.totalUserQuestions || 0;
             // Top Conversation Themes
             if (data.themes?.top_themes) {{
-                const themesHtml = data.themes.top_themes.map(theme =>
-                    `<div style="padding: 5px 0; border-bottom: 1px solid #eee;">
-                        <strong>${{theme.theme}}</strong>: ${{theme.count}} times
-                    </div>`
-                ).join('');
-                document.getElementById('themes').innerHTML = themesHtml;
+                // Render as doughnut chart instead of list
+                var themeLabels = data.themes.top_themes.map(function(theme) { return theme.theme; });
+                var themeCounts = data.themes.top_themes.map(function(theme) { return theme.count; });
+                var themeColors = [
+                    '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe',
+                    '#f59e42', '#fbbf24', '#fde68a', '#fca5a5', '#f87171',
+                    '#34d399', '#10b981', '#6ee7b7', '#a7f3d0', '#f472b6'
+                ];
+                var themeCtx = document.getElementById('themesChart');
+                if (window.themesChartInstance) { window.themesChartInstance.destroy(); }
+                window.themesChartInstance = new Chart(themeCtx, {{
+                    type: 'doughnut',
+                    data: {{
+                        labels: themeLabels,
+                        datasets: [{{
+                            data: themeCounts,
+                            backgroundColor: themeColors.slice(0, themeLabels.length)
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {{
+                            legend: {{ position: 'bottom' }}
+                        }}
+                    }}
+                }});
                 updateThemeDropdown(data);
             }}
             // --- Additional: Recent Conversations by Theme ---
