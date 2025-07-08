@@ -269,15 +269,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 updateHourlyChart(data.trends.hourly_distribution);
             }}
             if (data.questions?.recent) {{
-                const questionsHtml = data.questions.recent.map(q =>
-                    `<div class="question-item">
-                        <div class="question-text">${{q.title || 'No question recorded'}}</div>
-                        <div class="question-meta">
-                            Category: ${{q.category}} |
-                            ${{q.createdAt ? new Date(q.createdAt).toLocaleString() : ''}}
-                        </div>
-                    </div>`
-                ).join('');
+                var questionsHtml = '';
+                for (var i = 0; i < data.questions.recent.length; i++) {
+                    var q = data.questions.recent[i];
+                    var titleHtml = 'No question recorded';
+                    if (q && q.title) titleHtml = '<a href="/api/conversationviewtitle?title=' + encodeURIComponent(q.title) + '" target="_blank" style="color:#1e3a8a;text-decoration:underline;">' + q.title + '</a>';
+                    var date = q && q.createdAt ? new Date(q.createdAt).toLocaleString() : '';
+                    var category = q && q.category ? q.category : '';
+                    questionsHtml = questionsHtml + '<div class="question-item">' +
+                        '<div class="question-text">' + titleHtml + '</div>' +
+                        '<div class="question-meta">Category: ' + category + ' | ' + date + '</div>' +
+                    '</div>';
+                }
                 document.getElementById('questions').innerHTML = questionsHtml;
             }}
             document.getElementById('loading').style.display = 'none';
