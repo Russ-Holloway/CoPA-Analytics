@@ -14,7 +14,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         resp = requests.get(logo_url, timeout=10)
         if resp.status_code != 200:
             return func.HttpResponse(
-                f"Failed to fetch logo: {resp.status_code}",
+                f"Failed to fetch logo: {resp.status_code}\nResponse text: {resp.text}",
                 status_code=502,
                 headers={"Content-Type": "text/plain"}
             )
@@ -25,8 +25,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             headers={"Content-Type": content_type}
         )
     except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
         return func.HttpResponse(
-            f"Error fetching logo: {str(e)}",
+            f"Error fetching logo: {str(e)}\nTraceback:\n{tb}",
             status_code=500,
             headers={"Content-Type": "text/plain"}
         )
