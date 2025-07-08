@@ -35,7 +35,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             border-radius: 22px;
             box-shadow: 0 6px 32px rgba(30,58,138,0.13);
             position: relative;
-            min-height: 140px;
+            min-height: 220px;
             display: flex;
             align-items: center;
             justify-content: center;
