@@ -47,6 +47,13 @@
             "metadata": {
                 "description": "CoPPA Cosmos DB container name"
             }
+        },
+        "forceLogoUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "URL of the police force logo to display on the dashboard (right side). Leave blank for no logo."
+            }
         }
     },
     "variables": {
@@ -183,10 +190,7 @@
                             "name": "ENABLE_ORYX_BUILD",
                             "value": "true"
                         },
-                        {
-                            "name": "POST_BUILD_COMMAND",
-                            "value": "pip install -r requirements.txt"
-                        },
+
 
                         {
                             "name": "FUNCTIONS_WORKER_PROCESS_COUNT",
@@ -235,6 +239,10 @@
                         {
                             "name": "EMAIL_FROM",
                             "value": "[concat('coppa-analytics@', toLower(parameters('forcePrefix')), '.police.uk')]"
+                        },
+                        {
+                            "name": "FORCE_LOGO_URL",
+                            "value": "[parameters('forceLogoUrl')]"
                         },
                         {
                             "name": "SMTP_SERVER",
