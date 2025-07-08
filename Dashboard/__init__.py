@@ -25,11 +25,21 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             color: #232946;
             min-height: 100vh;
         }}
+        .dashboard-logo {{
+            height: 56px;
+            margin-right: 24px;
+            vertical-align: middle;
+            display: inline-block;
+        }}
+        .header h1, .dashboard-logo {{
+            display: inline-block;
+            vertical-align: middle;
+        }}
         .header {{
             background: linear-gradient(90deg, #6366f1 0%, #1e3a8a 100%);
             color: #fff;
             padding: 40px 28px 32px 28px; /* Increased padding */
-            text-align: center;
+            text-align: left;
             margin-bottom: 40px; /* Increased margin */
             border-radius: 22px; /* Slightly larger */
             box-shadow: 0 6px 32px rgba(30,58,138,0.13);
@@ -125,6 +135,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 <body>
     <div class="container">
         <div class="header">
+            <img src="/api/getlogo" alt="Logo" class="dashboard-logo">
             <h1>CoPPA Analytics Dashboard</h1>
             <p>Real Time Insights into User Interactions</p>
         </div>
