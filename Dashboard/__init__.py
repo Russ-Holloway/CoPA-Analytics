@@ -255,8 +255,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {{
-                            legend: {{ position: 'bottom' }}
-                        }}
+                            legend: {{
+                                position: 'bottom',
+                                labels: {{
+                                    font: {{ size: 20 }} // Increased font size for legend
+                                }}
+                            }}
+                        }},
+                        // Make chart labels larger
+                        layout: {{ padding: 10 }},
+                        elements: {{ arc: {{ borderWidth: 2 }} }},
                     }}
                 }});
                 updateThemeDropdown(data);
@@ -320,10 +328,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 options: {{
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {{
+                        legend: {{
+                            labels: {{
+                                font: {{ size: 20 }} // Increased font size for legend
+                            }}
+                        }},
+                        title: {{ display: false }}
+                    }},
                     scales: {{
-                        y: {{
-                            beginAtZero: true
-                        }}
+                        x: {{ ticks: {{ font: {{ size: 18 }} }} }},
+                        y: {{ beginAtZero: true, ticks: {{ font: {{ size: 18 }} }} }}
                     }}
                 }}
             }});
