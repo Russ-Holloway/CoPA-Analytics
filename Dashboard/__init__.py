@@ -160,7 +160,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 </div>
                 <div class="card">
                     <h3>Top Conversation Themes</h3>
-                    <div style="height:300px;">
+                    <div class="chart-container">
                         <canvas id="themesChart"></canvas>
                     </div>
                 </div>
@@ -237,17 +237,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             document.getElementById('totalUserQuestions').textContent = data.summary?.totalUserQuestions || 0;
             // Top Conversation Themes
             if (data.themes?.top_themes) {{
-                // Render as doughnut chart instead of list
-                var themeLabels = data.themes.top_themes.map(function(theme) { return theme.theme; });
-                var themeCounts = data.themes.top_themes.map(function(theme) { return theme.count; });
+                var themeLabels = data.themes.top_themes.map(function(theme) {{ return theme.theme; }});
+                var themeCounts = data.themes.top_themes.map(function(theme) {{ return theme.count; }});
                 var themeColors = [
                     '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe',
                     '#f59e42', '#fbbf24', '#fde68a', '#fca5a5', '#f87171',
                     '#34d399', '#10b981', '#6ee7b7', '#a7f3d0', '#f472b6'
                 ];
-                var themeCtx = document.getElementById('themesChart');
-                if (window.themesChartInstance) { window.themesChartInstance.destroy(); }
-                window.themesChartInstance = new Chart(themeCtx, {{
+                var ctx = document.getElementById('themesChart').getContext('2d');
+                if (window.themesChartInstance) {{ window.themesChartInstance.destroy(); }}
+                window.themesChartInstance = new Chart(ctx, {{
                     type: 'doughnut',
                     data: {{
                         labels: themeLabels,
