@@ -69,7 +69,7 @@ Your analytics solution is now running! Access:
 - If issues persist, check Function App logs in Monitoring → Log stream
 
 **Functions not appearing:**
-- Check GitHub Actions at https://github.com/Russ-Holloway/CoPPA-Analytics/actions
+- Check GitHub Actions at https://github.com/Russ-Holloway/CoPA-Analytics/actions
 - Wait for deployment to complete (green checkmark)
 - Functions may take 2-3 minutes to appear after GitHub deployment
 
@@ -297,3 +297,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Ready to deploy?** Click the "Deploy to Azure" button above and get started in minutes! 🚀
+
+## 🚦 Deployment, GitHub Integration, and Dashboard Branding Flow
+
+### 1. Azure Deployment (ARM Template)
+- Click the **Deploy to Azure** button and fill in the required parameters (force prefix, admin email, Cosmos DB details, etc).
+- **Force Logo URL**: Enter the public URL of your force's logo (e.g., from Azure Blob Storage). This is stored as the `FORCE_LOGO_URL` environment variable in your Function App.
+- Complete the deployment. Azure will provision the Function App, storage, and monitoring resources.
+
+### 2. Link to External GitHub Repository
+- In the Azure Portal, go to your new Function App → **Deployment Center**.
+- Select **GitHub** as the source, choose the `Russ-Holloway/CoPPA-Analytics` repository and the `main` branch.
+- Complete the setup. Azure will automatically deploy the latest code from GitHub to your Function App.
+- Any future updates to the GitHub repository will be automatically deployed to your Function App.
+
+### 3. Dashboard Logo Branding (FORCE_LOGO_URL)
+- The dashboard (`/api/Dashboard`) loads the right-side logo directly from the `FORCE_LOGO_URL` environment variable.
+- The value you set at deployment (or update later in Function App → Configuration) must be a public, direct image URL (e.g., Azure Blob Storage with public read access).
+- If the logo URL is valid and accessible, it will appear on the dashboard. If not, a placeholder image is shown.
+- To update the logo later, simply change the `FORCE_LOGO_URL` app setting and restart the Function App.
+
+### 4. Accessing the Dashboard
+- After deployment and GitHub sync, visit:
+  - `https://func-[your-prefix]-analytics.azurewebsites.net/api/Dashboard`
+- The dashboard will show your force's branding and live analytics.
+
+---
