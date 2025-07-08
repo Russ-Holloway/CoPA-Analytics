@@ -40,7 +40,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         }}
         .grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 28px;
             margin-bottom: 28px;
         }}
