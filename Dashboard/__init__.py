@@ -278,9 +278,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 var container = document.getElementById('conversationTitlesByTheme');
                 if (container) container.innerHTML = byThemeHtml || '<em>No data</em>';
             }}
-            if (data.categories) {{
-                updateCategoryChart(data.categories);
-            }}
             if (data.trends?.hourly_distribution) {{
                 updateHourlyChart(data.trends.hourly_distribution);
             }}
@@ -301,30 +298,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-        }}
-        function updateCategoryChart(categories) {{
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            if (categoryChart) {{
-                categoryChart.destroy();
-            }}
-            const labels = Object.keys(categories);
-            const counts = labels.map(label => categories[label].count);
-            categoryChart = new Chart(ctx, {{
-                type: 'doughnut',
-                data: {{
-                    labels: labels,
-                    datasets: [{{
-                        data: counts,
-                        backgroundColor: [
-                            '#1e3a8a', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe'
-                        ]
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    maintainAspectRatio: false
-                }}
-            }});
         }}
         function updateHourlyChart(hourlyData) {{
             const ctx = document.getElementById('hourlyChart').getContext('2d');
