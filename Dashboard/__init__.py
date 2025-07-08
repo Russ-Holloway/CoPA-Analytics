@@ -26,30 +26,38 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             min-height: 100vh;
         }}
         .header {{
-            background: linear-gradient(90deg, #6366f1 0%, #1e3a8a 100%);
-            color: #fff;
-            padding: 40px 28px 32px 28px; /* Increased padding */
-            margin-bottom: 40px; /* Increased margin */
-            border-radius: 22px; /* Slightly larger */
+            background: linear-gradient(90deg, #fff 0%, #1e3a8a 100%);
+            color: #1e3a8a;
+            padding: 0 28px;
+            margin-bottom: 40px;
+            border-radius: 22px;
             box-shadow: 0 6px 32px rgba(30,58,138,0.13);
+            position: relative;
+            min-height: 140px;
             display: flex;
             align-items: center;
-            min-height: 140px;
+            justify-content: center;
         }}
         .dashboard-logo {{
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
             height: 120px;
             width: auto;
-            margin-right: 48px;
+            margin: 0;
             vertical-align: middle;
             display: block;
             flex-shrink: 0;
         }}
         .header-content {{
-            flex: 1;
+            flex: 0 1 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100%;
+            padding-left: 160px; /* Prevent overlap with logo */
         }}
         .header h1 {{
             margin: 0;
