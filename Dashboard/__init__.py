@@ -18,9 +18,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <style>
         body {{
             font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
-            font-size: 18px;
+            font-size: 22px; /* Increased from 18px */
             margin: 0;
-            padding: 32px;
+            padding: 40px; /* Increased from 32px */
             background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
             color: #232946;
             min-height: 100vh;
@@ -28,80 +28,82 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         .header {{
             background: linear-gradient(90deg, #6366f1 0%, #1e3a8a 100%);
             color: #fff;
-            padding: 32px 20px 24px 20px;
+            padding: 40px 28px 32px 28px; /* Increased padding */
             text-align: center;
-            margin-bottom: 32px;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(30,58,138,0.10);
+            margin-bottom: 40px; /* Increased margin */
+            border-radius: 22px; /* Slightly larger */
+            box-shadow: 0 6px 32px rgba(30,58,138,0.13);
         }}
         .container {{
-            max-width: 1280px;
+            max-width: 1680px; /* Increased from 1280px */
             margin: 0 auto;
         }}
         .grid {{
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 28px;
-            margin-bottom: 28px;
+            gap: 36px; /* Increased gap */
+            margin-bottom: 36px; /* Increased margin */
         }}
         .dashboard-grid-4 {{
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 28px;
-            margin-bottom: 28px;
+            gap: 36px; /* Increased gap */
+            margin-bottom: 36px; /* Increased margin */
         }}
         .card {{
             background: rgba(255,255,255,0.95);
-            border-radius: 18px;
-            padding: 32px 26px 26px 26px;
-            box-shadow: 0 8px 32px rgba(30,58,138,0.13);
+            border-radius: 22px; /* Slightly larger */
+            padding: 44px 36px 36px 36px; /* Increased padding */
+            box-shadow: 0 12px 40px rgba(30,58,138,0.13);
             transition: box-shadow 0.2s, transform 0.2s;
         }}
         .card:hover {{
-            box-shadow: 0 12px 40px rgba(30,58,138,0.18);
-            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 16px 48px rgba(30,58,138,0.18);
+            transform: translateY(-2px) scale(1.015);
         }}
         .metric {{
             text-align: center;
-            padding: 15px;
+            padding: 22px; /* Increased padding */
         }}
         .metric-value {{
-            font-size: 2em;
+            font-size: 2.6em; /* Larger metric value */
             font-weight: bold;
             color: #1e3a8a;
         }}
         .metric-label {{
             color: #666;
-            margin-top: 5px;
+            margin-top: 8px;
+            font-size: 1.1em;
         }}
         .questions-list {{
-            max-height: 400px;
+            max-height: 520px; /* Increased height */
             overflow-y: auto;
         }}
         .question-item {{
             border-bottom: 1px solid #eee;
-            padding: 10px 0;
+            padding: 16px 0; /* Increased padding */
         }}
         .question-text {{
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }}
         .question-meta {{
-            font-size: 0.9em;
+            font-size: 1em;
             color: #666;
         }}
         .controls {{
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 28px; /* Increased padding */
+            border-radius: 12px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.10);
         }}
         .controls input, .controls select, .controls button {{
-            margin: 5px;
-            padding: 8px;
+            margin: 8px;
+            padding: 12px;
+            font-size: 1.1em;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
         }}
         .controls button {{
             background-color: #1e3a8a;
@@ -110,12 +112,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         }}
         .loading {{
             text-align: center;
-            padding: 20px;
+            padding: 28px;
             color: #666;
+            font-size: 1.2em;
         }}
         .chart-container {{
             position: relative;
-            height: 300px;
+            height: 420px; /* Increased from 300px */
         }}
     </style>
 </head>
