@@ -25,24 +25,44 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             color: #232946;
             min-height: 100vh;
         }}
-        .dashboard-logo {{
-            height: 56px;
-            margin-right: 24px;
-            vertical-align: middle;
-            display: inline-block;
-        }}
-        .header h1, .dashboard-logo {{
-            display: inline-block;
-            vertical-align: middle;
-        }}
         .header {{
             background: linear-gradient(90deg, #6366f1 0%, #1e3a8a 100%);
             color: #fff;
             padding: 40px 28px 32px 28px; /* Increased padding */
-            text-align: left;
             margin-bottom: 40px; /* Increased margin */
             border-radius: 22px; /* Slightly larger */
             box-shadow: 0 6px 32px rgba(30,58,138,0.13);
+            display: flex;
+            align-items: center;
+            min-height: 140px;
+        }}
+        .dashboard-logo {{
+            height: 120px;
+            width: auto;
+            margin-right: 48px;
+            vertical-align: middle;
+            display: block;
+            flex-shrink: 0;
+        }}
+        .header-content {{
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 2.8em;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+        }}
+        .header p {{
+            margin: 8px 0 0 0;
+            font-size: 1.3em;
+            text-align: center;
+            display: block;
         }}
         .container {{
             max-width: 1680px; /* Increased from 1280px */
@@ -136,8 +156,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     <div class="container">
         <div class="header">
             <img src="/api/getlogo" alt="Logo" class="dashboard-logo">
-            <h1>CoPPA Analytics Dashboard</h1>
-            <p>Real Time Insights into User Interactions</p>
+            <div class="header-content">
+                <h1>CoPPA Analytics Dashboard</h1>
+                <p>Real Time Insights into User Interactions</p>
+            </div>
         </div>
         <div class="controls">
             <label>Start Date: <input type="date" id="startDate"></label>
