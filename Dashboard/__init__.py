@@ -45,7 +45,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             left: 40px;
             top: 50%;
             transform: translateY(-50%);
-            height: 120px;
+            height: 180px;
             width: auto;
             margin: 0;
             vertical-align: middle;
@@ -172,7 +172,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             right: 40px;
             top: 50%;
             transform: translateY(-50%);
-            height: 120px;
+            height: 180px;
             width: auto;
             margin: 0;
             vertical-align: middle;
