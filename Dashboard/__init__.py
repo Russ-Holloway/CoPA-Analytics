@@ -44,6 +44,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             gap: 28px;
             margin-bottom: 28px;
         }}
+        .dashboard-grid-4 {{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
+            margin-bottom: 28px;
+        }}
         .card {{
             background: rgba(255,255,255,0.95);
             border-radius: 18px;
@@ -131,7 +137,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         </div>
         <div id="loading" class="loading">Loading dashboard data...</div>
         <div id="dashboard" style="display: none;">
-            <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 0;">
+            <div class="dashboard-grid-4">
                 <div class="card metric" style="background:#f0f8ff;">
                     <div class="metric-value" id="allTimeTotalQuestions">0</div>
                     <div class="metric-label">Total Questions (All-Time)</div>
@@ -140,8 +146,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div class="metric-value" id="allTimeUniqueUsers">0</div>
                     <div class="metric-label">Unique Users (All-Time)</div>
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 12px; margin-bottom: 28px;">
                 <div class="card metric">
                     <div class="metric-value" id="totalUserQuestions">0</div>
                     <div class="metric-label">Number of Questions in Selected Date Range</div>
@@ -151,7 +155,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div class="metric-label">New Unique Users in Selected Date Range</div>
                 </div>
             </div>
-            <div class="grid">
+            <div class="dashboard-grid-4">
                 <div class="card">
                     <h3>Top Conversation Themes</h3>
                     <div class="chart-container">
@@ -162,8 +166,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <h3>Recent Conversations by Theme</h3>
                     <div id="conversationTitlesByTheme"></div>
                 </div>
-            </div>
-            <div class="grid">
                 <div class="card">
                     <h3>Hourly Distribution</h3>
                     <div class="chart-container">
