@@ -270,7 +270,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             }}
             if (data.questions?.recent) {{
                 var questionsHtml = '';
-                for (var i = 0; i < data.questions.recent.length; i++) {
+                for (var i = 0; i < data.questions.recent.length; i++) {{
                     var q = data.questions.recent[i];
                     var titleHtml = 'No question recorded';
                     if (q && q.title) titleHtml = '<a href="/api/conversationviewtitle?title=' + encodeURIComponent(q.title) + '" target="_blank" style="color:#1e3a8a;text-decoration:underline;">' + q.title + '</a>';
@@ -280,7 +280,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         '<div class="question-text">' + titleHtml + '</div>' +
                         '<div class="question-meta">Category: ' + category + ' | ' + date + '</div>' +
                     '</div>';
-                }
+                }}
                 document.getElementById('questions').innerHTML = questionsHtml;
             }}
             document.getElementById('loading').style.display = 'none';
