@@ -158,6 +158,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             position: relative;
             height: 420px; /* Increased from 300px */
         }}
+        .user-logo {{
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 120px;
+            width: auto;
+            margin: 0;
+            vertical-align: middle;
+            display: block;
+            flex-shrink: 0;
+        }}
     </style>
 </head>
 <body>
@@ -168,6 +180,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 <h1>CoPPA Analytics Dashboard</h1>
                 <p>Real Time Insights into User Interactions</p>
             </div>
+            <img id="user-logo" src="/api/getuserlogo" alt="User Logo" class="user-logo" style="display:block;">
         </div>
         <div class="controls">
             <label>Start Date: <input type="date" id="startDate"></label>
@@ -390,6 +403,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         async function loadQuestions() {{
             // Removed: No longer needed, recent questions update with dashboard
         }}
+        // Show user logo on page load
         setDefaultDates();
         loadData();
     </script>
