@@ -1,18 +1,32 @@
 import os
 import azure.functions as func
+import requests
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logo_url = os.environ.get('FORCE_LOGO_URL')
     if not logo_url:
-        # Return a 404 or a default image if FORCE_LOGO_URL is not set
         return func.HttpResponse(
             "Logo not configured.",
             status_code=404,
             headers={"Content-Type": "text/plain"}
         )
-    # Option 1: Redirect to the logo URL (recommended for external blobs)
-    return func.HttpResponse(
-        status_code=302,
-        headers={"Location": logo_url}
-    )
-    # Option 2: (Advanced) Download and stream the image directly (not shown here)
+    try:
+        resp = requests.get(logo_url, timeout=10)
+        if resp.status_code != 200:
+            return func.HttpResponse(
+                f"Failed to fetch logo: {resp.status_code}",
+                status_code=502,
+                headers={"Content-Type": "text/plain"}
+            )
+        content_type = resp.headers.get('Content-Type', 'image/png')
+        return func.HttpResponse(
+            resp.content,
+            status_code=200,
+            headers={"Content-Type": content_type}
+        )
+    except Exception as e:
+        return func.HttpResponse(
+            f"Error fetching logo: {str(e)}",
+            status_code=500,
+            headers={"Content-Type": "text/plain"}
+        )

@@ -189,7 +189,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 <h1>CoPPA Analytics Dashboard</h1>
                 <p>Real Time Insights into User Interactions</p>
             </div>
-            <img id="user-logo" src="/api/getuserlogo" alt="User Logo" class="user-logo" onerror="this.style.display='none';">
+            <img id="user-logo" src="/api/getuserlogo" alt="User Logo" class="user-logo" onerror="this.style.display='none';document.getElementById('user-logo-placeholder').style.display='block';">
+            <span id="user-logo-placeholder" style="display:none;position:absolute;right:40px;top:50%;transform:translateY(-50%);height:120px;width:120px;vertical-align:middle;">
+                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="60" cy="60" r="54" fill="#e5e7eb" stroke="#cbd5e1" stroke-width="6"/>
+                  <text x="50%" y="54%" text-anchor="middle" fill="#94a3b8" font-size="32" font-family="Arial, sans-serif" dy=".3em">?</text>
+                </svg>
+            </span>
         </div>
         <div class="controls">
             <label>Start Date: <input type="date" id="startDate"></label>
