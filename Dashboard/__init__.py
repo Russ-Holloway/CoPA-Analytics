@@ -5,8 +5,10 @@ import logging
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         logging.info('Dashboard function processed a request.')
+        import os
         host = req.headers.get('host', 'your-function-app.azurewebsites.net')
         base_url = f"https://{host}/api"
+        force_logo_url = os.environ.get('FORCE_LOGO_URL', '').strip()
         html_content = f"""
 <!DOCTYPE html>
 <html lang=\"en\">
@@ -189,7 +191,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 <h1>CoPPA Analytics Dashboard</h1>
                 <p>Real Time Insights into User Interactions</p>
             </div>
-            <img id="user-logo" src="/api/getuserlogo" alt="User Logo" class="user-logo" onerror="this.style.display='none';document.getElementById('user-logo-placeholder').style.display='block';">
+            <img id="user-logo" src="{force_logo_url}" alt="User Logo" class="user-logo" onerror="this.style.display='none';document.getElementById('user-logo-placeholder').style.display='block';">
             <span id="user-logo-placeholder" style="display:none;position:absolute;right:40px;top:50%;transform:translateY(-50%);height:120px;width:120px;vertical-align:middle;">
                 <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="60" cy="60" r="54" fill="#e5e7eb" stroke="#cbd5e1" stroke-width="6"/>
