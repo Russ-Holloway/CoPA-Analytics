@@ -9,18 +9,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         base_url = f"https://{host}/api"
         html_content = f"""
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>CoPPA Analytics Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>
     <style>
         body {{
             font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
-            font-size: 22px; /* Increased from 18px */
+            font-size: 22px;
             margin: 0;
-            padding: 40px; /* Increased from 32px */
+            padding: 40px;
             background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
             color: #232946;
             min-height: 100vh;
@@ -51,13 +51,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             flex-shrink: 0;
         }}
         .header-content {{
-            flex: 0 1 auto;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            padding-left: 160px; /* Prevent overlap with logo */
+            margin: 0 auto;
+            z-index: 1;
+            pointer-events: none;
         }}
         .header h1 {{
             margin: 0;
@@ -65,12 +70,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             font-weight: bold;
             text-align: center;
             display: block;
+            width: 100%;
         }}
         .header p {{
             margin: 8px 0 0 0;
             font-size: 1.3em;
             text-align: center;
             display: block;
+            width: 100%;
         }}
         .container {{
             max-width: 1680px; /* Increased from 1280px */
@@ -169,6 +176,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             vertical-align: middle;
             display: block;
             flex-shrink: 0;
+            object-fit: contain;
+            background: none;
         }}
     </style>
 </head>
@@ -180,7 +189,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 <h1>CoPPA Analytics Dashboard</h1>
                 <p>Real Time Insights into User Interactions</p>
             </div>
-            <img id="user-logo" src="/api/getuserlogo" alt="User Logo" class="user-logo" style="display:block;">
+            <img id="user-logo" src="/api/getuserlogo" alt="User Logo" class="user-logo" onerror="this.style.display='none';">
         </div>
         <div class="controls">
             <label>Start Date: <input type="date" id="startDate"></label>
