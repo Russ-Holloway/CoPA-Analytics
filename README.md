@@ -41,17 +41,21 @@
 1. **Go to your new Function App** in the Azure Portal
 2. **Navigate to "Deployment Center"** in the left menu
 3. **Select "External Git"** as the deployment source
+
 4. **Repository URL**: `https://github.com/Russ-Holloway/CoPPA-Analytics.git`
 5. **Branch**: `main`
 
+> **Important:** When prompted for a logo URL, enter the public direct image URL for your force's logo (see "Setting the FORCE_LOGO_URL Environment Variable" below). This is required for your logo to appear on the dashboard.
+
 Once you have selected the branch, deployment will proceed automatically. No further configuration is required.
+
 
 ## Azure Deployment Center: Initial Sync Required
 After you connect your Azure Function App to this repository using **External Git** as the deployment source, Azure will not automatically deploy the code until you perform a manual sync:
 
 1. In the Azure Portal, go to your Function App.
 2. In the left menu, select **Deployment Center**.
-3. On the **Logs** or **Overview** tab, click the **Sync** button (or **Sync now**) to trigger the first deployment from your connected Git repository.
+3. On the **Logs** or **Overview** tab, click the **Sync** button (or **Sync now**) to trigger the first deployment from your connected External Git repository.
 4. Wait for the deployment to complete. You can monitor progress in the **Logs** tab.
 
 > **Note:** This manual sync is only required the first time you connect the repository. Subsequent pushes to the main branch will trigger automatic deployments.
@@ -75,9 +79,9 @@ Your analytics solution is now running! Access:
 - If issues persist, check Function App logs in Monitoring → Log stream
 
 **Functions not appearing:**
-- Check GitHub Actions at https://github.com/Russ-Holloway/CoPA-Analytics/actions
-- Wait for deployment to complete (green checkmark)
-- Functions may take 2-3 minutes to appear after GitHub deployment
+- Check the Deployment Center logs in Azure Portal (External Git tab)
+- Wait for deployment to complete (check for success in the Azure Portal)
+- Functions may take 2-3 minutes to appear after deployment
 
 ## 📋 What Gets Deployed
 
@@ -311,17 +315,38 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Force Logo URL**: Enter the public URL of your force's logo (e.g., from Azure Blob Storage). This is stored as the `FORCE_LOGO_URL` environment variable in your Function App.
 - Complete the deployment. Azure will provision the Function App, storage, and monitoring resources.
 
-### 2. Link to External GitHub Repository
+
+### 2. Link to External Git Repository
 - In the Azure Portal, go to your new Function App → **Deployment Center**.
-- Select **GitHub** as the source, choose the `Russ-Holloway/CoPPA-Analytics` repository and the `main` branch.
-- Complete the setup. Azure will automatically deploy the latest code from GitHub to your Function App.
-- Any future updates to the GitHub repository will be automatically deployed to your Function App.
+- Select **External Git** as the source, and enter the repository URL: `https://github.com/Russ-Holloway/CoPPA-Analytics.git` and branch: `main`.
+- Complete the setup. Azure will automatically deploy the latest code from the External Git repository to your Function App after you perform the initial sync (see above).
+- Any future updates to the main branch of the External Git repository will be automatically deployed to your Function App.
+
 
 ### 3. Dashboard Logo Branding (FORCE_LOGO_URL)
 - The dashboard (`/api/Dashboard`) loads the right-side logo directly from the `FORCE_LOGO_URL` environment variable.
 - The value you set at deployment (or update later in Function App → Configuration) must be a public, direct image URL (e.g., Azure Blob Storage with public read access).
 - If the logo URL is valid and accessible, it will appear on the dashboard. If not, a placeholder image is shown.
 - To update the logo later, simply change the `FORCE_LOGO_URL` app setting and restart the Function App.
+
+#### Setting the FORCE_LOGO_URL Environment Variable
+To display your organization's logo on the right side of the dashboard banner, you must set the `FORCE_LOGO_URL` environment variable in your Azure Function App **before** deployment:
+
+1. **Obtain a Logo URL:**
+   - Upload your logo image to a secure, publicly accessible location (e.g., Azure Blob Storage, SharePoint, or a trusted web server).
+   - Copy the direct URL to the image (e.g., `https://yourdomain.com/path/to/logo.png`).
+
+2. **Set the Environment Variable in Azure:**
+   - In the Azure Portal, go to your Function App.
+   - In the left menu, select **Configuration** under the **Settings** section.
+   - Click **+ New application setting**.
+   - Enter `FORCE_LOGO_URL` as the name and paste your logo image URL as the value.
+   - Click **OK**, then **Save** at the top to apply changes.
+
+3. **Deploy and Sync:**
+   - After setting the environment variable, connect your Function App to the External Git repository and perform the initial sync as described above.
+
+> **Note:** If `FORCE_LOGO_URL` is not set or the image cannot be loaded, a default placeholder icon will be shown instead.
 
 ### 4. Accessing the Dashboard
 - After deployment and GitHub sync, visit:
