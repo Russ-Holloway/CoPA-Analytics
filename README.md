@@ -36,19 +36,25 @@
 4. **Wait 5-10 minutes** for deployment to complete
 5. **Note your Function App name** - it will be `func-[your-prefix]-analytics`
 
-### **Step 2: Configure GitHub Deployment (2-3 minutes)**
+### **Step 2: Configure External Git Deployment (2-3 minutes)**
 
 1. **Go to your new Function App** in the Azure Portal
 2. **Navigate to "Deployment Center"** in the left menu
-3. **Select "GitHub"** as the deployment source
-4. **Configure the following:**
-   - **Organization**: `Russ-Holloway`
-   - **Repository**: `CoPPA-Analytics`
-   - **Branch**: `main`
-   - **Workflow Option**: Select "Overwrite the workflow"
-   - **Authentication Type**: Select "User-assigned identity"
-   - **Identity**: Select "(Create new)"
-5. **Click "Save"** and wait 2-3 minutes for automatic deployment
+3. **Select "External Git"** as the deployment source
+4. **Repository URL**: `https://github.com/Russ-Holloway/CoPPA-Analytics.git`
+5. **Branch**: `main`
+
+Once you have selected the branch, deployment will proceed automatically. No further configuration is required.
+
+## Azure Deployment Center: Initial Sync Required
+After you connect your Azure Function App to this repository using **External Git** as the deployment source, Azure will not automatically deploy the code until you perform a manual sync:
+
+1. In the Azure Portal, go to your Function App.
+2. In the left menu, select **Deployment Center**.
+3. On the **Logs** or **Overview** tab, click the **Sync** button (or **Sync now**) to trigger the first deployment from your connected Git repository.
+4. Wait for the deployment to complete. You can monitor progress in the **Logs** tab.
+
+> **Note:** This manual sync is only required the first time you connect the repository. Subsequent pushes to the main branch will trigger automatic deployments.
 
 ### **✅ Verification**
 
@@ -322,4 +328,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - `https://func-[your-prefix]-analytics.azurewebsites.net/api/Dashboard`
 - The dashboard will show your force's branding and live analytics.
 
----
+## Accessing the Dashboard: Get the Function URL
+After deployment, you can access the CoPPA Analytics Dashboard in your browser using the function URL. To find this URL:
+
+1. In the Azure Portal, go to your deployed **Function App**.
+2. In the left menu, select **Functions**.
+3. Click on the function named `Dashboard`.
+4. In the function's overview pane, click **Get Function URL** (usually at the top or in the right pane).
+5. Copy the provided URL (it will look like `https://<your-app-name>.azurewebsites.net/api/Dashboard`).
+6. Paste this URL into your web browser's address bar and press Enter.
+
+You should now see the CoPPA Analytics Dashboard. If you have set the `FORCE_LOGO_URL` environment variable, your organization's logo will appear on the right side of the banner.
