@@ -25,13 +25,18 @@
 ### **Step 1: Deploy Infrastructure (5-10 minutes)**
 
 1. **Click the "Deploy to Azure" button above** ⬆️
-2. **Fill in the deployment form:**
+2. **Prepare your force logo:**
+   - Upload your logo image (PNG/JPG/SVG) to an Azure Storage Account **Blob Container**.
+   - The container must have **anonymous (public) read access** enabled (set container access level to "Blob (anonymous read access for blobs only)").
+   - Copy the direct URL to your logo image (e.g., `https://<yourstorageaccount>.blob.core.windows.net/<container>/<logo.png>`).
+3. **Fill in the deployment form:**
    - **Force Prefix**: Your police force code (e.g., "BTP", "MET", "GMP", "WMP")
    - **Admin Email**: Email address for daily analytics reports
    - **Existing Cosmos DB Endpoint**: Your CoPPA Cosmos DB URL (or leave blank for demo data)
    - **Existing Cosmos DB Key**: Your CoPPA Cosmos DB primary key (or leave blank for demo data)
    - **Cosmos DB Database**: Usually `db_conversation_history` (check your CoPPA database)
    - **Cosmos DB Container**: Usually `conversations` (check your CoPPA container)
+   - **Force Logo URL**: Paste the direct URL to your logo image (from step 2 above). This will be stored as the `FORCE_LOGO_URL` environment variable and used for dashboard branding.
 3. **Click "Review + create"** then **"Create"**
 4. **Wait 5-10 minutes** for deployment to complete
 5. **Note your Function App name** - it will be `func-[your-prefix]-analytics`
@@ -45,9 +50,8 @@
 4. **Repository URL**: `https://github.com/Russ-Holloway/CoPPA-Analytics.git`
 5. **Branch**: `main`
 
-> **Important:** When prompted for a logo URL, enter the public direct image URL for your force's logo (see "Setting the FORCE_LOGO_URL Environment Variable" below). This is required for your logo to appear on the dashboard.
 
-Once you have selected the branch, deployment will proceed automatically. No further configuration is required.
+Once you have selected the branch, deployment will not proceed until you perform a manual sync (see below).
 
 
 ## Azure Deployment Center: Initial Sync Required
@@ -58,7 +62,7 @@ After you connect your Azure Function App to this repository using **External Gi
 3. On the **Logs** or **Overview** tab, click the **Sync** button (or **Sync now**) to trigger the first deployment from your connected External Git repository.
 4. Wait for the deployment to complete. You can monitor progress in the **Logs** tab.
 
-> **Note:** This manual sync is only required the first time you connect the repository. Subsequent pushes to the main branch will trigger automatic deployments.
+> **Note:** This manual sync is only required the first time you connect the repository. Further changes to the repository will **not** be automatically deployed; you must manually sync again for each update.
 
 ### **✅ Verification**
 
