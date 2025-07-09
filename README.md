@@ -339,3 +339,22 @@ After deployment, you can access the CoPPA Analytics Dashboard in your browser u
 6. Paste this URL into your web browser's address bar and press Enter.
 
 You should now see the CoPPA Analytics Dashboard. If you have set the `FORCE_LOGO_URL` environment variable, your organization's logo will appear on the right side of the banner.
+
+## Setting the FORCE_LOGO_URL Environment Variable
+To display your organization's logo on the right side of the dashboard banner, you must set the `FORCE_LOGO_URL` environment variable in your Azure Function App **before** deployment:
+
+1. **Obtain a Logo URL:**
+   - Upload your logo image to a secure, publicly accessible location (e.g., Azure Blob Storage, SharePoint, or a trusted web server).
+   - Copy the direct URL to the image (e.g., `https://yourdomain.com/path/to/logo.png`).
+
+2. **Set the Environment Variable in Azure:**
+   - In the Azure Portal, go to your Function App.
+   - In the left menu, select **Configuration** under the **Settings** section.
+   - Click **+ New application setting**.
+   - Enter `FORCE_LOGO_URL` as the name and paste your logo image URL as the value.
+   - Click **OK**, then **Save** at the top to apply changes.
+
+3. **Deploy and Sync:**
+   - After setting the environment variable, connect your Function App to the External Git repository and perform the initial sync as described above.
+
+> **Note:** If `FORCE_LOGO_URL` is not set or the image cannot be loaded, a default placeholder icon will be shown instead.
