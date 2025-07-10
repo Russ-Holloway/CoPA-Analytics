@@ -35,16 +35,26 @@ def main(mytimer: func.TimerRequest) -> None:
         from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart
 
+
+        # --- Fixes for Office365 SMTP ---
         smtp_server = os.environ.get('SMTP_SERVER', 'smtp.office365.com')
         smtp_port = int(os.environ.get('SMTP_PORT', '587'))
         smtp_user = os.environ.get('EMAIL_USERNAME')
         smtp_pass = os.environ.get('EMAIL_PASSWORD')
-        email_to = os.environ.get('EMAIL_TO', os.environ.get('ADMIN_EMAIL'))
-        email_from = os.environ.get('EMAIL_FROM', smtp_user)
+        email_to = os.environ.get('EMAIL_TO') or os.environ.get('ADMIN_EMAIL')
+        email_from = os.environ.get('EMAIL_FROM') or smtp_user
 
-        if not all([smtp_user, smtp_pass, email_to, email_from]):
+        # Office365: email_from must match smtp_user (the authenticated account)
+        if not all([smtp_user, smtp_pass, email_to]):
             logging.error('Missing SMTP or email environment variables. Email not sent.')
             return
+        if not email_from:
+            email_from = smtp_user
+
+        # Office365: Only allow sending from the authenticated user
+        if email_from.lower() != smtp_user.lower():
+            logging.warning('EMAIL_FROM does not match EMAIL_USERNAME. For Office365, these must match. Using EMAIL_USERNAME as sender.')
+            email_from = smtp_user
 
         subject = f"CoPPA Analytics Daily Report - {force_id} - {utc_timestamp[:10]}"
         body = f"""
@@ -71,10 +81,18 @@ This is an automated message. Please do not reply.
 
         try:
             with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.ehlo()
                 server.starttls()
+                server.ehlo()
                 server.login(smtp_user, smtp_pass)
-                server.sendmail(email_from, email_to.split(','), msg.as_string())
-            logging.info(f"Daily analytics email sent to {email_to}")
+                # Office365: only send to valid recipients
+                recipients = [r.strip() for r in email_to.split(',') if r.strip()]
+                server.sendmail(email_from, recipients, msg.as_string())
+            logging.info(f"Daily analytics email sent to {recipients}")
+        except smtplib.SMTPAuthenticationError as mailerr:
+            logging.error(f"SMTP authentication failed: {mailerr}")
+        except smtplib.SMTPRecipientsRefused as mailerr:
+            logging.error(f"SMTP recipient refused: {mailerr}")
         except Exception as mailerr:
             logging.error(f"Failed to send analytics email: {mailerr}")
 
