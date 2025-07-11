@@ -30,31 +30,19 @@ def main(mytimer: func.TimerRequest) -> None:
         logging.info(f'Analytics processing completed for force: {force_id}')
         logging.info(f'Processed data: {json.dumps(processed_data, indent=2)}')
 
-        # Send daily analytics email using Office365 SMTP
-        import smtplib
-        from email.mime.text import MIMEText
-        from email.mime.multipart import MIMEMultipart
+        # Send daily analytics email using Microsoft Graph API
+        import requests
+        import msal
 
-
-        # --- Fixes for Office365 SMTP ---
-        smtp_server = os.environ.get('SMTP_SERVER', 'smtp.office365.com')
-        smtp_port = int(os.environ.get('SMTP_PORT', '587'))
-        smtp_user = os.environ.get('EMAIL_USERNAME')
-        smtp_pass = os.environ.get('EMAIL_PASSWORD')
+        graph_client_id = os.environ.get('GRAPH_CLIENT_ID')
+        graph_client_secret = os.environ.get('GRAPH_CLIENT_SECRET')
+        graph_tenant_id = os.environ.get('GRAPH_TENANT_ID')
+        email_from = os.environ.get('EMAIL_FROM')
         email_to = os.environ.get('EMAIL_TO') or os.environ.get('ADMIN_EMAIL')
-        email_from = os.environ.get('EMAIL_FROM') or smtp_user
 
-        # Office365: email_from must match smtp_user (the authenticated account)
-        if not all([smtp_user, smtp_pass, email_to]):
-            logging.error('Missing SMTP or email environment variables. Email not sent.')
+        if not all([graph_client_id, graph_client_secret, graph_tenant_id, email_from, email_to]):
+            logging.error('Missing Graph API or email environment variables. Email not sent.')
             return
-        if not email_from:
-            email_from = smtp_user
-
-        # Office365: Only allow sending from the authenticated user
-        if email_from.lower() != smtp_user.lower():
-            logging.warning('EMAIL_FROM does not match EMAIL_USERNAME. For Office365, these must match. Using EMAIL_USERNAME as sender.')
-            email_from = smtp_user
 
         subject = f"CoPPA Analytics Daily Report - {force_id} - {utc_timestamp[:10]}"
         body = f"""
@@ -73,28 +61,50 @@ Status: {processed_data['status']}
 
 This is an automated message. Please do not reply.
 """
-        msg = MIMEMultipart()
-        msg['From'] = email_from
-        msg['To'] = email_to
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
 
-        try:
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
-                server.ehlo()
-                server.starttls()
-                server.ehlo()
-                server.login(smtp_user, smtp_pass)
-                # Office365: only send to valid recipients
-                recipients = [r.strip() for r in email_to.split(',') if r.strip()]
-                server.sendmail(email_from, recipients, msg.as_string())
-            logging.info(f"Daily analytics email sent to {recipients}")
-        except smtplib.SMTPAuthenticationError as mailerr:
-            logging.error(f"SMTP authentication failed: {mailerr}")
-        except smtplib.SMTPRecipientsRefused as mailerr:
-            logging.error(f"SMTP recipient refused: {mailerr}")
-        except Exception as mailerr:
-            logging.error(f"Failed to send analytics email: {mailerr}")
+        # Authenticate with Microsoft Graph
+        authority = f"https://login.microsoftonline.com/{graph_tenant_id}"
+        app = msal.ConfidentialClientApplication(
+            graph_client_id,
+            authority=authority,
+            client_credential=graph_client_secret
+        )
+        result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
+        if "access_token" not in result:
+            logging.error(f"Could not obtain access token: {result}")
+            return
+        access_token = result['access_token']
+
+        # Prepare Graph API message
+        message = {
+            "message": {
+                "subject": subject,
+                "body": {
+                    "contentType": "Text",
+                    "content": body
+                },
+                "toRecipients": [
+                    {"emailAddress": {"address": r.strip()}} for r in email_to.split(',') if r.strip()
+                ],
+                "from": {"emailAddress": {"address": email_from}}
+            },
+            "saveToSentItems": "false"
+        }
+
+        # Send email via Graph API
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{email_from}/sendMail"
+        response = requests.post(
+            graph_url,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json"
+            },
+            json=message
+        )
+        if response.status_code >= 400:
+            logging.error(f"Graph API error: {response.status_code} {response.text}")
+        else:
+            logging.info(f"Daily analytics email sent to {email_to} via Microsoft Graph API.")
 
     except Exception as e:
         logging.error(f'Error in timer trigger: {str(e)}')
