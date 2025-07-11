@@ -3,17 +3,12 @@ import logging
 import os
 import json
 import azure.functions as func
-from azure.cosmos import CosmosClient, exceptions
 
-def main(mytimer: func.TimerRequest) -> None:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
-
-    logging.info('Python timer trigger function ran at %s', utc_timestamp)
-    logging.info('TimerTrigger function ran at %s', mytimer.schedule_status.last)
-
+    logging.info('HTTP-triggered analytics email function called at %s', utc_timestamp)
     force_id = os.environ.get('FORCE_IDENTIFIER', 'unknown')
-    
     try:
         # Simulate analytics processing (as before)
         processed_data = {
@@ -41,7 +36,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
         if not all([graph_client_id, graph_tenant_id, email_from, email_to]):
             logging.error('Missing Graph API or email environment variables. Email not sent.')
-            return
+            return func.HttpResponse('Missing Graph API or email environment variables.', status_code=500)
 
         subject = f"CoPPA Analytics Daily Report - {force_id} - {utc_timestamp[:10]}"
         body = f"""
@@ -68,7 +63,6 @@ This is an automated message. Please do not reply.
             authority=authority
         )
         scopes = ["Mail.Send"]
-        # Try to get a cached token first
         accounts = app.get_accounts()
         if accounts:
             result = app.acquire_token_silent(scopes, account=accounts[0])
@@ -78,17 +72,16 @@ This is an automated message. Please do not reply.
             logging.info("Initiating device code flow for delegated Graph API access...")
             flow = app.initiate_device_flow(scopes=scopes)
             if "user_code" not in flow:
-                logging.error(f"Device flow error: {flow}")
-                return
-            print(flow["message"])
+                return func.HttpResponse("Device code flow failed to start.", status_code=500)
+            logging.info(f"Please authenticate: {flow['message']}")
             result = app.acquire_token_by_device_flow(flow)
         if "access_token" not in result:
-            logging.error(f"Could not obtain access token: {result}")
-            return
-        access_token = result['access_token']
+            logging.error(f"Failed to obtain access token: {result.get('error_description')}")
+            return func.HttpResponse(f"Failed to obtain access token: {result.get('error_description')}", status_code=500)
 
-        # Prepare Graph API message
-        message = {
+        access_token = result["access_token"]
+        graph_url = f"https://graph.microsoft.com/v1.0/users/{email_from}/sendMail"
+        email_payload = {
             "message": {
                 "subject": subject,
                 "body": {
@@ -96,32 +89,22 @@ This is an automated message. Please do not reply.
                     "content": body
                 },
                 "toRecipients": [
-                    {"emailAddress": {"address": r.strip()}} for r in email_to.split(',') if r.strip()
+                    {"emailAddress": {"address": email_to}}
                 ]
             },
-            "saveToSentItems": "false"
+            "saveToSentItems": "true"
         }
-
-        # Send email via Graph API (delegated, from signed-in user)
-        graph_url = "https://graph.microsoft.com/v1.0/me/sendMail"
-        response = requests.post(
-            graph_url,
-            headers={
-                "Authorization": f"Bearer {access_token}",
-                "Content-Type": "application/json"
-            },
-            json=message
-        )
-        if response.status_code >= 400:
-            logging.error(f"Graph API error: {response.status_code} {response.text}")
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.post(graph_url, headers=headers, json=email_payload)
+        if response.status_code == 202:
+            logging.info(f"Analytics email sent to {email_to} via Microsoft Graph API.")
+            return func.HttpResponse(f"Analytics email sent to {email_to} via Microsoft Graph API.", status_code=200)
         else:
-            logging.info(f"Daily analytics email sent to {email_to} via Microsoft Graph API (delegated).")
-
+            logging.error(f"Failed to send email: {response.text}")
+            return func.HttpResponse(f"Failed to send email: {response.text}", status_code=500)
     except Exception as e:
-        logging.error(f'Error in timer trigger: {str(e)}')
-        raise
-
-    if mytimer.past_due:
-        logging.info('The timer is past due!')
-
-    logging.info('Python timer trigger function completed successfully')
+        logging.error(f"Error in analytics email function: {str(e)}")
+        return func.HttpResponse(f"Error in analytics email function: {str(e)}", status_code=500)
