@@ -40,22 +40,29 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse('Missing Graph API or email environment variables.', status_code=500)
 
         subject = f"CoPPA Analytics Daily Report - {force_id} - {utc_timestamp[:10]}"
+        # Step 1: HTML email with all-time metrics (using dummy data for now)
+        all_time_total_questions = processed_data['processedRecords']  # Placeholder for dashboard metric
+        all_time_unique_users = 42  # Placeholder for dashboard metric
         body = f"""
-Hello,
-
-This is your automated CoPPA Analytics daily report for {force_id}.
-
-Summary:
-- New Interactions: {processed_data['summary']['newInteractions']}
-- Metrics Updated: {processed_data['summary']['updatedMetrics']}
-- Trends Calculated: {processed_data['summary']['trendsCalculated']}
-- Processed Records: {processed_data['processedRecords']}
-- Timestamp: {processed_data['timestamp']}
-
-Status: {processed_data['status']}
-
-This is an automated message. Please do not reply.
-"""
+        <html>
+        <body style='font-family:Segoe UI,Arial,sans-serif;font-size:18px;color:#232946;'>
+            <h2>CoPPA Analytics Daily Report for {force_id}</h2>
+            <table style='border-collapse:collapse;margin-top:20px;'>
+                <tr>
+                    <th style='padding:8px 16px;background:#f0f8ff;border-radius:8px 0 0 8px;'>Total Questions (All-Time)</th>
+                    <th style='padding:8px 16px;background:#f0f8ff;border-radius:0 8px 8px 0;'>Unique Users (All-Time)</th>
+                </tr>
+                <tr>
+                    <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{all_time_total_questions}</td>
+                    <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{all_time_unique_users}</td>
+                </tr>
+            </table>
+            <p style='margin-top:32px;'>Timestamp: {processed_data['timestamp']}</p>
+            <p>Status: {processed_data['status']}</p>
+            <p style='color:#888;font-size:0.9em;'>This is an automated message. Please do not reply.</p>
+        </body>
+        </html>
+        """
 
         # Authenticate with Microsoft Graph using client credentials (application permissions)
         authority = f"https://login.microsoftonline.com/{graph_tenant_id}"
@@ -76,7 +83,7 @@ This is an automated message. Please do not reply.
             "message": {
                 "subject": subject,
                 "body": {
-                    "contentType": "Text",
+                    "contentType": "HTML",
                     "content": body
                 },
                 "toRecipients": [
