@@ -35,12 +35,11 @@ def main(mytimer: func.TimerRequest) -> None:
         import msal
 
         graph_client_id = os.environ.get('GRAPH_CLIENT_ID')
-        graph_client_secret = os.environ.get('GRAPH_CLIENT_SECRET')
         graph_tenant_id = os.environ.get('GRAPH_TENANT_ID')
         email_from = os.environ.get('EMAIL_FROM')
         email_to = os.environ.get('EMAIL_TO') or os.environ.get('ADMIN_EMAIL')
 
-        if not all([graph_client_id, graph_client_secret, graph_tenant_id, email_from, email_to]):
+        if not all([graph_client_id, graph_tenant_id, email_from, email_to]):
             logging.error('Missing Graph API or email environment variables. Email not sent.')
             return
 
@@ -62,14 +61,27 @@ Status: {processed_data['status']}
 This is an automated message. Please do not reply.
 """
 
-        # Authenticate with Microsoft Graph
+        # Authenticate with Microsoft Graph using Device Code flow (delegated)
         authority = f"https://login.microsoftonline.com/{graph_tenant_id}"
-        app = msal.ConfidentialClientApplication(
+        app = msal.PublicClientApplication(
             graph_client_id,
-            authority=authority,
-            client_credential=graph_client_secret
+            authority=authority
         )
-        result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
+        scopes = ["Mail.Send"]
+        # Try to get a cached token first
+        accounts = app.get_accounts()
+        if accounts:
+            result = app.acquire_token_silent(scopes, account=accounts[0])
+        else:
+            result = None
+        if not result or "access_token" not in result:
+            logging.info("Initiating device code flow for delegated Graph API access...")
+            flow = app.initiate_device_flow(scopes=scopes)
+            if "user_code" not in flow:
+                logging.error(f"Device flow error: {flow}")
+                return
+            print(flow["message"])
+            result = app.acquire_token_by_device_flow(flow)
         if "access_token" not in result:
             logging.error(f"Could not obtain access token: {result}")
             return
@@ -85,14 +97,13 @@ This is an automated message. Please do not reply.
                 },
                 "toRecipients": [
                     {"emailAddress": {"address": r.strip()}} for r in email_to.split(',') if r.strip()
-                ],
-                "from": {"emailAddress": {"address": email_from}}
+                ]
             },
             "saveToSentItems": "false"
         }
 
-        # Send email via Graph API
-        graph_url = f"https://graph.microsoft.com/v1.0/users/{email_from}/sendMail"
+        # Send email via Graph API (delegated, from signed-in user)
+        graph_url = "https://graph.microsoft.com/v1.0/me/sendMail"
         response = requests.post(
             graph_url,
             headers={
@@ -104,7 +115,7 @@ This is an automated message. Please do not reply.
         if response.status_code >= 400:
             logging.error(f"Graph API error: {response.status_code} {response.text}")
         else:
-            logging.info(f"Daily analytics email sent to {email_to} via Microsoft Graph API.")
+            logging.info(f"Daily analytics email sent to {email_to} via Microsoft Graph API (delegated).")
 
     except Exception as e:
         logging.error(f'Error in timer trigger: {str(e)}')
