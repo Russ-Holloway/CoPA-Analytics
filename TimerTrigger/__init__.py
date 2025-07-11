@@ -40,11 +40,49 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse('Missing Graph API or email environment variables.', status_code=500)
 
         subject = f"CoPPA Analytics Daily Report - {force_id} - {utc_timestamp[:10]}"
-        # Step 2: Add filtered metrics to HTML email (dummy values for now)
+        # Step 6: Add recent conversations list to HTML email (dummy values for now)
         all_time_total_questions = processed_data['processedRecords']  # Placeholder for dashboard metric
         all_time_unique_users = 42  # Placeholder for dashboard metric
         total_user_questions = 17  # Dummy value for selected date range
         unique_users = 5  # Dummy value for selected date range
+        top_themes = [
+            {"theme": "domestic abuse", "count": 8},
+            {"theme": "theft", "count": 6},
+            {"theme": "mental health", "count": 5},
+            {"theme": "drugs", "count": 4},
+            {"theme": "violence", "count": 3}
+        ]  # Dummy values for now
+        themes_html = "<ul style='margin-top:12px;'>" + "".join([
+            f"<li><strong>{t['theme'].title()}</strong>: {t['count']}</li>" for t in top_themes
+        ]) + "</ul>"
+        recent_by_theme = {
+            "domestic abuse": {"title": "Domestic Abuse Support", "createdAt": "2025-07-10T14:22:00"},
+            "theft": {"title": "Theft in City Center", "createdAt": "2025-07-10T13:10:00"},
+            "mental health": {"title": "Mental Health Resources", "createdAt": "2025-07-09T17:45:00"},
+            "drugs": {"title": "Drug Awareness", "createdAt": "2025-07-09T09:30:00"},
+            "violence": {"title": "Violence Prevention", "createdAt": "2025-07-08T20:05:00"}
+        }
+        by_theme_html = "<ul style='margin-top:12px;'>" + "".join([
+            f"<li><strong>{theme.title()}</strong>: {info['title']} <span style='color:#888;font-size:0.9em;'>({info['createdAt']})</span></li>" for theme, info in recent_by_theme.items()
+        ]) + "</ul>"
+        hourly_distribution = [2, 1, 0, 0, 0, 0, 0, 1, 3, 5, 7, 8, 6, 4, 2, 1, 0, 0, 0, 0, 0, 1, 2, 3]
+        hours = [f"{h}:00" for h in range(24)]
+        hourly_html = "<table style='border-collapse:collapse;margin-top:12px;'><tr>" + "".join([
+            f"<th style='padding:4px 8px;background:#e0e7ff;'>{hour}</th>" for hour in hours
+        ]) + "</tr><tr>" + "".join([
+            f"<td style='padding:4px 8px;text-align:center;'>{count}</td>" for count in hourly_distribution
+        ]) + "</tr></table>"
+        # Dummy recent conversations list
+        recent_questions = [
+            {"title": "Domestic Abuse Support", "category": "domestic abuse", "createdAt": "2025-07-10T14:22:00"},
+            {"title": "Theft in City Center", "category": "theft", "createdAt": "2025-07-10T13:10:00"},
+            {"title": "Mental Health Resources", "category": "mental health", "createdAt": "2025-07-09T17:45:00"},
+            {"title": "Drug Awareness", "category": "drugs", "createdAt": "2025-07-09T09:30:00"},
+            {"title": "Violence Prevention", "category": "violence", "createdAt": "2025-07-08T20:05:00"}
+        ]
+        questions_html = "<div style='margin-top:12px;'>" + "".join([
+            f"<div style='border-bottom:1px solid #eee;padding:8px 0;'><span style='font-weight:bold;'>{q['title']}</span> <span style='color:#888;font-size:0.9em;'>({q['category'].title()} | {q['createdAt']})</span></div>" for q in recent_questions
+        ]) + "</div>"
         body = f"""
         <html>
         <body style='font-family:Segoe UI,Arial,sans-serif;font-size:18px;color:#232946;'>
@@ -67,6 +105,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{unique_users}</td>
                 </tr>
             </table>
+            <h3 style='margin-top:36px;'>Top Conversation Themes</h3>
+            {themes_html}
+            <h3 style='margin-top:36px;'>Recent Conversations by Theme</h3>
+            {by_theme_html}
+            <h3 style='margin-top:36px;'>Hourly Distribution</h3>
+            {hourly_html}
+            <h3 style='margin-top:36px;'>Recent Conversations</h3>
+            {questions_html}
             <p style='margin-top:32px;'>Timestamp: {processed_data['timestamp']}</p>
             <p>Status: {processed_data['status']}</p>
             <p style='color:#888;font-size:0.9em;'>This is an automated message. Please do not reply.</p>
