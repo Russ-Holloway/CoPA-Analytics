@@ -3,6 +3,7 @@ import logging
 import os
 import json
 import azure.functions as func
+from azure.cosmos import CosmosClient
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     utc_timestamp = datetime.datetime.utcnow().replace(
@@ -178,3 +179,97 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.error(f"Error in analytics email function: {str(e)}")
         return func.HttpResponse(f"Error in analytics email function: {str(e)}", status_code=500)
+
+# --- Cosmos DB connection setup (step 1: do not use for metrics yet) ---
+cosmos_endpoint = os.environ.get('COSMOS_DB_ENDPOINT')
+cosmos_key = os.environ.get('COSMOS_DB_KEY')
+database_name = os.environ.get('COSMOS_DB_DATABASE', 'coppa-db')
+container_name = os.environ.get('COSMOS_DB_CONTAINER', 'questions')
+cosmos_connected = False
+if cosmos_endpoint and cosmos_key:
+    try:
+        cosmos_client = CosmosClient(cosmos_endpoint, cosmos_key)
+        db = cosmos_client.get_database_client(database_name)
+        container = db.get_container_client(container_name)
+        cosmos_connected = True
+        logging.info('Successfully connected to Cosmos DB.')
+    except Exception as e:
+        logging.error(f'Cosmos DB connection failed: {e}')
+else:
+    logging.warning('Cosmos DB endpoint/key not set in environment.')
+# --- End Cosmos DB connection setup ---
+
+# --- Step 2: Count all documents in Cosmos DB and log the result (do not use in email) ---
+if cosmos_connected:
+    try:
+        query = "SELECT VALUE COUNT(1) FROM c"
+        count_result = list(container.query_items(query=query, enable_cross_partition_query=True))
+        total_docs = count_result[0] if count_result else 0
+        logging.info(f"Cosmos DB: Total documents in container: {total_docs}")
+    except Exception as e:
+        logging.error(f"Cosmos DB count query failed: {e}")
+# --- End step 2 ---
+
+# Use live Cosmos DB count for all_time_total_questions (step 3)
+if cosmos_connected:
+    try:
+        all_time_total_questions = total_docs
+    except Exception as e:
+        logging.error(f'Failed to set all_time_total_questions from Cosmos DB: {e}')
+        all_time_total_questions = 1250  # fallback dummy value
+else:
+    all_time_total_questions = 1250  # fallback dummy value
+
+# --- Step 4: Update the email body to use the live count (modify the body HTML) ---
+        body = f"""
+        <html>
+        <head>
+        <style>
+            body {{ font-family: 'Inter', 'Segoe UI', Arial, sans-serif; background: #f6f8fb; color: #232946; margin: 0; padding: 32px; }}
+            .report-title {{ font-size: 2.2em; font-weight: bold; margin-bottom: 24px; color: #1e3a8a; letter-spacing: 0.5px; }}
+            .metrics-table {{ width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 24px; background: #f8fbff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px #e0e7ff55; }}
+            .metrics-table th, .metrics-table td {{ border: none; padding: 16px 24px; text-align: center; font-size: 1.1em; }}
+            .metrics-table th {{ background: #e0e7ff; color: #1e3a8a; font-weight: bold; }}
+            .metrics-table tr:not(:last-child) td {{ border-bottom: 1px solid #e0e7ff; }}
+            .metric-key {{ color: #1e3a8a; font-weight: bold; font-size: 1.2em; }}
+            .metric-value {{ color: #2563eb; font-size: 1.4em; font-weight: bold; }}
+            .section-title {{ font-size: 1.25em; font-weight: bold; margin: 36px 0 14px 0; color: #1e3a8a; letter-spacing: 0.2px; }}
+            ul {{ margin: 0 0 0 28px; }}
+            .by-theme-list {{ margin-bottom: 0; }}
+            .by-theme-list strong {{ color: #1e3a8a; }}
+            .hourly-table {{ width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 24px; background: #f0f4ff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px #e0e7ff33; }}
+            .hourly-table th, .hourly-table td {{ border: none; padding: 8px 10px; text-align: center; font-size: 1em; }}
+            .hourly-table th {{ background: #dbeafe; color: #1e3a8a; font-weight: bold; }}
+            .hourly-table tr:not(:last-child) td {{ border-bottom: 1px solid #e0e7ff; }}
+            .recent-list {{ margin: 0; padding: 0; list-style: none; }}
+            .recent-item {{ border-bottom: 1px solid #e0e7ff; padding: 14px 0; transition: background 0.15s; }}
+            .recent-item:last-child {{ border-bottom: none; }}
+            .recent-item a {{ color: #1e3a8a; text-decoration: none; font-weight: bold; transition: color 0.15s; }}
+            .recent-item a:hover {{ text-decoration: underline; color: #2563eb; }}
+            .recent-meta {{ color: #666; font-size: 0.98em; margin-left: 8px; }}
+        </style>
+        </head>
+        <body>
+            <div class='report-title'>CoPPA Analytics Daily Report for {force_id}</div>
+            <table class='metrics-table'>
+                <tr><th class='metric-key'>Total Questions (All-Time)</th><th class='metric-key'>Unique Users (All-Time)</th></tr>
+                <tr><td class='metric-value'>{all_time_total_questions}</td><td class='metric-value'>{all_time_unique_users}</td></tr>
+            </table>
+            <table class='metrics-table'>
+                <tr><th class='metric-key'>Questions in Selected Date Range</th><th class='metric-key'>New Unique Users in Selected Date Range</th></tr>
+                <tr><td class='metric-value'>{total_user_questions}</td><td class='metric-value'>{unique_users}</td></tr>
+            </table>
+            <div class='section-title'>Top Conversation Themes</div>
+            {themes_html}
+            <div class='section-title'>Recent Conversations by Theme</div>
+            {by_theme_html}
+            <div class='section-title'>Hourly Distribution</div>
+            {hourly_html}
+            <div class='section-title'>Recent Conversations</div>
+            {questions_html}
+            <p style='margin-top:32px;'>Timestamp: {processed_data['timestamp']}</p>
+            <p>Status: {processed_data['status']}</p>
+            <p style='color:#888;font-size:0.9em;'>This is an automated message. Please do not reply.</p>
+        </body>
+        </html>
+        """
