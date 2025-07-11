@@ -25,16 +25,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f'Analytics processing completed for force: {force_id}')
         logging.info(f'Processed data: {json.dumps(processed_data, indent=2)}')
 
-        # Send daily analytics email using Microsoft Graph API
+        # Send daily analytics email using Microsoft Graph API (application permissions)
         import requests
         import msal
 
         graph_client_id = os.environ.get('GRAPH_CLIENT_ID')
         graph_tenant_id = os.environ.get('GRAPH_TENANT_ID')
+        graph_client_secret = os.environ.get('GRAPH_CLIENT_SECRET')
         email_from = os.environ.get('EMAIL_FROM')
         email_to = os.environ.get('EMAIL_TO') or os.environ.get('ADMIN_EMAIL')
 
-        if not all([graph_client_id, graph_tenant_id, email_from, email_to]):
+        if not all([graph_client_id, graph_tenant_id, graph_client_secret, email_from, email_to]):
             logging.error('Missing Graph API or email environment variables. Email not sent.')
             return func.HttpResponse('Missing Graph API or email environment variables.', status_code=500)
 
@@ -56,25 +57,15 @@ Status: {processed_data['status']}
 This is an automated message. Please do not reply.
 """
 
-        # Authenticate with Microsoft Graph using Device Code flow (delegated)
+        # Authenticate with Microsoft Graph using client credentials (application permissions)
         authority = f"https://login.microsoftonline.com/{graph_tenant_id}"
-        app = msal.PublicClientApplication(
+        app = msal.ConfidentialClientApplication(
             graph_client_id,
-            authority=authority
+            authority=authority,
+            client_credential=graph_client_secret
         )
-        scopes = ["Mail.Send"]
-        accounts = app.get_accounts()
-        if accounts:
-            result = app.acquire_token_silent(scopes, account=accounts[0])
-        else:
-            result = None
-        if not result or "access_token" not in result:
-            logging.info("Initiating device code flow for delegated Graph API access...")
-            flow = app.initiate_device_flow(scopes=scopes)
-            if "user_code" not in flow:
-                return func.HttpResponse("Device code flow failed to start.", status_code=500)
-            logging.info(f"Please authenticate: {flow['message']}")
-            result = app.acquire_token_by_device_flow(flow)
+        scopes = ["https://graph.microsoft.com/.default"]
+        result = app.acquire_token_for_client(scopes=scopes)
         if "access_token" not in result:
             logging.error(f"Failed to obtain access token: {result.get('error_description')}")
             return func.HttpResponse(f"Failed to obtain access token: {result.get('error_description')}", status_code=500)
