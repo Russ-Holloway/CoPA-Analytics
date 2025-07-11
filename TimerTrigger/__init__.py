@@ -40,9 +40,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse('Missing Graph API or email environment variables.', status_code=500)
 
         subject = f"CoPPA Analytics Daily Report - {force_id} - {utc_timestamp[:10]}"
-        # Step 1: HTML email with all-time metrics (using dummy data for now)
+        # Step 2: Add filtered metrics to HTML email (dummy values for now)
         all_time_total_questions = processed_data['processedRecords']  # Placeholder for dashboard metric
         all_time_unique_users = 42  # Placeholder for dashboard metric
+        total_user_questions = 17  # Dummy value for selected date range
+        unique_users = 5  # Dummy value for selected date range
         body = f"""
         <html>
         <body style='font-family:Segoe UI,Arial,sans-serif;font-size:18px;color:#232946;'>
@@ -55,6 +57,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 <tr>
                     <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{all_time_total_questions}</td>
                     <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{all_time_unique_users}</td>
+                </tr>
+                <tr>
+                    <th style='padding:8px 16px;background:#f9fafb;border-radius:8px 0 0 8px;'>Questions in Selected Date Range</th>
+                    <th style='padding:8px 16px;background:#f9fafb;border-radius:0 8px 8px 0;'>New Unique Users in Selected Date Range</th>
+                </tr>
+                <tr>
+                    <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{total_user_questions}</td>
+                    <td style='padding:8px 16px;text-align:center;font-weight:bold;'>{unique_users}</td>
                 </tr>
             </table>
             <p style='margin-top:32px;'>Timestamp: {processed_data['timestamp']}</p>
