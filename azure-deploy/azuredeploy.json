@@ -57,12 +57,13 @@
         }
     },
     "variables": {
+        "uniqueSuffix": "[take(uniqueString(resourceGroup().id, parameters('forcePrefix')), 6)]",
         "resourcePrefix": "[concat('coppa-', toLower(parameters('forcePrefix')))]",
         "storageAccountName": "[take(concat('st', uniqueString(resourceGroup().id)), 24)]",
-        "functionAppName": "[concat('func-', variables('resourcePrefix'), '-analytics')]",
-        "appServicePlanName": "[concat('plan-', variables('resourcePrefix'), '-analytics')]",
-        "applicationInsightsName": "[concat('appi-', variables('resourcePrefix'), '-analytics')]",
-        "logAnalyticsWorkspaceName": "[concat('log-', variables('resourcePrefix'), '-analytics')]",
+        "functionAppName": "[concat('func-', variables('resourcePrefix'), '-analytics-', variables('uniqueSuffix'))]",
+        "appServicePlanName": "[concat('plan-', variables('resourcePrefix'), '-analytics-', variables('uniqueSuffix'))]",
+        "applicationInsightsName": "[concat('appi-', variables('resourcePrefix'), '-analytics-', variables('uniqueSuffix'))]",
+        "logAnalyticsWorkspaceName": "[concat('log-', variables('resourcePrefix'), '-analytics-', variables('uniqueSuffix'))]",
         "location": "[resourceGroup().location]"
     },
     "resources": [
@@ -263,15 +264,19 @@
     "outputs": {
         "coppaAnalyticsDashboard": {
             "type": "string",
-            "value": "[concat('https://', variables('storageAccountName'), '.z33.web.core.windows.net/')]"
+            "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/Dashboard')]"
         },
         "coppaAnalyticsAPI": {
             "type": "string",
-            "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/analytics')]"
+            "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/GetAnalytics')]"
         },
         "functionAppName": {
             "type": "string",
             "value": "[variables('functionAppName')]"
+        },
+        "functionAppUrl": {
+            "type": "string",
+            "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net')]"
         },
         "storageAccountName": {
             "type": "string",
@@ -281,9 +286,22 @@
             "type": "string",
             "value": "[resourceGroup().name]"
         },
+        "uniqueSuffix": {
+            "type": "string",
+            "value": "[variables('uniqueSuffix')]"
+        },
+        "testEndpoints": {
+            "type": "object",
+            "value": {
+                "testFunction": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/TestFunction')]",
+                "getAnalytics": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/GetAnalytics?days=7')]",
+                "dashboard": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/Dashboard')]",
+                "debugEnvironment": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/DebugEnvironment')]"
+            }
+        },
         "nextSteps": {
             "type": "string",
-            "value": "CoPPA Analytics deployed! Check the outputs for your dashboard URL and API endpoint."
+            "value": "CoPPA Analytics deployed! Your Function App name includes a unique suffix to avoid naming conflicts. Check the outputs for your specific endpoint URLs."
         }
     }
 }
