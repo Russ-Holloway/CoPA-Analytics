@@ -130,17 +130,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Citation tracking
         citation_sources = defaultdict(lambda: {'count': 0, 'questions': set()})
         citation_categories = {
-            'CoP-APP': ['cop-app', 'college of policing', 'authorised professional practice', 'app.college.police'],
-            'Op Soteria-NOM': ['op soteria', 'operation soteria', 'soteria-nom', 'national operating model'],
-            'NPCC': ['npcc', 'national police chiefs council', 'national police chiefs\' council'],
-            'GovUK-CPS': ['gov.uk/cps', 'cps.gov.uk', 'crown prosecution service', 'cps guidance', 'cps legal guidance'],
-            'GovUK-Legislation': ['legislation.gov.uk', 'act 19', 'act 20', 'statute', 'section ', 'schedule '],
-            'GovUK-HO': ['gov.uk/home-office', 'home office', 'ho guidance', 'home office guidance', 'home office circular'],
-            'GovUK-MoJ': ['gov.uk/moj', 'ministry of justice', 'moj guidance', 'justice.gov.uk'],
-            'RCJ': ['rcj', 'royal courts of justice', 'case law', 'appeal', 'judgment'],
-            'VKPP': ['vkpp', 'victims\' commissioner', 'victims code'],
-            'Sentencing Council': ['sentencing council', 'sentencing guidelines', 'sentencingcouncil.org'],
-            'BTP-Policy': ['btp policy', 'btp-policy', 'british transport police policy', 'force policy'],
+            'CoP-APP': ['cop-app:', 'cop-app ', 'college of policing', 'authorised professional practice'],
+            'Op Soteria-NOM': ['op soteria-nom:', 'op soteria:', 'operation soteria', 'soteria'],
+            'NPCC': ['npcc:', 'npcc ', 'national police chiefs'],
+            'GovUK-CPS': ['govuk-cps:', 'cps.gov.uk', 'crown prosecution service', 'cps guidance'],
+            'GovUK-Legislation': ['govuk-legislation:', 'legislation.gov.uk'],
+            'GovUK-HO': ['govuk-ho:', 'home office guidance'],
+            'GovUK-MoJ': ['govuk-moj:', 'ministry of justice'],
+            'RCJ': ['rcj:', 'royal courts of justice'],
+            'VKPP': ['vkpp:', 'victims\' commissioner'],
+            'Sentencing Council': ['sentencing council:', 'sentencing guidelines'],
+            'BTP-Policy': ['btp-policy:', 'btp policy'],
             'Other Documents': [],  # Catch-all for unmatched citations
         }
 
@@ -172,6 +172,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     if citations and isinstance(citations, list):
                         for citation in citations:
                             title = citation.get('title', '').lower()
+                            # Log first few citation titles for debugging
+                            if citation_sources['Other Documents']['count'] < 5:
+                                logging.info(f"Citation title sample: {title}")
+                            
                             # Categorize citation by source
                             matched = False
                             for source_name, keywords in citation_categories.items():
