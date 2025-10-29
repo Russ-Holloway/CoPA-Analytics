@@ -127,6 +127,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             'complaint', 'noise', 'property', 'traffic', 'crime', 'enquiry', 'lost', 'report',
         ]
 
+        # Citation tracking
+        citation_sources = defaultdict(lambda: {'count': 0, 'questions': set()})
+        citation_categories = {
+            'CPS Guidance': ['cps', 'crown prosecution'],
+            'Legislation': ['act', 'legislation', 'statute', 'section', 'schedule'],
+            'PACE': ['pace', 'police and criminal evidence'],
+            'Code of Practice': ['code of practice', 'cop'],
+            'NPCC': ['npcc', 'national police chiefs'],
+            'Operation Soteria': ['operation soteria', 'op soteria', 'soteria'],
+        }
+
         for item in items:
             # Unique users
             user_id = item.get('userId')
@@ -144,6 +155,33 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     hourly_distribution[dt.hour] += 1
                 except Exception:
                     pass
+            
+            # Extract citations from tool messages
+            if item.get('role') == 'tool':
+                conv_id = item.get('conversationId')
+                try:
+                    content = item.get('content', '')
+                    tool_data = json.loads(content) if isinstance(content, str) else content
+                    citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
+                    if citations and isinstance(citations, list):
+                        for citation in citations:
+                            title = citation.get('title', '').lower()
+                            # Categorize citation by source
+                            for source_name, keywords in citation_categories.items():
+                                if any(keyword in title for keyword in keywords):
+                                    citation_sources[source_name]['count'] += 1
+                                    if conv_id:
+                                        citation_sources[source_name]['questions'].add(conv_id)
+                                    break
+                            else:
+                                # If no category matched, categorize as "Other"
+                                citation_sources['Other']['count'] += 1
+                                if conv_id:
+                                    citation_sources['Other']['questions'].add(conv_id)
+                except Exception as e:
+                    logging.warning(f"Error parsing citations: {e}")
+                    pass
+            
             # Questions (user questions)
             if item.get('type') == 'conversation' and (item.get('title') or item.get('question')):
                 total_questions += 1
@@ -210,6 +248,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         # Prepare response
         avg_response_time = round(sum(response_times)/len(response_times), 2) if response_times else None
+        
+        # Format citations data for response
+        citations_breakdown = [
+            {
+                "source": source_name,
+                "totalCitations": data['count'],
+                "questionsCount": len(data['questions'])
+            }
+            for source_name, data in sorted(citation_sources.items(), key=lambda x: x[1]['count'], reverse=True)
+        ]
+        
         data = {
             "summary": {
                 "totalInteractions": total_interactions,
@@ -225,6 +274,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "conversationTitleBreakdown": conversation_title_breakdown,
             "trends": {"hourly_distribution": hourly_distribution},
             "questions": {"recent": recent_questions},
+            "citations": {
+                "breakdown": citations_breakdown,
+                "totalCitations": sum(c['totalCitations'] for c in citations_breakdown),
+                "totalQuestionsWithCitations": len(set().union(*[data['questions'] for data in citation_sources.values()])) if citation_sources else 0
+            },
             # --- NEW FIELD: allTime ---
             "allTime": {
                 "totalQuestions": all_time_total_questions,

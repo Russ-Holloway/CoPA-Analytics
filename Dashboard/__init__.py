@@ -251,6 +251,25 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     <div id="questions" class="questions-list"></div>
                 </div>
             </div>
+            <div class="dashboard-grid-4">
+                <div class="card" style="grid-column: span 2;">
+                    <h3>Citation Sources Usage</h3>
+                    <div id="citationsTable" style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #f0f8ff; border-bottom: 2px solid #1e3a8a;">
+                                    <th style="padding: 12px; text-align: left; font-size: 1em;">Source</th>
+                                    <th style="padding: 12px; text-align: center; font-size: 1em;">Total Citations</th>
+                                    <th style="padding: 12px; text-align: center; font-size: 1em;">Questions with Citations</th>
+                                </tr>
+                            </thead>
+                            <tbody id="citationsTableBody">
+                                <tr><td colspan="3" style="padding: 20px; text-align: center; color: #666;">Loading citation data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -380,6 +399,27 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 }}
                 document.getElementById('questions').innerHTML = questionsHtml;
             }}
+            
+            // Update citations table
+            if (data.citations && data.citations.breakdown) {{
+                var citationsHtml = '';
+                for (var i = 0; i < data.citations.breakdown.length; i++) {{
+                    var citation = data.citations.breakdown[i];
+                    var rowClass = i % 2 === 0 ? 'background-color: #f9fafb;' : '';
+                    citationsHtml += '<tr style="' + rowClass + ' border-bottom: 1px solid #e5e7eb;">' +
+                        '<td style="padding: 12px; font-weight: 500;">' + citation.source + '</td>' +
+                        '<td style="padding: 12px; text-align: center; color: #1e3a8a; font-weight: bold;">' + citation.totalCitations + '</td>' +
+                        '<td style="padding: 12px; text-align: center; color: #1e3a8a; font-weight: bold;">' + citation.questionsCount + '</td>' +
+                    '</tr>';
+                }}
+                if (citationsHtml === '') {{
+                    citationsHtml = '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #666;">No citation data available for this period</td></tr>';
+                }}
+                document.getElementById('citationsTableBody').innerHTML = citationsHtml;
+            }} else {{
+                document.getElementById('citationsTableBody').innerHTML = '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #666;">No citation data available</td></tr>';
+            }}
+            
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
         }}
