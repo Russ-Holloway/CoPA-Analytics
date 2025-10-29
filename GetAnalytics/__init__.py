@@ -130,12 +130,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Citation tracking
         citation_sources = defaultdict(lambda: {'count': 0, 'questions': set()})
         citation_categories = {
-            'CPS Guidance': ['cps', 'crown prosecution'],
-            'Legislation': ['act', 'legislation', 'statute', 'section', 'schedule'],
-            'PACE': ['pace', 'police and criminal evidence'],
-            'Code of Practice': ['code of practice', 'cop'],
-            'NPCC': ['npcc', 'national police chiefs'],
             'Operation Soteria': ['operation soteria', 'op soteria', 'soteria'],
+            'CPS Guidance': ['cps guidance', 'crown prosecution service guidance', 'cps legal guidance'],
+            'PACE Code': ['pace code', 'police and criminal evidence act code'],
+            'Code of Practice': ['code of practice', ' cop ', 'codes of practice'],
+            'Legislation': ['act 19', 'act 20', 'section ', 'schedule ', 'statute', 'offences act', 'evidence act', 'procedure act'],
+            'NPCC Guidance': ['npcc', 'national police chiefs council', 'national police chiefs\' council'],
+            'Home Office': ['home office guidance', 'home office circular', 'home office'],
+            'College of Policing': ['college of policing', 'app ', 'authorised professional practice'],
+            'Case Law': ['v ', ' case', 'appeal', 'judgment', 'court'],
         }
 
         for item in items:
@@ -250,11 +253,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         avg_response_time = round(sum(response_times)/len(response_times), 2) if response_times else None
         
         # Format citations data for response
+        total_citations = sum(data['count'] for data in citation_sources.values())
         citations_breakdown = [
             {
                 "source": source_name,
                 "totalCitations": data['count'],
-                "questionsCount": len(data['questions'])
+                "questionsCount": len(data['questions']),
+                "percentage": round((data['count'] / total_citations * 100), 1) if total_citations > 0 else 0,
+                "avgPerQuestion": round(data['count'] / len(data['questions']), 1) if len(data['questions']) > 0 else 0
             }
             for source_name, data in sorted(citation_sources.items(), key=lambda x: x[1]['count'], reverse=True)
         ]
