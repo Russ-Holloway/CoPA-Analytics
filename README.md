@@ -89,7 +89,7 @@ Your analytics solution is now running! Access:
 
 ## 📋 What Gets Deployed
 
-After successful deployment, you'll have **7 Azure Functions** providing comprehensive analytics:
+After successful deployment, you'll have **8 Azure Functions** providing comprehensive analytics:
 
 ### **🎛️ Dashboard** - `/api/Dashboard`
 - **Purpose**: Interactive web-based analytics dashboard
@@ -105,6 +105,16 @@ After successful deployment, you'll have **7 Azure Functions** providing compreh
 - **Purpose**: Most asked questions and topics analysis
 - **Features**: Question frequency, trending queries, topic clustering
 - **Use**: Identify citizen concerns and popular topics
+
+### **📥 ExportToCSV** - `/api/ExportToCSV`
+- **Purpose**: Export conversation data to CSV format for download
+- **Features**: Flexible data export with date filtering, conversation or message-level exports
+- **Parameters**: 
+  - `?days=30` (default: last 30 days)
+  - `?startDate=2025-01-01&endDate=2025-01-31` (custom date range)
+  - `?format=conversations` or `?format=messages` (default: conversations)
+- **Use**: Download data for offline analysis, reporting, or integration with other tools
+- **Example**: `https://func-[your-prefix]-analytics.azurewebsites.net/api/ExportToCSV?days=7&format=conversations`
 
 ### **🌱 SeedData** - `/api/SeedData`
 - **Purpose**: Generate demo/test data for new deployments
@@ -236,6 +246,21 @@ https://func-coppa-[your-force]-analytics.azurewebsites.net/api/Dashboard
 ### Analytics API
 ```
 https://func-coppa-[your-force]-analytics.azurewebsites.net/api/GetAnalytics?days=7
+```
+
+### CSV Data Export
+```
+# Export last 30 days of conversations (default)
+https://func-coppa-[your-force]-analytics.azurewebsites.net/api/ExportToCSV
+
+# Export last 7 days of conversations
+https://func-coppa-[your-force]-analytics.azurewebsites.net/api/ExportToCSV?days=7
+
+# Export messages for a specific date range
+https://func-coppa-[your-force]-analytics.azurewebsites.net/api/ExportToCSV?startDate=2025-01-01&endDate=2025-01-31&format=messages
+
+# Export conversations for last 90 days
+https://func-coppa-[your-force]-analytics.azurewebsites.net/api/ExportToCSV?days=90&format=conversations
 ```
 
 ### Health Check
