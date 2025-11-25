@@ -279,8 +279,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     content = item.get('content', '')
                     # Clean and format content - replace problematic characters
                     content_cleaned = content.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
-                    # Preview first 500 chars for better visibility
-                    content_preview = content_cleaned[:500] + '...' if len(content_cleaned) > 500 else content_cleaned
+                    # Export full content without truncation
+                    content_preview = content_cleaned
                     
                     # Check for citations
                     has_citations = 'No'
