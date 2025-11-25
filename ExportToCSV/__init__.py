@@ -191,12 +191,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             user_details = get_user_details(unique_user_ids, access_token)
             logging.info(f"Successfully retrieved details for {len(user_details)} users.")
         
-        # Create CSV in memory
+        # Create CSV in memory with proper quoting for multi-line content
         output = io.StringIO()
         
         if export_format == 'conversations':
             # Export conversation-level data
-            csv_writer = csv.writer(output)
+            csv_writer = csv.writer(output, quoting=csv.QUOTE_ALL)
             csv_writer.writerow([
                 'ID',
                 'Title',
@@ -258,8 +258,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             logging.info(f"Exported {len(conversations)} conversations to CSV.")
         
         else:  # messages format
-            # Export message-level data
-            csv_writer = csv.writer(output)
+            # Export message-level data with proper quoting for multi-line content
+            csv_writer = csv.writer(output, quoting=csv.QUOTE_ALL)
             csv_writer.writerow([
                 'ID',
                 'Conversation ID',
@@ -277,8 +277,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             for item in filtered_items:
                 if item.get('type') == 'message':
                     content = item.get('content', '')
-                    # Preview first 100 chars
-                    content_preview = content[:100] + '...' if len(content) > 100 else content
+                    # Clean and format content - replace problematic characters
+                    content_cleaned = content.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+                    # Preview first 500 chars for better visibility
+                    content_preview = content_cleaned[:500] + '...' if len(content_cleaned) > 500 else content_cleaned
                     
                     # Check for citations
                     has_citations = 'No'
