@@ -141,7 +141,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             'RCJ': ['rcj-', 'royal courts of justice'],
             'VKPP': ['vkpp-', 'victims\' commissioner', 'victims commissioner'],
             'Sentencing Council': ['sent-coun-', 'sentencing council', 'sentencing guidelines'],
-            'BTP-Policy': ['btp-policy', 'btp policy', 'british transport police'],
+            'BTP-Policy': ['btp-pol', 'btp-policy', 'btp policy', 'btp-', 'british transport police'],
             'Stop & Search': ['stop and search', 'stop & search', 'stop search'],
             'PACE': ['pace-', 'police and criminal evidence act'],
             'SCRS': ['scrs ', 'scrs crime manual', 'scotland'],
