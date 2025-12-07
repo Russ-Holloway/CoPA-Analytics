@@ -36,15 +36,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             .transcript {{ margin-top: 32px; }}
             .msg-q {{ background: #e0e7ff; padding: 14px; border-radius: 8px; margin-bottom: 8px; }}
             .msg-a {{ background: #f0fdf4; padding: 14px; border-radius: 8px; margin-bottom: 8px; }}
-            .msg-tool {{ background: #fef9c3; padding: 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.97em; color: #7c4700; }}
+            .msg-tool {{ background: #fef9c3; padding: 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.97em; color: #7c4700; cursor: pointer; transition: all 0.2s; }}
+            .msg-tool:hover {{ background: #fef08a; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
             .msg-role {{ font-weight: bold; margin-right: 8px; }}
             .citation-title {{ color: #1e3a8a; font-weight: bold; }}
+            .citation-name {{ color: #1e3a8a; font-weight: bold; }}
             .citation-content {{ display: block; margin-top: 4px; font-size: 0.97em; color: #333; }}
-            .citation-link {{ color: #1e3a8a; text-decoration: underline; cursor: pointer; }}
-            .citation-link:hover {{ color: #3b82f6; }}
         </style>
         <script>
-        async function trackCitationClick(conversationId, citationTitle, citationUrl) {{
+        async function trackCitationClick(conversationId, citationTitle) {{
           try {{
             await fetch('/api/TrackCitationClick', {{
               method: 'POST',
@@ -52,19 +52,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
               body: JSON.stringify({{
                 conversationId: conversationId,
                 citationTitle: citationTitle,
-                citationUrl: citationUrl || '',
+                citationUrl: '',
                 userId: 'viewer',
                 timestamp: new Date().toISOString()
               }})
             }});
           }} catch (e) {{ console.error('Citation tracking failed:', e); }}
-        }}
-        function handleCitationClick(event, conversationId, title, url) {{
-          event.preventDefault();
-          event.stopPropagation();
-          trackCitationClick(conversationId, title, url);
-          if (url) window.open(url, '_blank');
-          return false;
         }}
         </script>
     </head>
@@ -107,10 +100,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                                 for c in citations:
                                     title = c.get('title', '(citation)')
                                     c_content = c.get('content', '')
-                                    url = c.get('url', '')
                                     title_escaped = title.replace("'", "\\'").replace('"', '&quot;')
-                                    url_escaped = url.replace("'", "\\'").replace('"', '&quot;')
-                                    citation_htmls.append(f'<div class="msg-tool"><span class="citation-title">Citation:</span> <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a><span class="citation-content">{c_content}</span></div>')
+                                    citation_htmls.append(f'<div class="msg-tool" onclick="trackCitationClick(\'{conversation_id}\', \'{title_escaped}\')"><span class="citation-title">Citation:</span> <span class="citation-name">{title}</span><span class="citation-content">{c_content}</span></div>')
                             else:
                                 citation_htmls.append(f'<div class="msg-tool">{t_content}</div>')
                         except Exception:
@@ -134,10 +125,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         for c in citations:
                             title = c.get('title', '(citation)')
                             c_content = c.get('content', '')
-                            url = c.get('url', '')
                             title_escaped = title.replace("'", "\\'").replace('"', '&quot;')
-                            url_escaped = url.replace("'", "\\'").replace('"', '&quot;')
-                            html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a><span class="citation-content">{c_content}</span></div>'
+                            html += f'<div class="msg-tool" onclick="trackCitationClick(\'{conversation_id}\', \'{title_escaped}\')"><span class="citation-title">Citation:</span> <span class="citation-name">{title}</span><span class="citation-content">{c_content}</span></div>'
                     else:
                         html += f'<div class="msg-tool">{content}</div>'
                 except Exception:
