@@ -54,10 +54,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         "    });" + \
         "  } catch (e) { console.error('Citation tracking failed:', e); }" + \
         "}" + \
-        "function handleCitationClick(e, conversationId, title, url) {" + \
-        "  e.preventDefault();" + \
+        "function handleCitationClick(event, conversationId, title, url) {" + \
+        "  event.preventDefault();" + \
+        "  event.stopPropagation();" + \
         "  trackCitationClick(conversationId, title, url);" + \
         "  if (url) window.open(url, '_blank');" + \
+        "  return false;" + \
         "}" + \
         "</script></head><body>" + \
         "<div class='container'>" + \
