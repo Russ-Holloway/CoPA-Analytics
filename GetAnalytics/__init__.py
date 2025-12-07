@@ -26,6 +26,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         client = CosmosClient(endpoint, key)
         db = client.get_database_client(database_name)
         container = db.get_container_client(container_name)
+        
+        # Also check the other database for citation clicks
+        db2 = client.get_database_client('db_conversation_history')
+        container2 = db2.get_container_client('Conversations')
 
         # Parse date filters from query params
         from datetime import datetime, timezone
@@ -45,7 +49,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Query all items (filtering in Python for flexibility)
         query = "SELECT * FROM c"
         items = list(container.query_items(query=query, enable_cross_partition_query=True))
-        logging.info(f"GetAnalytics: Retrieved {len(items)} items from Cosmos DB.")
+        logging.info(f"GetAnalytics: Retrieved {len(items)} items from primary container.")
+        
+        # Also fetch citation clicks from the secondary database
+        try:
+            items2 = list(container2.query_items(query=query, enable_cross_partition_query=True))
+            citation_clicks_from_db2 = [item for item in items2 if item.get('type') == 'citation_click']
+            items.extend(citation_clicks_from_db2)
+            logging.info(f"GetAnalytics: Retrieved {len(citation_clicks_from_db2)} citation clicks from secondary container.")
+        except Exception as e:
+            logging.warning(f"Could not fetch from secondary container: {e}")
+        
+        logging.info(f"GetAnalytics: Total {len(items)} items from Cosmos DB.")
         if items:
             logging.info(f"GetAnalytics: Sample item: {json.dumps(items[0], indent=2)}")
         # Filter by date and category if provided

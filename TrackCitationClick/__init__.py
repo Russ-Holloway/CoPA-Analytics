@@ -45,8 +45,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Cosmos DB connection
         endpoint = os.environ.get('COSMOS_DB_ENDPOINT')
         key = os.environ.get('COSMOS_DB_KEY')
-        database_name = os.environ.get('COSMOS_DB_DATABASE', 'coppa-db')
-        container_name = os.environ.get('COSMOS_DB_CONTAINER', 'questions')
+        # Allow database/container to be specified in request, otherwise use environment defaults
+        database_name = req_body.get('databaseName') or os.environ.get('COSMOS_DB_DATABASE', 'coppa-db')
+        container_name = req_body.get('containerName') or os.environ.get('COSMOS_DB_CONTAINER', 'questions')
         
         if not endpoint or not key:
             raise Exception('COSMOS_DB_ENDPOINT or COSMOS_DB_KEY environment variable not set')
