@@ -129,6 +129,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         # Citation tracking
         citation_sources = defaultdict(lambda: {'count': 0, 'questions': set()})
+        unmatched_samples = []  # Store sample unmatched citations for debugging
         citation_categories = {
             'CoP-APP': ['cop-app:', 'cop-app ', 'cop app:', 'cop app ', 'college of policing', 'authorised professional practice', 'app:'],
             'Op Soteria-NOM': ['op soteria-nom:', 'op soteria:', 'opsoteria', 'operation soteria', 'soteria'],
@@ -200,6 +201,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                                 # Log unmatched citations to help identify new patterns
                                 if total_citations_processed < 50:
                                     logging.warning(f"Unmatched citation: {title}")
+                                # Store first 20 unmatched samples for API response
+                                if len(unmatched_samples) < 20:
+                                    unmatched_samples.append(title)
                                 
                             total_citations_processed += 1
                 except Exception as e:
@@ -304,7 +308,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "citations": {
                 "breakdown": citations_breakdown,
                 "totalCitations": sum(c['totalCitations'] for c in citations_breakdown),
-                "totalQuestionsWithCitations": len(set().union(*[data['questions'] for data in citation_sources.values()])) if citation_sources else 0
+                "totalQuestionsWithCitations": len(set().union(*[data['questions'] for data in citation_sources.values()])) if citation_sources else 0,
+                "unmatchedSamples": unmatched_samples  # Debug: show sample unmatched citations
             },
             # --- NEW FIELD: allTime ---
             "allTime": {
