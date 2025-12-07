@@ -130,17 +130,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Citation tracking
         citation_sources = defaultdict(lambda: {'count': 0, 'questions': set()})
         citation_categories = {
-            'CoP-APP': ['cop-app:', 'cop-app ', 'college of policing', 'authorised professional practice'],
-            'Op Soteria-NOM': ['op soteria-nom:', 'op soteria:', 'operation soteria', 'soteria'],
+            'CoP-APP': ['cop-app:', 'cop-app ', 'cop app:', 'cop app ', 'college of policing', 'authorised professional practice', 'app:'],
+            'Op Soteria-NOM': ['op soteria-nom:', 'op soteria:', 'opsoteria', 'operation soteria', 'soteria'],
             'NPCC': ['npcc:', 'npcc ', 'national police chiefs'],
-            'GovUK-CPS': ['govuk-cps:', 'cps.gov.uk', 'crown prosecution service', 'cps guidance'],
-            'GovUK-Legislation': ['govuk-legislation:', 'legislation.gov.uk'],
-            'GovUK-HO': ['govuk-ho:', 'home office guidance'],
-            'GovUK-MoJ': ['govuk-moj:', 'ministry of justice'],
+            'GovUK-CPS': ['govuk-cps:', 'govuk cps:', 'cps.gov.uk', 'crown prosecution service', 'cps guidance', 'cps:'],
+            'GovUK-Legislation': ['govuk-legislation:', 'govuk legislation:', 'legislation.gov.uk', 'legislation:'],
+            'GovUK-HO': ['govuk-ho:', 'govuk ho:', 'home office guidance', 'home office:'],
+            'GovUK-MoJ': ['govuk-moj:', 'govuk moj:', 'ministry of justice', 'moj:'],
             'RCJ': ['rcj:', 'royal courts of justice'],
-            'VKPP': ['vkpp:', 'victims\' commissioner'],
-            'Sentencing Council': ['sentencing council:', 'sentencing guidelines'],
-            'BTP-Policy': ['btp-policy:', 'btp policy'],
+            'VKPP': ['vkpp:', 'victims\' commissioner', 'victims commissioner'],
+            'Sentencing Council': ['sentencing council:', 'sentencing guidelines', 'sentencing:'],
+            'BTP-Policy': ['btp-policy:', 'btp policy:', 'btp:', 'british transport police'],
+            'Stop & Search': ['stop and search', 'stop & search', 'stop search', 's&s:'],
+            'PACE': ['pace:', 'police and criminal evidence act'],
             'Other Documents': [],  # Catch-all for unmatched citations
         }
 
@@ -170,11 +172,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     tool_data = json.loads(content) if isinstance(content, str) else content
                     citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
                     if citations and isinstance(citations, list):
+                        # Track total citations processed for logging
+                        total_citations_processed = sum(src['count'] for src in citation_sources.values())
+                        
                         for citation in citations:
                             title = citation.get('title', '').lower()
-                            # Log first few citation titles for debugging
-                            if citation_sources['Other Documents']['count'] < 5:
-                                logging.info(f"Citation title sample: {title}")
+                            # Log first 50 citation titles for debugging to understand patterns
+                            if total_citations_processed < 50:
+                                logging.info(f"Citation title: {title}")
                             
                             # Categorize citation by source
                             matched = False
@@ -192,6 +197,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                                 citation_sources['Other Documents']['count'] += 1
                                 if conv_id:
                                     citation_sources['Other Documents']['questions'].add(conv_id)
+                                # Log unmatched citations to help identify new patterns
+                                if total_citations_processed < 50:
+                                    logging.warning(f"Unmatched citation: {title}")
+                                
+                            total_citations_processed += 1
                 except Exception as e:
                     logging.warning(f"Error parsing citations: {e}")
                     pass
