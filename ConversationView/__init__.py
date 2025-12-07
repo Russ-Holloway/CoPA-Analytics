@@ -36,11 +36,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             .transcript {{ margin-top: 32px; }}
             .msg-q {{ background: #e0e7ff; padding: 14px; border-radius: 8px; margin-bottom: 8px; }}
             .msg-a {{ background: #f0fdf4; padding: 14px; border-radius: 8px; margin-bottom: 8px; }}
-            .msg-tool {{ background: #fef9c3; padding: 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.97em; color: #7c4700; }}
+            .msg-tool {{ background: #fef9c3; padding: 14px; border-radius: 8px; margin-bottom: 12px; font-size: 0.97em; color: #7c4700; border-left: 3px solid #eab308; }}
             .msg-role {{ font-weight: bold; margin-right: 8px; }}
-            .citation-title {{ color: #1e3a8a; font-weight: bold; }}
-            .citation-content {{ display: block; margin-top: 4px; font-size: 0.97em; color: #333; }}
-            .citation-link {{ color: #1e3a8a; text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 8px; font-weight: 500; }}
+            .citation-title {{ color: #1e3a8a; font-weight: bold; display: block; margin-bottom: 6px; }}
+            .citation-content {{ display: block; margin-top: 8px; margin-left: 0; font-size: 0.95em; color: #333; line-height: 1.5; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); }}
+            .citation-link {{ color: #1e3a8a; text-decoration: underline; cursor: pointer; font-weight: 500; }}
             .citation-link:hover {{ color: #3b82f6; background: rgba(30, 58, 138, 0.05); padding: 2px 4px; border-radius: 3px; }}
         </style>
         <script>
