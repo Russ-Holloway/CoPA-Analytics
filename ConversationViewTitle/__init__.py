@@ -49,7 +49,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         "        citationTitle: citationTitle," + \
         "        citationUrl: ''," + \
         "        userId: 'viewer'," + \
-        "        timestamp: new Date().toISOString()" + \
+        "        timestamp: new Date().toISOString()," + \
+        "        databaseName: '" + database_name + "'," + \
+        "        containerName: '" + container_name + "'" + \
         "      })" + \
         "    });" + \
         "  } catch (e) { console.error('Citation tracking failed:', e); }" + \
