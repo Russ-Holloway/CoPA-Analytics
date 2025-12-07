@@ -109,9 +109,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                                     title_escaped = title.replace("'", "\\'").replace('"', '&quot;')
                                     url_escaped = url.replace("'", "\\'").replace('"', '&quot;')
                                     if url:
-                                        citation_htmls.append(f'<div class="msg-tool"><span class="citation-title">Citation:</span> <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a><span class="citation-content">{c_content}</span></div>')
+                                        citation_htmls.append(f'<div class="msg-tool"><div class="citation-title">Citation: <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a></div><div class="citation-content">{c_content}</div></div>')
                                     else:
-                                        citation_htmls.append(f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>')
+                                        citation_htmls.append(f'<div class="msg-tool"><div class="citation-title">Citation: {title}</div><div class="citation-content">{c_content}</div></div>')
                             else:
                                 citation_htmls.append(f'<div class="msg-tool">{t_content}</div>')
                         except Exception:
@@ -139,9 +139,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                             title_escaped = title.replace("'", "\\'").replace('"', '&quot;')
                             url_escaped = url.replace("'", "\\'").replace('"', '&quot;')
                             if url:
-                                html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a><span class="citation-content">{c_content}</span></div>'
+                                html += f'<div class="msg-tool"><div class="citation-title">Citation: <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a></div><div class="citation-content">{c_content}</div></div>'
                             else:
-                                html += f'<div class="msg-tool"><span class="citation-title">Citation:</span> {title}<span class="citation-content">{c_content}</span></div>'
+                                html += f'<div class="msg-tool"><div class="citation-title">Citation: {title}</div><div class="citation-content">{c_content}</div></div>'
                     else:
                         html += f'<div class="msg-tool">{content}</div>'
                 except Exception:
