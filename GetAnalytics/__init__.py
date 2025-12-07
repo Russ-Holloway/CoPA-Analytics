@@ -131,19 +131,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         citation_sources = defaultdict(lambda: {'count': 0, 'questions': set()})
         unmatched_samples = []  # Store sample unmatched citations for debugging
         citation_categories = {
-            'CoP-APP': ['cop-app:', 'cop-app ', 'cop app:', 'cop app ', 'college of policing', 'authorised professional practice', 'app:'],
-            'Op Soteria-NOM': ['op soteria-nom:', 'op soteria:', 'opsoteria', 'operation soteria', 'soteria'],
-            'NPCC': ['npcc:', 'npcc ', 'national police chiefs'],
-            'GovUK-CPS': ['govuk-cps:', 'govuk cps:', 'cps.gov.uk', 'crown prosecution service', 'cps guidance', 'cps:'],
-            'GovUK-Legislation': ['govuk-legislation:', 'govuk legislation:', 'legislation.gov.uk', 'legislation:'],
-            'GovUK-HO': ['govuk-ho:', 'govuk ho:', 'home office guidance', 'home office:'],
-            'GovUK-MoJ': ['govuk-moj:', 'govuk moj:', 'ministry of justice', 'moj:'],
-            'RCJ': ['rcj:', 'royal courts of justice'],
-            'VKPP': ['vkpp:', 'victims\' commissioner', 'victims commissioner'],
-            'Sentencing Council': ['sentencing council:', 'sentencing guidelines', 'sentencing:'],
-            'BTP-Policy': ['btp-policy:', 'btp policy:', 'btp:', 'british transport police'],
-            'Stop & Search': ['stop and search', 'stop & search', 'stop search', 's&s:'],
-            'PACE': ['pace:', 'police and criminal evidence act'],
+            'CoP-APP': ['cop-app', 'cop app', 'college of policing', 'authorised professional practice', 'cop-detention', 'cop-general'],
+            'Op Soteria-NOM': ['op soteria-nom', 'op soteria', 'opsoteria', 'operation soteria', 'soteria'],
+            'NPCC': ['npcc-', 'npcc ', 'national police chiefs', 'gravity-matrix', 'oocr-'],
+            'GovUK-CPS': ['govuk-cps-', 'govuk cps', 'cps.gov.uk', 'crown prosecution service', 'cps guidance'],
+            'GovUK-Legislation': ['govuk-legislation', 'legislation.gov.uk'],
+            'GovUK-HO': ['govuk-ho-', 'govuk ho', 'home office guidance', 'notifiable-offence'],
+            'GovUK-MoJ': ['govuk-moj-', 'govuk moj', 'ministry of justice', 'cautions-guidance'],
+            'RCJ': ['rcj-', 'royal courts of justice'],
+            'VKPP': ['vkpp-', 'victims\' commissioner', 'victims commissioner'],
+            'Sentencing Council': ['sent-coun-', 'sentencing council', 'sentencing guidelines'],
+            'BTP-Policy': ['btp-policy', 'btp policy', 'british transport police'],
+            'Stop & Search': ['stop and search', 'stop & search', 'stop search'],
+            'PACE': ['pace-', 'police and criminal evidence act'],
+            'SCRS': ['scrs ', 'scrs crime manual', 'scotland'],
             'Other Documents': [],  # Catch-all for unmatched citations
         }
 
