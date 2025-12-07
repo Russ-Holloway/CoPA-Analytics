@@ -40,8 +40,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         "</style>" + \
         "<script>" + \
         "async function trackCitationClick(conversationId, citationTitle) {" + \
+        "  console.log('Citation clicked!', {conversationId, citationTitle});" + \
         "  try {" + \
-        "    await fetch('/api/TrackCitationClick', {" + \
+        "    const response = await fetch('/api/TrackCitationClick', {" + \
         "      method: 'POST'," + \
         "      headers: { 'Content-Type': 'application/json' }," + \
         "      body: JSON.stringify({" + \
@@ -54,6 +55,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         "        containerName: '" + container_name + "'" + \
         "      })" + \
         "    });" + \
+        "    const data = await response.json();" + \
+        "    console.log('Tracking response:', response.status, data);" + \
         "  } catch (e) { console.error('Citation tracking failed:', e); }" + \
         "}" + \
         "</script></head><body>" + \
