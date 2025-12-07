@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citation Click Tracking - Integration Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .conversation {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .message {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background: #e3f2fd;
+            text-align: right;
+        }
+        .ai-message {
+            background: #f5f5f5;
+        }
+        .citations {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+        }
+        .citation-link {
+            display: block;
+            color: #1e3a8a;
+            text-decoration: none;
+            padding: 8px 0;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .citation-link:hover {
+            text-decoration: underline;
+            background: rgba(30, 58, 138, 0.05);
+            padding-left: 5px;
+        }
+        .citation-link.clicked {
+            color: #6b7280;
+            text-decoration: line-through;
+        }
+        .citation-link::before {
+            content: "📄 ";
+        }
+        .stats {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Citation Click Tracking - Frontend Integration Example</h1>
+    
+    <div class="conversation">
+        <h3>Sample Conversation</h3>
+        
+        <div class="message user-message">
+            <strong>User:</strong> What are the legal requirements for making an arrest?
+        </div>
+        
+        <div class="message ai-message">
+            <strong>CoPA:</strong> 
+            <p>An arrest can be made when an officer has reasonable grounds to suspect that a person is committing, has committed, or is about to commit an offence. The arrest must be necessary and proportionate according to PACE Code G.</p>
+            
+            <div class="citations">
+                <strong>Sources:</strong>
+                <a href="https://example.com/pace" class="citation-link" data-title="PACE Code G - Arrest Guidance" data-conversation="conv-123">
+                    PACE Code G - Arrest Guidance
+                </a>
+                <a href="https://example.com/cop" class="citation-link" data-title="College of Policing - Arrest" data-conversation="conv-123">
+                    College of Policing - Arrest
+                </a>
+                <a href="https://example.com/legislation" class="citation-link" data-title="Police and Criminal Evidence Act 1984" data-conversation="conv-123">
+                    Police and Criminal Evidence Act 1984
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <h4>📊 Click Statistics</h4>
+        <p>Citations clicked: <strong id="clickCount">0</strong></p>
+        <p>Tracking calls made: <strong id="apiCallCount">0</strong></p>
+        <p>Last clicked: <strong id="lastClicked">None</strong></p>
+    </div>
+    
+    <h2>Integration Code</h2>
+    
+    <h3>1. Basic Implementation</h3>
+    <div class="code-block">
+<pre>// Function to track citation clicks
+async function trackCitationClick(citationData) {
+    const endpoint = '/api/TrackCitationClick';
+    
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                conversationId: citationData.conversationId,
+                citationTitle: citationData.title,
+                citationUrl: citationData.url,
+                userId: citationData.userId || 'anonymous',
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if (response.ok) {
+            console.log('Citation click tracked successfully');
+        }
+    } catch (error) {
+        console.error('Failed to track citation:', error);
+        // Don't block user navigation on tracking failure
+    }
+}
+
+// Add click handler to citation links
+document.querySelectorAll('.citation-link').forEach(link => {
+    link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const citationData = {
+            conversationId: e.target.dataset.conversation,
+            title: e.target.dataset.title,
+            url: e.target.href,
+            userId: getCurrentUserId() // Your function to get user ID
+        };
+        
+        // Track the click (non-blocking)
+        trackCitationClick(citationData);
+        
+        // Open link in new tab
+        window.open(e.target.href, '_blank');
+        
+        // Visual feedback
+        e.target.classList.add('clicked');
+    });
+});</pre>
+    </div>
+    
+    <h3>2. React Component Example</h3>
+    <div class="code-block">
+<pre>import React from 'react';
+
+const CitationLink = ({ citation, conversationId, userId }) => {
+    const handleClick = async (e) => {
+        e.preventDefault();
+        
+        // Track the click
+        try {
+            await fetch('/api/TrackCitationClick', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversationId,
+                    citationTitle: citation.title,
+                    citationUrl: citation.url,
+                    userId: userId || 'anonymous',
+                    timestamp: new Date().toISOString()
+                })
+            });
+        } catch (error) {
+            console.error('Citation tracking failed:', error);
+        }
+        
+        // Open link
+        window.open(citation.url, '_blank');
+    };
+    
+    return (
+        &lt;a 
+            href={citation.url}
+            onClick={handleClick}
+            className="citation-link"
+            target="_blank"
+            rel="noopener noreferrer"
+        &gt;
+            {citation.title}
+        &lt;/a&gt;
+    );
+};
+
+export default CitationLink;</pre>
+    </div>
+    
+    <h3>3. Vue.js Component Example</h3>
+    <div class="code-block">
+<pre>&lt;template&gt;
+  &lt;a 
+    :href="citation.url"
+    @click="handleClick"
+    class="citation-link"
+    target="_blank"
+  &gt;
+    {{ citation.title }}
+  &lt;/a&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+  props: {
+    citation: Object,
+    conversationId: String,
+    userId: String
+  },
+  methods: {
+    async handleClick(e) {
+      e.preventDefault();
+      
+      try {
+        await fetch('/api/TrackCitationClick', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conversationId: this.conversationId,
+            citationTitle: this.citation.title,
+            citationUrl: this.citation.url,
+            userId: this.userId || 'anonymous',
+            timestamp: new Date().toISOString()
+          })
+        });
+      } catch (error) {
+        console.error('Citation tracking failed:', error);
+      }
+      
+      window.open(this.citation.url, '_blank');
+    }
+  }
+};
+&lt;/script&gt;</pre>
+    </div>
+
+    <script>
+        // Demo functionality
+        let clickCount = 0;
+        let apiCallCount = 0;
+        
+        // Simulate getCurrentUserId function
+        function getCurrentUserId() {
+            return 'demo-user-' + Math.floor(Math.random() * 1000);
+        }
+        
+        // Track citation clicks in demo
+        async function trackCitationClick(citationData) {
+            const endpoint = '/api/TrackCitationClick';
+            
+            apiCallCount++;
+            document.getElementById('apiCallCount').textContent = apiCallCount;
+            
+            // In real implementation, this would call your API
+            console.log('Would track citation:', citationData);
+            
+            // Simulate API call
+            return new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
+        // Add click handlers to citation links
+        document.querySelectorAll('.citation-link').forEach(link => {
+            link.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const citationData = {
+                    conversationId: e.target.dataset.conversation,
+                    title: e.target.dataset.title,
+                    url: e.target.href,
+                    userId: getCurrentUserId()
+                };
+                
+                // Track the click
+                await trackCitationClick(citationData);
+                
+                // Update UI
+                clickCount++;
+                document.getElementById('clickCount').textContent = clickCount;
+                document.getElementById('lastClicked').textContent = citationData.title;
+                
+                // Visual feedback
+                e.target.classList.add('clicked');
+                
+                // In real implementation, would open link
+                console.log('Would open:', e.target.href);
+                alert('Citation click tracked! (Link would open in new tab)\n\nTitle: ' + citationData.title);
+            });
+        });
+    </script>
+</body>
+</html>

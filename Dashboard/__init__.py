@@ -230,6 +230,25 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 </div>
             </div>
             <div class="dashboard-grid-4">
+                <div class="card metric" style="background:#e0f2fe;">
+                    <div class="metric-value" id="citationEngagementRate">0%</div>
+                    <div class="metric-label">Citation Check Rate</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 8px;">% of responses where users clicked citations</div>
+                </div>
+                <div class="card metric" style="background:#dbeafe;">
+                    <div class="metric-value" id="avgMessagesPerConversation">0</div>
+                    <div class="metric-label">Avg Messages Per Conversation</div>
+                </div>
+                <div class="card metric" style="background:#e0f2fe;">
+                    <div class="metric-value" id="returningUserRate">0%</div>
+                    <div class="metric-label">Returning User Rate</div>
+                </div>
+                <div class="card metric" style="background:#dbeafe;">
+                    <div class="metric-value" id="responsesWithCitationsRate">0%</div>
+                    <div class="metric-label">Responses With Citations</div>
+                </div>
+            </div>
+            <div class="dashboard-grid-4">
                 <div class="card">
                     <h3>Top Conversation Themes</h3>
                     <div class="chart-container">
@@ -249,6 +268,23 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 <div class="card">
                     <h3>Recent Conversations</h3>
                     <div id="questions" class="questions-list"></div>
+                </div>
+            </div>
+            <div class="dashboard-grid-4">
+                <div class="card" style="grid-column: span 4;">
+                    <h3>Citation Engagement Insights</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; border-left: 4px solid #1e3a8a;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #1e3a8a;" id="conversationsWithClicks">0</div>
+                            <div style="color: #666; margin-top: 4px;">Conversations with Citation Clicks</div>
+                            <div style="font-size: 0.9em; color: #888; margin-top: 8px;" id="citationClickDetails">0 total clicks across 0 conversations with citations</div>
+                        </div>
+                        <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #059669;" id="citationEngagementPct">0%</div>
+                            <div style="color: #666; margin-top: 4px;">of Users Check Sources After Response</div>
+                            <div style="font-size: 0.9em; color: #888; margin-top: 8px;">This shows users are verifying information</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="dashboard-grid-4">
@@ -327,6 +363,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             // Existing filtered metrics
             document.getElementById('uniqueUsers').textContent = data.summary?.uniqueUsers || 0;
             document.getElementById('totalUserQuestions').textContent = data.summary?.totalUserQuestions || 0;
+            // New engagement metrics
+            document.getElementById('citationEngagementRate').textContent = (data.citations?.citationEngagementRate ?? 0) + '%';
+            document.getElementById('avgMessagesPerConversation').textContent = data.engagement?.avgMessagesPerConversation ?? 0;
+            document.getElementById('returningUserRate').textContent = (data.engagement?.returningUserRate ?? 0) + '%';
+            document.getElementById('responsesWithCitationsRate').textContent = (data.citations?.responsesWithCitationsRate ?? 0) + '%';
             // Top Conversation Themes
             if (data.themes?.top_themes) {{
                 var themeLabels = data.themes.top_themes.map(function(theme) {{ return theme.theme; }});
@@ -401,6 +442,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     '</div>';
                 }}
                 document.getElementById('questions').innerHTML = questionsHtml;
+            }}
+            
+            // Update citation engagement insights
+            if (data.citations) {{
+                document.getElementById('conversationsWithClicks').textContent = data.citations.conversationsWithClicks || 0;
+                document.getElementById('citationEngagementPct').textContent = (data.citations.citationEngagementRate || 0) + '%';
+                var clickDetailsText = (data.citations.totalCitationClicks || 0) + ' total clicks across ' + 
+                                      (data.citations.conversationsWithCitations || 0) + ' conversations with citations';
+                document.getElementById('citationClickDetails').textContent = clickDetailsText;
             }}
             
             // Update citations table
