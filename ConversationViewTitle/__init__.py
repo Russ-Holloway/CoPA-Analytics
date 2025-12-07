@@ -35,7 +35,31 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         ".msg-role { font-weight: bold; margin-right: 8px; }" + \
         ".citation-title { color: #1e3a8a; font-weight: bold; }" + \
         ".citation-content { display: block; margin-top: 4px; font-size: 0.97em; color: #333; }" + \
-        "</style></head><body>" + \
+        ".citation-link { color: #1e3a8a; text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 8px; font-weight: 500; }" + \
+        ".citation-link:hover { color: #3b82f6; background: rgba(30, 58, 138, 0.05); padding: 2px 4px; border-radius: 3px; }" + \
+        "</style>" + \
+        "<script>" + \
+        "async function trackCitationClick(conversationId, citationTitle, citationUrl) {" + \
+        "  try {" + \
+        "    await fetch('/api/TrackCitationClick', {" + \
+        "      method: 'POST'," + \
+        "      headers: { 'Content-Type': 'application/json' }," + \
+        "      body: JSON.stringify({" + \
+        "        conversationId: conversationId," + \
+        "        citationTitle: citationTitle," + \
+        "        citationUrl: citationUrl || ''," + \
+        "        userId: 'viewer'," + \
+        "        timestamp: new Date().toISOString()" + \
+        "      })" + \
+        "    });" + \
+        "  } catch (e) { console.error('Citation tracking failed:', e); }" + \
+        "}" + \
+        "function handleCitationClick(e, conversationId, title, url) {" + \
+        "  e.preventDefault();" + \
+        "  trackCitationClick(conversationId, title, url);" + \
+        "  if (url) window.open(url, '_blank');" + \
+        "}" + \
+        "</script></head><body>" + \
         "<div class='container'>" + \
         "<h2>" + (conv.get('title') or '') + "</h2>" + \
         "<div class='meta'><b>Date:</b> " + (conv.get('createdAt') or '') + "</div>" + \
@@ -73,7 +97,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                                 for c in citations:
                                     title = c.get('title', '(citation)')
                                     c_content = c.get('content', '')
-                                    citation_htmls.append("<div class='msg-tool'><span class='citation-title'>Citation:</span> " + title + "<span class='citation-content'>" + c_content + "</span></div>")
+                                    url = c.get('url', '')
+                                    title_escaped = title.replace("'", "\\'")
+                                    url_escaped = url.replace("'", "\\'")
+                                    if url:
+                                        citation_htmls.append("<div class='msg-tool'><span class='citation-title'>Citation:</span> <a href='#' class='citation-link' onclick=\"handleCitationClick(event, '" + conversation_id + "', '" + title_escaped + "', '" + url_escaped + "')\">" + title + "</a><span class='citation-content'>" + c_content + "</span></div>")
+                                    else:
+                                        citation_htmls.append("<div class='msg-tool'><span class='citation-title'>Citation:</span> " + title + "<span class='citation-content'>" + c_content + "</span></div>")
                             else:
                                 citation_htmls.append("<div class='msg-tool'>" + t_content + "</div>")
                         except Exception:
@@ -97,7 +127,13 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         for c in citations:
                             title = c.get('title', '(citation)')
                             c_content = c.get('content', '')
-                            html += "<div class='msg-tool'><span class='citation-title'>Citation:</span> " + title + "<span class='citation-content'>" + c_content + "</span></div>"
+                            url = c.get('url', '')
+                            title_escaped = title.replace("'", "\\'")
+                            url_escaped = url.replace("'", "\\'")
+                            if url:
+                                html += "<div class='msg-tool'><span class='citation-title'>Citation:</span> <a href='#' class='citation-link' onclick=\"handleCitationClick(event, '" + conversation_id + "', '" + title_escaped + "', '" + url_escaped + "')\">" + title + "</a><span class='citation-content'>" + c_content + "</span></div>"
+                            else:
+                                html += "<div class='msg-tool'><span class='citation-title'>Citation:</span> " + title + "<span class='citation-content'>" + c_content + "</span></div>"
                     else:
                         html += "<div class='msg-tool'>" + content + "</div>"
                 except Exception:
