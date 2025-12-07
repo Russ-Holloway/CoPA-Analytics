@@ -104,14 +104,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                             if citations and isinstance(citations, list):
                                 for c in citations:
                                     title = c.get('title', '(citation)')
-                                    c_content = c.get('content', '')
+                                    c_content = c.get('content', '').replace('<', '&lt;').replace('>', '&gt;')
                                     url = c.get('url', '')
                                     title_escaped = title.replace("'", "\\'").replace('"', '&quot;')
                                     url_escaped = url.replace("'", "\\'").replace('"', '&quot;')
+                                    title_display = title.replace('<', '&lt;').replace('>', '&gt;')
                                     if url:
-                                        citation_htmls.append(f'<div class="msg-tool"><div class="citation-title">Citation: <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a></div><div class="citation-content">{c_content}</div></div>')
+                                        citation_htmls.append(f'<div class="msg-tool"><div class="citation-title"><a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title_display}</a></div><div class="citation-content">{c_content}</div></div>')
                                     else:
-                                        citation_htmls.append(f'<div class="msg-tool"><div class="citation-title">Citation: {title}</div><div class="citation-content">{c_content}</div></div>')
+                                        citation_htmls.append(f'<div class="msg-tool"><div class="citation-title">{title_display}</div><div class="citation-content">{c_content}</div></div>')
                             else:
                                 citation_htmls.append(f'<div class="msg-tool">{t_content}</div>')
                         except Exception:
@@ -134,14 +135,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     if citations and isinstance(citations, list):
                         for c in citations:
                             title = c.get('title', '(citation)')
-                            c_content = c.get('content', '')
+                            c_content = c.get('content', '').replace('<', '&lt;').replace('>', '&gt;')
                             url = c.get('url', '')
                             title_escaped = title.replace("'", "\\'").replace('"', '&quot;')
                             url_escaped = url.replace("'", "\\'").replace('"', '&quot;')
+                            title_display = title.replace('<', '&lt;').replace('>', '&gt;')
                             if url:
-                                html += f'<div class="msg-tool"><div class="citation-title">Citation: <a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title}</a></div><div class="citation-content">{c_content}</div></div>'
+                                html += f'<div class="msg-tool"><div class="citation-title"><a href="#" class="citation-link" onclick="handleCitationClick(event, \'{conversation_id}\', \'{title_escaped}\', \'{url_escaped}\')">{title_display}</a></div><div class="citation-content">{c_content}</div></div>'
                             else:
-                                html += f'<div class="msg-tool"><div class="citation-title">Citation: {title}</div><div class="citation-content">{c_content}</div></div>'
+                                html += f'<div class="msg-tool"><div class="citation-title">{title_display}</div><div class="citation-content">{c_content}</div></div>'
                     else:
                         html += f'<div class="msg-tool">{content}</div>'
                 except Exception:
