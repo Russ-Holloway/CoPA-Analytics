@@ -147,16 +147,63 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             'SCRS': ['scrs ', 'scrs crime manual', 'scotland'],
             'Other Documents': [],  # Catch-all for unmatched citations
         }
+        
+        # Citation click tracking
+        citation_clicks = set()  # Track unique conversations with citation clicks
+        total_citation_clicks = 0
+        conversations_with_citations = set()
+        
+        # Conversation metrics
+        conversation_message_counts = defaultdict(int)
+        user_conversation_count = defaultdict(int)
+        returning_users = set()
+        user_first_seen = {}
+        conversations_with_responses = set()
 
         for item in items:
-            # Unique users
+            item_type = item.get('type')
+            
+            # Track citation clicks
+            if item_type == 'citation_click':
+                conv_id = item.get('conversationId')
+                if conv_id:
+                    citation_clicks.add(conv_id)
+                    total_citation_clicks += 1
+            
+            # Track conversation message counts
+            if item_type == 'message':
+                conv_id = item.get('conversationId')
+                if conv_id:
+                    conversation_message_counts[conv_id] += 1
+            
+            # Track returning users
             user_id = item.get('userId')
             if user_id:
                 unique_users.add(user_id)
+                ts = item.get('createdAt') or item.get('timestamp')
+                if ts:
+                    try:
+                        dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+                        if user_id not in user_first_seen:
+                            user_first_seen[user_id] = dt
+                        else:
+                            # If we've seen this user before in a different period, they're returning
+                            time_diff = (dt - user_first_seen[user_id]).days
+                            if time_diff > 0:
+                                returning_users.add(user_id)
+                    except Exception:
+                        pass
+            
+            # Count conversations per user
+            if item_type == 'conversation':
+                if user_id:
+                    user_conversation_count[user_id] += 1
+            
             # Category
-            cat = item.get('category') or item.get('type')
+            cat = item.get('category') or item_type
             if cat:
                 categories[cat] += 1
+            
             # Hourly distribution
             ts = item.get('createdAt') or item.get('timestamp')
             if ts:
@@ -169,11 +216,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             # Extract citations from tool messages
             if item.get('role') == 'tool':
                 conv_id = item.get('conversationId')
+                if conv_id:
+                    conversations_with_responses.add(conv_id)
                 try:
                     content = item.get('content', '')
                     tool_data = json.loads(content) if isinstance(content, str) else content
                     citations = tool_data.get('citations') if isinstance(tool_data, dict) else None
                     if citations and isinstance(citations, list):
+                        # Track conversations that have citations
+                        if conv_id:
+                            conversations_with_citations.add(conv_id)
+                        
                         # Track total citations processed for logging
                         total_citations_processed = sum(src['count'] for src in citation_sources.values())
                         
@@ -275,8 +328,23 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Peak usage hour
         peak_hour = hourly_distribution.index(max(hourly_distribution)) if any(hourly_distribution) else None
 
-        # Prepare response
+        # Calculate additional metrics
         avg_response_time = round(sum(response_times)/len(response_times), 2) if response_times else None
+        
+        # Citation engagement metrics
+        conversations_with_citations_count = len(conversations_with_citations)
+        conversations_with_clicks_count = len(citation_clicks)
+        citation_engagement_rate = round((conversations_with_clicks_count / conversations_with_citations_count * 100), 1) if conversations_with_citations_count > 0 else 0
+        
+        # Conversation length metrics
+        avg_messages_per_conversation = round(sum(conversation_message_counts.values()) / len(conversation_message_counts), 1) if conversation_message_counts else 0
+        
+        # User engagement metrics
+        avg_conversations_per_user = round(sum(user_conversation_count.values()) / len(user_conversation_count), 1) if user_conversation_count else 0
+        returning_user_rate = round((len(returning_users) / len(unique_users) * 100), 1) if len(unique_users) > 0 else 0
+        
+        # Response quality metrics
+        responses_with_citations_rate = round((conversations_with_citations_count / len(conversations_with_responses) * 100), 1) if conversations_with_responses else 0
         
         # Format citations data for response
         total_citations = sum(data['count'] for data in citation_sources.values())
@@ -298,7 +366,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 "totalQuestions": total_questions,
                 "totalUserQuestions": total_user_questions,
                 "peakUsageHour": peak_hour,
-                "avgResponseTimeSeconds": avg_response_time
+                "avgResponseTimeSeconds": avg_response_time,
+                "avgMessagesPerConversation": avg_messages_per_conversation,
+                "avgConversationsPerUser": avg_conversations_per_user,
+                "returningUserRate": returning_user_rate
             },
             "categories": {k: {"count": v} for k, v in categories.items()},
             "themes": {"top_themes": top_themes},
@@ -310,7 +381,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 "breakdown": citations_breakdown,
                 "totalCitations": sum(c['totalCitations'] for c in citations_breakdown),
                 "totalQuestionsWithCitations": len(set().union(*[data['questions'] for data in citation_sources.values()])) if citation_sources else 0,
-                "unmatchedSamples": unmatched_samples  # Debug: show sample unmatched citations
+                "unmatchedSamples": unmatched_samples,  # Debug: show sample unmatched citations
+                "conversationsWithCitations": conversations_with_citations_count,
+                "conversationsWithClicks": conversations_with_clicks_count,
+                "citationEngagementRate": citation_engagement_rate,
+                "totalCitationClicks": total_citation_clicks,
+                "responsesWithCitationsRate": responses_with_citations_rate
+            },
+            # --- Engagement metrics ---
+            "engagement": {
+                "avgMessagesPerConversation": avg_messages_per_conversation,
+                "avgConversationsPerUser": avg_conversations_per_user,
+                "returningUserRate": returning_user_rate,
+                "totalReturningUsers": len(returning_users),
+                "citationCheckRate": citation_engagement_rate
             },
             # --- NEW FIELD: allTime ---
             "allTime": {

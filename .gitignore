@@ -5,7 +5,7 @@ bin
 obj
 appsettings.json
 local.settings.json
-.vscode/
+
 .azure/
 
 # Python
@@ -62,7 +62,7 @@ venv.bak/
 
 # IDE
 .idea/
-.vscode/
+
 *.swp
 *.swo
 *~
@@ -95,3 +95,5 @@ appsettings.*.json
 # Temporary files
 *.tmp
 *.temp
+
+.python_packages
