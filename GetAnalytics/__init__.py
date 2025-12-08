@@ -157,6 +157,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             'VKPP': ['vkpp-', 'victims\' commissioner', 'victims commissioner'],
             'Sentencing Council': ['sent-coun-', 'sentencing council', 'sentencing guidelines'],
             'BTP-Policy': ['btp-pol', 'btp-policy', 'btp policy', 'btp-', 'british transport police'],
+            'BTP-Records-Management': ['btp-records-management', 'btp records management', 'records management'],
             'Stop & Search': ['stop and search', 'stop & search', 'stop search'],
             'PACE': ['pace-', 'police and criminal evidence act'],
             'SCRS': ['scrs ', 'scrs crime manual', 'scotland'],
