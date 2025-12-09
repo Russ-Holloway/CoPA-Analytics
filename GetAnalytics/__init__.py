@@ -252,6 +252,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                             if total_citations_processed < 50:
                                 logging.info(f"Citation title: {title}")
                             
+                            # Additional logging for BTP documents
+                            if 'btp' in title:
+                                logging.info(f"BTP citation found: {title}")
+                            
                             # Categorize citation by source
                             matched = False
                             for source_name, keywords in citation_categories.items():
@@ -262,6 +266,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                                     if conv_id:
                                         citation_sources[source_name]['questions'].add(conv_id)
                                     matched = True
+                                    logging.info(f"Matched '{title}' to category '{source_name}'")
                                     break
                             # If no category matched, categorize as "Other Documents"
                             if not matched:
