@@ -350,14 +350,27 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     try:
                         tool_data = json.loads(content) if isinstance(content, str) else content
                         if isinstance(tool_data, dict):
-                            # Extract the answer/response text from tool data
-                            answer = tool_data.get('answer', '') or tool_data.get('response', '') or tool_data.get('content', '')
+                            # Check for direct answer/response fields first
+                            answer = tool_data.get('answer', '') or tool_data.get('response', '')
                             if answer:
                                 return clean_text_for_csv(answer)
-                            # If no answer field, try to get a summary
+                            
+                            # For citation-based tool responses, extract citation titles as summary
+                            citations = tool_data.get('citations', [])
+                            if citations and isinstance(citations, list):
+                                # Get citation titles to provide a readable summary
+                                titles = [c.get('title', '') for c in citations if c.get('title')]
+                                unique_titles = list(dict.fromkeys(titles))  # Remove duplicates while preserving order
+                                if unique_titles:
+                                    return f"[Citations from: {', '.join(unique_titles[:5])}]"
+                            
+                            # If no answer or citations, try summary
                             summary = tool_data.get('summary', '')
                             if summary:
                                 return clean_text_for_csv(summary)
+                            
+                            # Last resort: return a placeholder instead of raw JSON
+                            return "[Tool response - see citation columns for details]"
                     except (json.JSONDecodeError, TypeError):
                         pass
                 
