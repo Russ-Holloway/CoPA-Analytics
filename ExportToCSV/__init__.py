@@ -3,6 +3,8 @@ import logging
 import os
 import csv
 import io
+import json
+import re
 from datetime import datetime, timedelta
 from azure.cosmos import CosmosClient
 import requests
@@ -265,33 +267,117 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 'Conversation ID',
                 'Type',
                 'Role',
-                'Content Preview',
+                'Content',
                 'User ID',
                 'User Name',
                 'User Email',
                 'Created At',
-                'Has Citations'
+                'Has Citations',
+                'Citation Count',
+                'Citation Titles',
+                'Citation Sources'
             ])
+            
+            def clean_text_for_csv(text):
+                """Clean text to prevent CSV corruption."""
+                if not text:
+                    return ''
+                # Replace newlines and carriage returns with spaces
+                text = text.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
+                # Replace tabs with spaces
+                text = text.replace('\t', ' ')
+                # Remove or replace other problematic characters
+                text = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', text)
+                # Collapse multiple spaces into one
+                text = re.sub(r' +', ' ', text)
+                return text.strip()
+            
+            def extract_citations(content, role):
+                """Extract citation details from tool messages."""
+                citations_list = []
+                if role == 'tool':
+                    try:
+                        tool_data = json.loads(content) if isinstance(content, str) else content
+                        if isinstance(tool_data, dict) and tool_data.get('citations'):
+                            for citation in tool_data.get('citations', []):
+                                title = citation.get('title', 'Unknown')
+                                url = citation.get('url', '')
+                                # Determine source from title/url
+                                source = categorize_citation_source(title, url)
+                                citations_list.append({
+                                    'title': clean_text_for_csv(title),
+                                    'source': source
+                                })
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+                return citations_list
+            
+            def categorize_citation_source(title, url=''):
+                """Categorize citation source based on title/url patterns."""
+                title_lower = (title or '').lower()
+                url_lower = (url or '').lower()
+                combined = title_lower + ' ' + url_lower
+                
+                source_patterns = {
+                    'CoP-APP': ['cop-app', 'cop app', 'college of policing', 'authorised professional practice', 'cop-detention', 'cop-general'],
+                    'Op Soteria-NOM': ['op soteria', 'opsoteria', 'operation soteria', 'soteria'],
+                    'NPCC': ['npcc-', 'npcc ', 'national police chiefs', 'gravity-matrix', 'oocr-'],
+                    'GovUK-CPS': ['govuk-cps', 'cps.gov.uk', 'crown prosecution service', 'cps guidance'],
+                    'GovUK-Legislation': ['govuk-legislation', 'legislation.gov.uk'],
+                    'GovUK-HO': ['govuk-ho', 'home office guidance', 'notifiable-offence'],
+                    'GovUK-MoJ': ['govuk-moj', 'ministry of justice', 'cautions-guidance'],
+                    'RCJ': ['rcj-', 'royal courts of justice'],
+                    'VKPP': ['vkpp-', 'victims\' commissioner', 'victims commissioner'],
+                    'Sentencing Council': ['sent-coun-', 'sentencing council', 'sentencing guidelines'],
+                    'BTP-Records-Management': ['btp-records-management'],
+                    'BTP-Policy': ['btp-policy-'],
+                    'Stop & Search': ['stop and search', 'stop & search', 'stop search'],
+                    'PACE': ['pace-', 'police and criminal evidence act'],
+                    'SCRS': ['scrs ', 'scrs crime manual', 'scotland'],
+                }
+                
+                for source_name, keywords in source_patterns.items():
+                    if any(keyword in combined for keyword in keywords):
+                        return source_name
+                return 'Other'
+            
+            def extract_readable_content(content, role):
+                """Extract readable content from messages, handling tool JSON specially."""
+                if not content:
+                    return ''
+                
+                if role == 'tool':
+                    try:
+                        tool_data = json.loads(content) if isinstance(content, str) else content
+                        if isinstance(tool_data, dict):
+                            # Extract the answer/response text from tool data
+                            answer = tool_data.get('answer', '') or tool_data.get('response', '') or tool_data.get('content', '')
+                            if answer:
+                                return clean_text_for_csv(answer)
+                            # If no answer field, try to get a summary
+                            summary = tool_data.get('summary', '')
+                            if summary:
+                                return clean_text_for_csv(summary)
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+                
+                return clean_text_for_csv(content)
             
             message_count = 0
             for item in filtered_items:
                 if item.get('type') == 'message':
                     content = item.get('content', '')
-                    # Clean and format content - replace problematic characters
-                    content_cleaned = content.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' ')
-                    # Export full content without truncation
-                    content_preview = content_cleaned
+                    role = item.get('role', '')
                     
-                    # Check for citations
-                    has_citations = 'No'
-                    if item.get('role') == 'tool':
-                        try:
-                            import json
-                            tool_data = json.loads(content) if isinstance(content, str) else content
-                            if isinstance(tool_data, dict) and tool_data.get('citations'):
-                                has_citations = 'Yes'
-                        except:
-                            pass
+                    # Extract readable content
+                    content_display = extract_readable_content(content, role)
+                    
+                    # Extract citations for tool messages
+                    citations = extract_citations(content, role)
+                    has_citations = 'Yes' if citations else 'No'
+                    citation_count = len(citations)
+                    citation_titles = ' | '.join([c['title'] for c in citations]) if citations else ''
+                    citation_sources = ' | '.join([c['source'] for c in citations]) if citations else ''
                     
                     user_id = item.get('userId', '')
                     user_info = user_details.get(user_id, {})
@@ -300,13 +386,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                         item.get('id', ''),
                         item.get('conversationId', ''),
                         item.get('type', ''),
-                        item.get('role', ''),
-                        content_preview,
+                        role,
+                        content_display,
                         user_id,
                         user_info.get('displayName', ''),
                         user_info.get('email', ''),
                         item.get('createdAt', ''),
-                        has_citations
+                        has_citations,
+                        citation_count,
+                        citation_titles,
+                        citation_sources
                     ])
                     message_count += 1
             
